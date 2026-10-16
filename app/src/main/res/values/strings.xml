@@ -1,0 +1,119 @@
+<resources>
+
+    <string name="app_name">Transfer Driver</string>
+
+    <string name="login_title">Transfer Driver</string>
+    <string name="login_subtitle">Вход для водителей Transfer Servis</string>
+
+    <string name="login_hint">Логин</string>
+    <string name="password_hint">Пароль</string>
+    <string name="login_button">Войти</string>
+
+    <string name="error_login_required">Введите логин</string>
+    <string name="error_password_required">Введите пароль</string>
+    <string name="error_login_failed">Не удалось выполнить вход</string>
+    <string name="error_invalid_server_response">Некорректный ответ сервера</string>
+    <string name="error_session_save">Не удалось безопасно сохранить сессию</string>
+
+    <string name="driver_screen_title">Водитель</string>
+    <string name="driver_authenticated">Авторизация водителя выполнена</string>
+
+    <string name="driver_session_checking">Проверка сессии…</string>
+
+    <string name="session_refresh_failed">Не удалось обновить сессию</string>
+    <string name="session_retry">Повторить</string>
+
+    <string name="logout_button">Выйти</string>
+    <string name="logout_in_progress">Завершение сессии…</string>
+    <string name="logout_failed">Не удалось завершить сессию</string>
+
+    <string name="orders_loading">Загрузка заявок…</string>
+    <string name="orders_loaded_count">Заявки: %1$d</string>
+    <string name="orders_load_failed">Не удалось загрузить заявки</string>
+
+    <string name="orders_empty_new">Новых заявок пока нет</string>
+    <string name="orders_empty_active">У вас нет активных поездок</string>
+    <string name="orders_empty_history">История поездок пока пуста</string>
+
+    <string name="orders_tab_new">Новые</string>
+    <string name="orders_tab_active">Мои активные</string>
+    <string name="orders_tab_history">История</string>
+
+    <string name="orders_tab_new_count">Новые (%1$d)</string>
+    <string name="orders_tab_active_count">Мои активные (%1$d)</string>
+    <string name="orders_tab_history_count">История (%1$d)</string>
+
+    <string name="order_active_badge">АКТИВНАЯ ПОЕЗДКА</string>
+
+    <string name="order_route_unknown">Маршрут не указан</string>
+
+    <string name="order_id_format">ID заявки: %1$s</string>
+    <string name="order_from_format">Откуда: %1$s</string>
+    <string name="order_to_format">Куда: %1$s</string>
+
+    <string name="order_date_format">Дата: %1$s</string>
+    <string name="order_tariff_format">Тариф: %1$s</string>
+    <string name="order_price_format">Стоимость: %1$s ₽</string>
+    <string name="order_distance_format">Расстояние: %1$s км</string>
+    <string name="order_duration_format">В пути: %1$s</string>
+    <string name="order_status_format">Статус: %1$s</string>
+
+    <string name="order_customer_format">Пассажир: %1$s</string>
+    <string name="order_phone_format">Телефон: %1$s</string>
+    <string name="order_comment_format">Комментарий: %1$s</string>
+
+    <string name="order_status_new">Новая</string>
+    <string name="order_status_taken">Принята</string>
+    <string name="order_status_in_progress">В поездке</string>
+    <string name="order_status_done">Завершена</string>
+    <string name="order_status_canceled">Отменена</string>
+
+    <string name="tariff_comfort">Комфорт</string>
+    <string name="tariff_business">Бизнес</string>
+    <string name="tariff_minivan">Минивэн</string>
+
+    <string name="order_call">Позвонить</string>
+    <string name="order_open_route">Маршрут</string>
+
+    <string name="order_phone_unavailable">Телефон пассажира недоступен</string>
+    <string name="order_route_unavailable">Недостаточно данных для построения маршрута</string>
+
+    <string name="dialer_unavailable">На устройстве не найдено приложение для звонков</string>
+    <string name="maps_unavailable">Не удалось открыть приложение карт</string>
+
+    <string name="order_accept">Принять заказ</string>
+    <string name="order_accepting">Принимаем…</string>
+
+    <string name="order_start">Начать поездку</string>
+    <string name="order_starting">Начинаем…</string>
+
+    <string name="order_finish">Завершить поездку</string>
+    <string name="order_finishing">Завершаем…</string>
+
+    <string name="order_accept_confirm_title">Принять заказ?</string>
+    <string name="order_accept_confirm_message">Маршрут: %1$s\n\nПосле подтверждения заказ будет назначен вам.</string>
+
+    <string name="order_start_confirm_title">Начать поездку?</string>
+    <string name="order_start_confirm_message">Маршрут: %1$s\n\nСтатус заявки изменится на «В поездке».</string>
+
+    <string name="order_finish_confirm_title">Завершить поездку?</string>
+    <string name="order_finish_confirm_message">Маршрут: %1$s\n\nПосле подтверждения поездка будет завершена.</string>
+
+    <string name="order_accepted">Заказ принят</string>
+    <string name="order_started">Поездка начата</string>
+    <string name="order_finished">Поездка завершена</string>
+    <string name="order_action_success">Статус заявки изменён</string>
+
+    <string name="order_conflict">Состояние заказа уже изменилось</string>
+    <string name="order_action_failed">Не удалось изменить заявку</string>
+    <string name="order_invalid">Некорректная заявка</string>
+
+    <string name="cancel_button">Отмена</string>
+
+    <string name="back_button">Назад</string>
+
+    <string name="order_details_passenger_title">Пассажир</string>
+    <string name="order_details_load_failed">Не удалось загрузить заявку</string>
+    <string name="order_details_unavailable">Эта заявка больше недоступна</string>
+
+</resources>
