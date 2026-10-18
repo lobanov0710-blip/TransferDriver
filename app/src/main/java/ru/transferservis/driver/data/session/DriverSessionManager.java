@@ -184,17 +184,42 @@ public final class DriverSessionManager {
          */
         pushRegistrar.unregisterBeforeLogout(
                 () ->
-                        logoutStaffSession(
-                                current,
+                        logoutCurrentStaffSession(
                                 callback
                         )
         );
     }
 
-    private void logoutStaffSession(
-            DriverSession current,
+    private void logoutCurrentStaffSession(
             LogoutCallback callback
     ) {
+
+        /*
+         * The authenticated unregister request
+         * may have refreshed and rotated the
+         * staff session. Reload it here so
+         * logout always uses the latest
+         * refresh token.
+         */
+        DriverSession current =
+                sessionStore.load();
+
+        if (
+                current == null
+                        ||
+                        !current
+                                .hasUsableRefreshToken()
+        ) {
+
+            pushRegistrar
+                    .markNeedsRegistration();
+
+            sessionStore.clear();
+
+            callback.onLoggedOut();
+
+            return;
+        }
 
         repository.logout(
                 current.getRefreshToken(),
