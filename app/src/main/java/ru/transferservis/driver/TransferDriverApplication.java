@@ -2,9 +2,14 @@ package ru.transferservis.driver;
 
 import android.app.Application;
 
-import ru.transferservis.driver.data.api.ApiClient;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-public final class TransferDriverApplication extends Application {
+import ru.transferservis.driver.data.api.ApiClient;
+import ru.transferservis.driver.notifications.DriverNotificationManager;
+import ru.transferservis.driver.notifications.PushTokenStore;
+
+public final class TransferDriverApplication
+        extends Application {
 
     @Override
     public void onCreate() {
@@ -14,5 +19,57 @@ public final class TransferDriverApplication extends Application {
         ApiClient.initialize(
                 this
         );
+
+        DriverNotificationManager notificationManager =
+                new DriverNotificationManager(
+                        this
+                );
+
+        notificationManager
+                .ensureNotificationChannel();
+
+        initializePushToken();
+    }
+
+    private void initializePushToken() {
+
+        PushTokenStore tokenStore =
+                new PushTokenStore(
+                        this
+                );
+
+        FirebaseMessaging
+                .getInstance()
+                .getToken()
+                .addOnSuccessListener(
+                        token -> {
+
+                            if (
+                                    token == null
+                                            ||
+                                            token
+                                                    .trim()
+                                                    .isEmpty()
+                            ) {
+
+                                return;
+                            }
+
+                            /*
+                             * Token is intentionally
+                             * never written to logs.
+                             */
+                            tokenStore.saveToken(
+                                    token
+                            );
+                        }
+                );
+
+        /*
+         * Failure to obtain a token must not
+         * crash application startup.
+         *
+         * Firebase may provide a token later.
+         */
     }
 }
