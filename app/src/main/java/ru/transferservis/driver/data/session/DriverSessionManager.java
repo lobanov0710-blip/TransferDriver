@@ -3,6 +3,7 @@ package ru.transferservis.driver.data.session;
 import android.content.Context;
 
 import ru.transferservis.driver.data.repository.StaffRepository;
+import ru.transferservis.driver.notifications.PushDeviceRegistrar;
 
 public final class DriverSessionManager {
 
@@ -34,13 +35,19 @@ public final class DriverSessionManager {
 
     private final StaffSessionRefresher sessionRefresher;
 
+    private final PushDeviceRegistrar pushRegistrar;
+
     public DriverSessionManager(
             Context context
     ) {
 
+        Context applicationContext =
+                context
+                        .getApplicationContext();
+
         sessionStore =
                 new SecureSessionStore(
-                        context
+                        applicationContext
                 );
 
         repository =
@@ -49,6 +56,11 @@ public final class DriverSessionManager {
         sessionRefresher =
                 new StaffSessionRefresher(
                         sessionStore
+                );
+
+        pushRegistrar =
+                new PushDeviceRegistrar(
+                        applicationContext
                 );
     }
 
@@ -72,6 +84,9 @@ public final class DriverSessionManager {
                                 .hasUsableRefreshToken()
         ) {
 
+            pushRegistrar
+                    .markNeedsRegistration();
+
             sessionStore.clear();
 
             callback
@@ -84,6 +99,9 @@ public final class DriverSessionManager {
                 current
                         .hasUsableAccessToken()
         ) {
+
+            pushRegistrar
+                    .registerIfNeeded();
 
             callback.onReady(
                     current
@@ -102,6 +120,9 @@ public final class DriverSessionManager {
 
                                 case READY:
 
+                                    pushRegistrar
+                                            .registerIfNeeded();
+
                                     callback.onReady(
                                             result.getSession()
                                     );
@@ -117,6 +138,9 @@ public final class DriverSessionManager {
                                     break;
 
                                 case AUTHENTICATION_REQUIRED:
+
+                                    pushRegistrar
+                                            .markNeedsRegistration();
 
                                     callback
                                             .onAuthenticationRequired();
@@ -140,12 +164,37 @@ public final class DriverSessionManager {
 
         if (current == null) {
 
+            pushRegistrar
+                    .markNeedsRegistration();
+
             sessionStore.clear();
 
             callback.onLoggedOut();
 
             return;
         }
+
+        /*
+         * DELETE /staff/push-device requires
+         * a valid staff access context, so
+         * perform it before staff/logout.
+         *
+         * Unregister is best effort and must
+         * never prevent the actual logout.
+         */
+        pushRegistrar.unregisterBeforeLogout(
+                () ->
+                        logoutStaffSession(
+                                current,
+                                callback
+                        )
+        );
+    }
+
+    private void logoutStaffSession(
+            DriverSession current,
+            LogoutCallback callback
+    ) {
 
         repository.logout(
                 current.getRefreshToken(),
@@ -156,6 +205,15 @@ public final class DriverSessionManager {
                     public void onSuccess() {
 
                         sessionStore.clear();
+
+                        /*
+                         * A later login on this
+                         * installation must bind
+                         * the current FCM token to
+                         * the new session family.
+                         */
+                        pushRegistrar
+                                .markNeedsRegistration();
 
                         callback.onLoggedOut();
                     }
