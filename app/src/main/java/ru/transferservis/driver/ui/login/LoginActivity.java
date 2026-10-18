@@ -16,6 +16,7 @@ import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.StaffDto;
 import ru.transferservis.driver.data.model.StaffLoginResponse;
 import ru.transferservis.driver.data.session.SecureSessionStore;
+import ru.transferservis.driver.notifications.PushDeviceRegistrar;
 import ru.transferservis.driver.ui.main.DriverMainActivity;
 
 public class LoginActivity extends AppCompatActivity {
@@ -181,6 +182,11 @@ public class LoginActivity extends AppCompatActivity {
 
                                 return;
                             }
+
+                            new PushDeviceRegistrar(
+                                    LoginActivity.this
+                            )
+                                    .registerIfNeeded();
 
                             editPassword.setText(
                                     ""
