@@ -3,6 +3,8 @@ package ru.transferservis.driver.notifications;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.UUID;
+
 public final class PushTokenStore {
 
     private static final String PREFS_NAME =
@@ -11,8 +13,14 @@ public final class PushTokenStore {
     private static final String KEY_FCM_TOKEN =
             "fcm_token";
 
+    private static final String KEY_INSTALLATION_ID =
+            "installation_id";
+
     private static final String KEY_REGISTRATION_DIRTY =
             "registration_dirty";
+
+    private static final String KEY_REGISTRATION_GENERATION =
+            "registration_generation";
 
     private final SharedPreferences preferences;
 
@@ -64,6 +72,10 @@ public final class PushTokenStore {
                         KEY_REGISTRATION_DIRTY,
                         true
                 )
+                .putLong(
+                        KEY_REGISTRATION_GENERATION,
+                        nextGeneration()
+                )
                 .apply();
     }
 
@@ -83,6 +95,52 @@ public final class PushTokenStore {
                 .isEmpty();
     }
 
+    public synchronized String getOrCreateInstallationId() {
+
+        String current =
+                getInstallationId();
+
+        if (!current.isEmpty()) {
+
+            return current;
+        }
+
+        String generated =
+                UUID
+                        .randomUUID()
+                        .toString()
+                        .toLowerCase();
+
+        preferences
+                .edit()
+                .putString(
+                        KEY_INSTALLATION_ID,
+                        generated
+                )
+                .apply();
+
+        return generated;
+    }
+
+    public String getInstallationId() {
+
+        String value =
+                clean(
+                        preferences.getString(
+                                KEY_INSTALLATION_ID,
+                                null
+                        )
+                );
+
+        if (!isUuid(value)) {
+
+            return "";
+        }
+
+        return value
+                .toLowerCase();
+    }
+
     public boolean needsRegistration() {
 
         return hasToken()
@@ -93,8 +151,17 @@ public final class PushTokenStore {
                 );
     }
 
+    public long getRegistrationGeneration() {
+
+        return preferences.getLong(
+                KEY_REGISTRATION_GENERATION,
+                0L
+        );
+    }
+
     public void markRegistered(
-            String token
+            String token,
+            long generation
     ) {
 
         String normalized =
@@ -111,6 +178,10 @@ public final class PushTokenStore {
                         !normalized.equals(
                                 current
                         )
+                        ||
+                        generation
+                                !=
+                                getRegistrationGeneration()
         ) {
 
             return;
@@ -137,7 +208,56 @@ public final class PushTokenStore {
                         KEY_REGISTRATION_DIRTY,
                         true
                 )
+                .putLong(
+                        KEY_REGISTRATION_GENERATION,
+                        nextGeneration()
+                )
                 .apply();
+    }
+
+    private long nextGeneration() {
+
+        long current =
+                getRegistrationGeneration();
+
+        if (
+                current
+                        == Long.MAX_VALUE
+        ) {
+
+            return 1L;
+        }
+
+        return current + 1L;
+    }
+
+    private boolean isUuid(
+            String value
+    ) {
+
+        if (
+                value == null
+                        ||
+                        value.isEmpty()
+        ) {
+
+            return false;
+        }
+
+        try {
+
+            UUID.fromString(
+                    value
+            );
+
+            return true;
+
+        } catch (
+                IllegalArgumentException error
+        ) {
+
+            return false;
+        }
     }
 
     private String clean(
