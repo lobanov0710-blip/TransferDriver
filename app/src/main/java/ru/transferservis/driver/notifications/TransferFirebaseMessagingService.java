@@ -31,6 +31,18 @@ public final class TransferFirebaseMessagingService
         tokenStore.saveToken(
                 token
         );
+
+        /*
+         * If an authenticated staff session
+         * exists, update the backend now.
+         *
+         * Without a session this is a no-op;
+         * login/session restoration retries it.
+         */
+        new PushDeviceRegistrar(
+                this
+        )
+                .registerIfNeeded();
     }
 
     @Override
