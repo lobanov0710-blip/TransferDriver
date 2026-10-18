@@ -37,7 +37,7 @@ public final class PushTokenStore {
                         );
     }
 
-    public void saveToken(
+    public synchronized void saveToken(
             String token
     ) {
 
@@ -159,7 +159,7 @@ public final class PushTokenStore {
         );
     }
 
-    public void markRegistered(
+    public synchronized void markRegistered(
             String token,
             long generation
     ) {
@@ -196,7 +196,7 @@ public final class PushTokenStore {
                 .apply();
     }
 
-    public void markNeedsRegistration() {
+    public synchronized void markNeedsRegistration() {
 
         if (!hasToken()) {
             return;
@@ -238,7 +238,8 @@ public final class PushTokenStore {
         if (
                 value == null
                         ||
-                        value.isEmpty()
+                        value.length()
+                                != 36
         ) {
 
             return false;
