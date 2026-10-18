@@ -3,7 +3,6 @@ package ru.transferservis.driver.data.repository;
 import androidx.annotation.NonNull;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import ru.transferservis.driver.data.api.ApiClient;
@@ -14,7 +13,7 @@ import ru.transferservis.driver.data.model.PushDeviceUnregistrationRequest;
 
 public final class PushDeviceRepository {
 
-    public interface Callback {
+    public interface ResultCallback {
 
         void onSuccess();
 
@@ -37,7 +36,7 @@ public final class PushDeviceRepository {
     public void register(
             String installationId,
             String token,
-            Callback callback
+            ResultCallback callback
     ) {
 
         if (callback == null) {
@@ -87,7 +86,7 @@ public final class PushDeviceRepository {
 
     public void unregister(
             String installationId,
-            Callback callback
+            ResultCallback callback
     ) {
 
         if (callback == null) {
@@ -122,11 +121,11 @@ public final class PushDeviceRepository {
                 );
     }
 
-    private Callback<BasicResponse> callbackAdapter(
-            Callback callback
+    private retrofit2.Callback<BasicResponse> callbackAdapter(
+            ResultCallback callback
     ) {
 
-        return new Callback<BasicResponse>() {
+        return new retrofit2.Callback<BasicResponse>() {
 
             @Override
             public void onResponse(
@@ -170,13 +169,11 @@ public final class PushDeviceRepository {
                     @NonNull Throwable throwable
             ) {
 
-                if (
-                        call.isCanceled()
-                ) {
-
-                    return;
-                }
-
+                /*
+                 * Always release the caller's
+                 * in-flight state, including
+                 * explicit cancellation.
+                 */
                 callback.onError(
                         0
                 );
