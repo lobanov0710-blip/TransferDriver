@@ -6,6 +6,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import ru.transferservis.driver.data.api.ApiClient;
 import ru.transferservis.driver.notifications.DriverNotificationManager;
+import ru.transferservis.driver.notifications.PushDeviceRegistrar;
 import ru.transferservis.driver.notifications.PushTokenStore;
 
 public final class TransferDriverApplication
@@ -38,6 +39,11 @@ public final class TransferDriverApplication
                         this
                 );
 
+        PushDeviceRegistrar pushRegistrar =
+                new PushDeviceRegistrar(
+                        this
+                );
+
         FirebaseMessaging
                 .getInstance()
                 .getToken()
@@ -62,6 +68,9 @@ public final class TransferDriverApplication
                             tokenStore.saveToken(
                                     token
                             );
+
+                            pushRegistrar
+                                    .registerIfNeeded();
                         }
                 );
 
