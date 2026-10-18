@@ -113,7 +113,7 @@ public final class PushDeviceRegistrar {
                 installationId,
                 token,
 
-                new PushDeviceRepository.Callback() {
+                new PushDeviceRepository.ResultCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -225,7 +225,7 @@ public final class PushDeviceRegistrar {
         repository.unregister(
                 installationId,
 
-                new PushDeviceRepository.Callback() {
+                new PushDeviceRepository.ResultCallback() {
 
                     @Override
                     public void onSuccess() {
