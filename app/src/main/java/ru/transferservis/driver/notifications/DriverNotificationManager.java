@@ -103,22 +103,29 @@ public final class DriverNotificationManager {
                         normalizedOrderId
                 );
 
-        openOrderIntent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        |
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-        );
-
         int notificationId =
                 notificationIdForOrder(
                         normalizedOrderId
                 );
 
+        Intent openMainIntent =
+                new Intent(
+                        context,
+                        DriverMainActivity.class
+                );
+
+        openMainIntent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP
+        );
+
         PendingIntent pendingIntent =
-                PendingIntent.getActivity(
+                PendingIntent.getActivities(
                         context,
                         notificationId,
-                        openOrderIntent,
+                        new Intent[] {
+                                openMainIntent,
+                                openOrderIntent
+                        },
                         PendingIntent.FLAG_UPDATE_CURRENT
                                 |
                                 PendingIntent.FLAG_IMMUTABLE
