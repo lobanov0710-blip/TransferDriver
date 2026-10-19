@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -60,6 +61,16 @@ dependencies {
 
     implementation(libs.recyclerview)
     implementation(libs.swiperefreshlayout)
+
+    implementation(
+        platform(
+            "com.google.firebase:firebase-bom:34.15.0"
+        )
+    )
+
+    implementation(
+        "com.google.firebase:firebase-messaging"
+    )
 
     testImplementation(libs.junit)
 
