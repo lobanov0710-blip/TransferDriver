@@ -89,22 +89,34 @@ public final class OrderDetailsActivity
             StaffOrderDto order
     ) {
 
+        String id =
+                order == null
+                        ? ""
+                        : order.getId();
+
+        return createIntent(
+                context,
+                id
+        );
+    }
+
+    public static Intent createIntent(
+            Context context,
+            String orderId
+    ) {
+
         Intent intent =
                 new Intent(
                         context,
                         OrderDetailsActivity.class
                 );
 
-        if (
-                order != null
-                        &&
-                        order.getId() != null
-                        &&
-                        !order
-                                .getId()
-                                .trim()
-                                .isEmpty()
-        ) {
+        String normalizedId =
+                orderId == null
+                        ? ""
+                        : orderId.trim();
+
+        if (!normalizedId.isEmpty()) {
 
             /*
              * Передаём только идентификатор.
@@ -114,9 +126,7 @@ public final class OrderDetailsActivity
              */
             intent.putExtra(
                     EXTRA_ORDER_ID,
-                    order
-                            .getId()
-                            .trim()
+                    normalizedId
             );
         }
 
