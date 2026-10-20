@@ -1,6 +1,10 @@
 package ru.transferservis.driver.ui.main;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +30,15 @@ import ru.transferservis.driver.ui.login.LoginActivity;
 
 public class DriverMainActivity
         extends AppCompatActivity {
+
+    private static final int REQUEST_POST_NOTIFICATIONS =
+            11015;
+
+    private static final String NOTIFICATION_PERMISSION_PREFS =
+            "driver_notification_permission_v1";
+
+    private static final String KEY_NOTIFICATION_PERMISSION_REQUESTED =
+            "requested";
 
     private TextView textDriverTitle;
     private TextView textDriverStatus;
@@ -798,6 +811,8 @@ public class DriverMainActivity
             DriverSession session
     ) {
 
+        ensureNotificationPermission();
+
         buttonLogout.setVisibility(
                 View.VISIBLE
         );
@@ -1078,6 +1093,59 @@ public class DriverMainActivity
                 this
         )
                 .clear();
+    }
+
+    private void ensureNotificationPermission() {
+
+        if (
+                Build.VERSION.SDK_INT
+                        < Build.VERSION_CODES.TIRAMISU
+        ) {
+
+            return;
+        }
+
+        if (
+                checkSelfPermission(
+                        Manifest.permission.POST_NOTIFICATIONS
+                )
+                        ==
+                        PackageManager.PERMISSION_GRANTED
+        ) {
+
+            return;
+        }
+
+        SharedPreferences preferences =
+                getSharedPreferences(
+                        NOTIFICATION_PERMISSION_PREFS,
+                        MODE_PRIVATE
+                );
+
+        if (
+                preferences.getBoolean(
+                        KEY_NOTIFICATION_PERMISSION_REQUESTED,
+                        false
+                )
+        ) {
+
+            return;
+        }
+
+        preferences
+                .edit()
+                .putBoolean(
+                        KEY_NOTIFICATION_PERMISSION_REQUESTED,
+                        true
+                )
+                .apply();
+
+        requestPermissions(
+                new String[] {
+                        Manifest.permission.POST_NOTIFICATIONS
+                },
+                REQUEST_POST_NOTIFICATIONS
+        );
     }
 
     private String safeMessage(

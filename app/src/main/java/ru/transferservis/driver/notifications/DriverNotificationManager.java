@@ -14,6 +14,7 @@ import java.util.List;
 
 import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.StaffOrderDto;
+import ru.transferservis.driver.ui.details.OrderDetailsActivity;
 import ru.transferservis.driver.ui.main.DriverMainActivity;
 
 public final class DriverNotificationManager {
@@ -74,6 +75,105 @@ public final class DriverNotificationManager {
 
         notificationManager.createNotificationChannel(
                 channel
+        );
+    }
+
+    public void notifyNewOrder(
+            String orderId
+    ) {
+
+        String normalizedOrderId =
+                clean(
+                        orderId
+                );
+
+        if (normalizedOrderId.isEmpty()) {
+            return;
+        }
+
+        if (!canPostNotifications()) {
+            return;
+        }
+
+        ensureNotificationChannel();
+
+        Intent openOrderIntent =
+                OrderDetailsActivity.createIntent(
+                        context,
+                        normalizedOrderId
+                );
+
+        int notificationId =
+                notificationIdForOrder(
+                        normalizedOrderId
+                );
+
+        Intent openMainIntent =
+                new Intent(
+                        context,
+                        DriverMainActivity.class
+                );
+
+        openMainIntent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP
+        );
+
+        PendingIntent pendingIntent =
+                PendingIntent.getActivities(
+                        context,
+                        notificationId,
+                        new Intent[] {
+                                openMainIntent,
+                                openOrderIntent
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                                |
+                                PendingIntent.FLAG_IMMUTABLE
+                );
+
+        Notification notification =
+                new Notification.Builder(
+                        context,
+                        CHANNEL_NEW_ORDERS
+                )
+                        .setSmallIcon(
+                                R.drawable.ic_notification_driver
+                        )
+                        .setContentTitle(
+                                context.getString(
+                                        R.string.notification_new_order_title
+                                )
+                        )
+                        .setContentText(
+                                context.getString(
+                                        R.string.notification_new_orders_text
+                                )
+                        )
+                        .setStyle(
+                                new Notification.BigTextStyle()
+                                        .bigText(
+                                                context.getString(
+                                                        R.string.notification_new_orders_text
+                                                )
+                                        )
+                        )
+                        .setContentIntent(
+                                pendingIntent
+                        )
+                        .setAutoCancel(
+                                true
+                        )
+                        .setCategory(
+                                Notification.CATEGORY_TRANSPORT
+                        )
+                        .setVisibility(
+                                Notification.VISIBILITY_PRIVATE
+                        )
+                        .build();
+
+        notificationManager.notify(
+                notificationId,
+                notification
         );
     }
 
@@ -269,6 +369,24 @@ public final class DriverNotificationManager {
         return context.getString(
                 R.string.order_route_unknown
         );
+    }
+
+    private int notificationIdForOrder(
+            String orderId
+    ) {
+
+        int hash =
+                orderId.hashCode();
+
+        if (hash == Integer.MIN_VALUE) {
+            hash = 0;
+        }
+
+        return 12000
+                +
+                Math.abs(
+                        hash
+                ) % 1000000;
     }
 
     private String clean(
