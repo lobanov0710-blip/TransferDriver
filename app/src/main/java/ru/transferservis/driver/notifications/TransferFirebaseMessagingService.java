@@ -131,6 +131,25 @@ public final class TransferFirebaseMessagingService
                 )
         ) {
 
+            long updatedAt =
+                    parsePositiveLong(
+                            data.get(
+                                    "updatedAt"
+                            )
+                    );
+
+            if (
+                    updatedAt <= 0L
+                            ||
+                            !acceptEventVersion(
+                                    orderId,
+                                    updatedAt
+                            )
+            ) {
+
+                return;
+            }
+
             notificationManager
                     .notifyNewOrder(
                             orderId
@@ -162,29 +181,7 @@ public final class TransferFirebaseMessagingService
                         )
                 );
 
-        String updatedAt =
-                clean(
-                        data.get(
-                                "updatedAt"
-                        )
-                );
-
-        if (
-                !isPositiveLong(
-                        updatedAt
-                )
-        ) {
-
-            return;
-        }
-
-        /*
-         * invalidate:
-         * remove a stale "new order"
-         * notification without showing a new
-         * notification to the driver.
-         */
-        if (
+        boolean invalidate =
                 "invalidate".equals(
                         action
                 )
@@ -197,8 +194,52 @@ public final class TransferFirebaseMessagingService
                                         "canceled".equals(
                                                 status
                                         )
+                        );
+
+        boolean notifyCanceled =
+                "notify".equals(
+                        action
+                )
+                        &&
+                        "canceled".equals(
+                                status
+                        );
+
+        if (
+                !invalidate
+                        &&
+                        !notifyCanceled
+        ) {
+
+            return;
+        }
+
+        long updatedAt =
+                parsePositiveLong(
+                        data.get(
+                                "updatedAt"
+                        )
+                );
+
+        if (
+                updatedAt <= 0L
+                        ||
+                        !acceptEventVersion(
+                                orderId,
+                                updatedAt
                         )
         ) {
+
+            return;
+        }
+
+        /*
+         * invalidate:
+         * remove a stale "new order"
+         * notification without showing a new
+         * notification to the driver.
+         */
+        if (invalidate) {
 
             notificationManager
                     .cancelOrderNotification(
@@ -213,21 +254,24 @@ public final class TransferFirebaseMessagingService
          * this event is sent only to the
          * driver assigned to the order.
          */
-        if (
-                "notify".equals(
-                        action
-                )
-                        &&
-                        "canceled".equals(
-                                status
-                        )
-        ) {
+        notificationManager
+                .notifyOrderCanceled(
+                        orderId
+                );
+    }
 
-            notificationManager
-                    .notifyOrderCanceled(
-                            orderId
-                    );
-        }
+    private boolean acceptEventVersion(
+            String orderId,
+            long updatedAt
+    ) {
+
+        return new OrderPushVersionStore(
+                this
+        )
+                .acceptIfNewer(
+                        orderId,
+                        updatedAt
+                );
     }
 
     private boolean isUuid(
@@ -260,30 +304,36 @@ public final class TransferFirebaseMessagingService
         }
     }
 
-    private boolean isPositiveLong(
+    private long parsePositiveLong(
             String value
     ) {
 
-        if (
-                value == null
-                        ||
-                        value.trim().isEmpty()
-        ) {
+        String normalized =
+                clean(
+                        value
+                );
 
-            return false;
+        if (normalized.isEmpty()) {
+
+            return 0L;
         }
 
         try {
 
-            return Long.parseLong(
-                    value
-            ) > 0L;
+            long parsed =
+                    Long.parseLong(
+                            normalized
+                    );
+
+            return parsed > 0L
+                    ? parsed
+                    : 0L;
 
         } catch (
                 NumberFormatException error
         ) {
 
-            return false;
+            return 0L;
         }
     }
 
