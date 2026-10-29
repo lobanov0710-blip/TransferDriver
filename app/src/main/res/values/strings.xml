@@ -31,11 +31,13 @@
     <string name="orders_loaded_count">Заявки: %1$d</string>
     <string name="orders_load_failed">Не удалось загрузить заявки</string>
 
-    <string name="notification_channel_orders">Новые заказы</string>
-    <string name="notification_channel_orders_description">Уведомления о новых заказах</string>
+    <string name="notification_channel_orders">Заказы</string>
+    <string name="notification_channel_orders_description">Уведомления о новых заказах и изменениях статуса</string>
     <string name="notification_new_order_title">Новый заказ</string>
     <string name="notification_new_orders_title">Новые заказы: %1$d</string>
     <string name="notification_new_orders_text">Откройте приложение, чтобы посмотреть новые заказы</string>
+    <string name="notification_order_canceled_title">Заказ отменён</string>
+    <string name="notification_order_canceled_text">Откройте приложение, чтобы посмотреть актуальное состояние заказа</string>
 
     <string name="orders_empty_new">Новых заявок пока нет</string>
     <string name="orders_empty_active">У вас нет активных поездок</string>
