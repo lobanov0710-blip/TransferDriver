@@ -177,6 +177,132 @@ public final class DriverNotificationManager {
         );
     }
 
+    public void cancelOrderNotification(
+            String orderId
+    ) {
+
+        String normalizedOrderId =
+                clean(
+                        orderId
+                );
+
+        if (normalizedOrderId.isEmpty()) {
+            return;
+        }
+
+        notificationManager.cancel(
+                notificationIdForOrder(
+                        normalizedOrderId
+                )
+        );
+    }
+
+    public void notifyOrderCanceled(
+            String orderId
+    ) {
+
+        String normalizedOrderId =
+                clean(
+                        orderId
+                );
+
+        if (normalizedOrderId.isEmpty()) {
+            return;
+        }
+
+        if (!canPostNotifications()) {
+            return;
+        }
+
+        ensureNotificationChannel();
+
+        Intent openOrderIntent =
+                OrderDetailsActivity.createIntent(
+                        context,
+                        normalizedOrderId
+                );
+
+        int notificationId =
+                notificationIdForOrder(
+                        normalizedOrderId
+                );
+
+        Intent openMainIntent =
+                new Intent(
+                        context,
+                        DriverMainActivity.class
+                );
+
+        openMainIntent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP
+        );
+
+        PendingIntent pendingIntent =
+                PendingIntent.getActivities(
+                        context,
+                        notificationId,
+                        new Intent[] {
+                                openMainIntent,
+                                openOrderIntent
+                        },
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                                |
+                                PendingIntent.FLAG_IMMUTABLE
+                );
+
+        String text =
+                context.getString(
+                        R.string.notification_order_canceled_text
+                );
+
+        Notification notification =
+                new Notification.Builder(
+                        context,
+                        CHANNEL_NEW_ORDERS
+                )
+                        .setSmallIcon(
+                                R.drawable.ic_notification_driver
+                        )
+                        .setContentTitle(
+                                context.getString(
+                                        R.string.notification_order_canceled_title
+                                )
+                        )
+                        .setContentText(
+                                text
+                        )
+                        .setStyle(
+                                new Notification.BigTextStyle()
+                                        .bigText(
+                                                text
+                                        )
+                        )
+                        .setContentIntent(
+                                pendingIntent
+                        )
+                        .setAutoCancel(
+                                true
+                        )
+                        .setCategory(
+                                Notification.CATEGORY_TRANSPORT
+                        )
+                        .setVisibility(
+                                Notification.VISIBILITY_PRIVATE
+                        )
+                        .build();
+
+        /*
+         * The notification ID is deterministic
+         * per order, so a cancellation replaces
+         * any stale "new order" notification for
+         * the same order.
+         */
+        notificationManager.notify(
+                notificationId,
+                notification
+        );
+    }
+
     public void notifyNewOrders(
             List<StaffOrderDto> orders
     ) {

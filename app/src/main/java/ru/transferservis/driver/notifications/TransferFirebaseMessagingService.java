@@ -60,10 +60,10 @@ public final class TransferFirebaseMessagingService
         );
 
         /*
-         * ARCH-11.15B3 uses data-only FCM
+         * Driver push uses data-only FCM
          * messages so delivery is handled
-         * here consistently in foreground
-         * and background.
+         * consistently in foreground and
+         * background.
          *
          * Never log payloads or FCM tokens.
          */
@@ -87,13 +87,6 @@ public final class TransferFirebaseMessagingService
                         )
                 );
 
-        if (!"new_order".equals(
-                type
-        )) {
-
-            return;
-        }
-
         String orderId =
                 clean(
                         data.get(
@@ -110,9 +103,9 @@ public final class TransferFirebaseMessagingService
 
         /*
          * A delayed FCM message may arrive
-         * after logout. Do not surface it
-         * unless a refreshable driver session
-         * still exists locally.
+         * after logout. Do not surface or act
+         * on it unless a refreshable driver
+         * session still exists locally.
          */
         SecureSessionStore sessionStore =
                 new SecureSessionStore(
@@ -127,11 +120,157 @@ public final class TransferFirebaseMessagingService
             return;
         }
 
-        new DriverNotificationManager(
+        DriverNotificationManager notificationManager =
+                new DriverNotificationManager(
+                        this
+                );
+
+        if (
+                "new_order".equals(
+                        type
+                )
+        ) {
+
+            long updatedAt =
+                    parsePositiveLong(
+                            data.get(
+                                    "updatedAt"
+                            )
+                    );
+
+            if (
+                    updatedAt <= 0L
+                            ||
+                            !acceptEventVersion(
+                                    orderId,
+                                    updatedAt
+                            )
+            ) {
+
+                return;
+            }
+
+            notificationManager
+                    .notifyNewOrder(
+                            orderId
+                    );
+
+            return;
+        }
+
+        if (
+                !"order_status_changed".equals(
+                        type
+                )
+        ) {
+
+            return;
+        }
+
+        String status =
+                clean(
+                        data.get(
+                                "status"
+                        )
+                );
+
+        String action =
+                clean(
+                        data.get(
+                                "action"
+                        )
+                );
+
+        boolean invalidate =
+                "invalidate".equals(
+                        action
+                )
+                        &&
+                        (
+                                "taken".equals(
+                                        status
+                                )
+                                        ||
+                                        "canceled".equals(
+                                                status
+                                        )
+                        );
+
+        boolean notifyCanceled =
+                "notify".equals(
+                        action
+                )
+                        &&
+                        "canceled".equals(
+                                status
+                        );
+
+        if (
+                !invalidate
+                        &&
+                        !notifyCanceled
+        ) {
+
+            return;
+        }
+
+        long updatedAt =
+                parsePositiveLong(
+                        data.get(
+                                "updatedAt"
+                        )
+                );
+
+        if (
+                updatedAt <= 0L
+                        ||
+                        !acceptEventVersion(
+                                orderId,
+                                updatedAt
+                        )
+        ) {
+
+            return;
+        }
+
+        /*
+         * invalidate:
+         * remove a stale "new order"
+         * notification without showing a new
+         * notification to the driver.
+         */
+        if (invalidate) {
+
+            notificationManager
+                    .cancelOrderNotification(
+                            orderId
+                    );
+
+            return;
+        }
+
+        /*
+         * notify + canceled:
+         * this event is sent only to the
+         * driver assigned to the order.
+         */
+        notificationManager
+                .notifyOrderCanceled(
+                        orderId
+                );
+    }
+
+    private boolean acceptEventVersion(
+            String orderId,
+            long updatedAt
+    ) {
+
+        return new OrderPushVersionStore(
                 this
         )
-                .notifyNewOrder(
-                        orderId
+                .acceptIfNewer(
+                        orderId,
+                        updatedAt
                 );
     }
 
@@ -162,6 +301,39 @@ public final class TransferFirebaseMessagingService
         ) {
 
             return false;
+        }
+    }
+
+    private long parsePositiveLong(
+            String value
+    ) {
+
+        String normalized =
+                clean(
+                        value
+                );
+
+        if (normalized.isEmpty()) {
+
+            return 0L;
+        }
+
+        try {
+
+            long parsed =
+                    Long.parseLong(
+                            normalized
+                    );
+
+            return parsed > 0L
+                    ? parsed
+                    : 0L;
+
+        } catch (
+                NumberFormatException error
+        ) {
+
+            return 0L;
         }
     }
 
