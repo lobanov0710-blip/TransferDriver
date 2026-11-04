@@ -1,6 +1,7 @@
 package ru.transferservis.driver.notifications;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -9,6 +10,9 @@ import ru.transferservis.driver.data.session.DriverSession;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 
 public final class PushDeviceRegistrar {
+
+    private static final String TAG =
+            "PushDeviceRegistrar";
 
     public interface CompletionCallback {
 
@@ -122,6 +126,18 @@ public final class PushDeviceRegistrar {
                                 false
                         );
 
+                        /*
+                         * Diagnostic only.
+                         *
+                         * Never log installation id,
+                         * FCM token, JWT, refresh token
+                         * or any account identifier.
+                         */
+                        Log.i(
+                                TAG,
+                                "push registration succeeded"
+                        );
+
                         DriverSession current =
                                 sessionStore.load();
 
@@ -170,6 +186,19 @@ public final class PushDeviceRegistrar {
 
                         REGISTRATION_IN_FLIGHT.set(
                                 false
+                        );
+
+                        /*
+                         * Diagnostic only.
+                         *
+                         * httpStatus=0 means a transport
+                         * failure before an HTTP response.
+                         * No sensitive values are logged.
+                         */
+                        Log.w(
+                                TAG,
+                                "push registration failed, httpStatus="
+                                        + httpStatus
                         );
 
                         /*
