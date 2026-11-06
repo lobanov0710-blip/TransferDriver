@@ -227,19 +227,14 @@ public final class DriverNotificationManager {
                         == 1
         ) {
 
-            StaffOrderDto order =
-                    orders.get(
-                            0
-                    );
-
             title =
                     context.getString(
                             R.string.notification_new_order_title
                     );
 
             text =
-                    buildRoute(
-                            order
+                    context.getString(
+                            R.string.notification_new_orders_text
                     );
 
         }
@@ -312,63 +307,6 @@ public final class DriverNotificationManager {
         return context.checkSelfPermission(
                 Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private String buildRoute(
-            StaffOrderDto order
-    ) {
-
-        if (order == null) {
-
-            return context.getString(
-                    R.string.order_route_unknown
-            );
-        }
-
-        String route =
-                clean(
-                        order.getRoute()
-                );
-
-        if (!route.isEmpty()) {
-
-            return route;
-        }
-
-        String from =
-                clean(
-                        order.getFrom()
-                );
-
-        String to =
-                clean(
-                        order.getTo()
-                );
-
-        if (
-                !from.isEmpty()
-                        &&
-                        !to.isEmpty()
-        ) {
-
-            return from
-                    + " → "
-                    + to;
-        }
-
-        if (!from.isEmpty()) {
-
-            return from;
-        }
-
-        if (!to.isEmpty()) {
-
-            return to;
-        }
-
-        return context.getString(
-                R.string.order_route_unknown
-        );
     }
 
     private int notificationIdForOrder(

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import java.util.UUID;
 
+import ru.transferservis.driver.security.UuidValidator;
+
 public final class PushTokenStore {
 
     private static final String PREFS_NAME =
@@ -132,7 +134,7 @@ public final class PushTokenStore {
                         )
                 );
 
-        if (!isUuid(value)) {
+        if (!UuidValidator.isCanonical(value)) {
 
             return "";
         }
@@ -229,36 +231,6 @@ public final class PushTokenStore {
         }
 
         return current + 1L;
-    }
-
-    private boolean isUuid(
-            String value
-    ) {
-
-        if (
-                value == null
-                        ||
-                        value.length()
-                                != 36
-        ) {
-
-            return false;
-        }
-
-        try {
-
-            UUID.fromString(
-                    value
-            );
-
-            return true;
-
-        } catch (
-                IllegalArgumentException error
-        ) {
-
-            return false;
-        }
     }
 
     private String clean(

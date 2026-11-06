@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import ru.transferservis.driver.security.SecureActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +29,7 @@ import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.ui.login.LoginActivity;
 
 public class DriverMainActivity
-        extends AppCompatActivity {
+        extends SecureActivity {
 
     private static final int REQUEST_POST_NOTIFICATIONS =
             11015;

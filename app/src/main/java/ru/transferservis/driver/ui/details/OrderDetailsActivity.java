@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import ru.transferservis.driver.security.SecureActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -30,7 +30,7 @@ import ru.transferservis.driver.ui.login.LoginActivity;
 import ru.transferservis.driver.ui.main.OrderActionResult;
 
 public final class OrderDetailsActivity
-        extends AppCompatActivity {
+        extends SecureActivity {
 
     private static final String EXTRA_ORDER_ID =
             "order_id";

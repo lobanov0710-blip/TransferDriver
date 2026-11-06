@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import ru.transferservis.driver.security.SecureActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import ru.transferservis.driver.R;
@@ -19,7 +19,7 @@ import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.notifications.PushDeviceRegistrar;
 import ru.transferservis.driver.ui.main.DriverMainActivity;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends SecureActivity {
 
     private EditText editLogin;
     private EditText editPassword;

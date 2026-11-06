@@ -8,11 +8,12 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import ru.transferservis.driver.data.session.SecureSessionStore;
+import ru.transferservis.driver.security.ApiEndpointPolicy;
 
 public final class ApiClient {
 
     static final String BASE_URL =
-            "https://uber-v3.lobanov0710.workers.dev/";
+            ApiEndpointPolicy.BASE_URL;
 
     private static Retrofit retrofit;
 
@@ -42,7 +43,7 @@ public final class ApiClient {
                 );
 
         OkHttpClient okHttpClient =
-                new OkHttpClient.Builder()
+                SecureHttpClient.newBuilder()
                         .addInterceptor(
                                 authInterceptor
                         )
