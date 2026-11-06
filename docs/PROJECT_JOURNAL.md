@@ -76,3 +76,30 @@ ARCH-11.16 — уведомления водителя об изменении �
 - сборка APK не выполнялась;
 - merge не выполнялся;
 - production deploy и изменения production не выполнялись.
+
+
+## 2026-11-06 — P0 ARCH-11.16: production cleanup completed, E2E gate remains
+
+После утверждения ТЗ продолжена реализация по плану с этапа P0.
+
+Backend `uber-v3`, PR #7:
+- удалён временный synthetic endpoint `/__arch-11-16/test-push`;
+- удалён `src/core/arch1116SyntheticPush.js`;
+- в PR оставлен только production-код ARCH-11.16 и тесты;
+- head: `73a944987db08a4e3153402d56b906a667b0db43`;
+- Backend tests run #62: PASS;
+- PR остаётся Draft/mergeable;
+- merge и deploy не выполнялись.
+
+Android:
+- PR #3 `arch/11.16-order-status-receive` остаётся production-кандидатом P0;
+- PR #5 `fix/arch-11.16-push-registration-diagnostics` помечен как временная диагностика и **не должен быть слит**;
+- последний известный текущий emulator/install имел `registration_dirty=true`, поэтому нельзя считать E2E подтверждённым по старым backend push targets.
+
+Оставшийся gate P0:
+1. подтвердить успешную регистрацию FCM текущей Android installation/session family;
+2. подтвердить фактическую обработку order-status FCM текущим приложением;
+3. после PASS закрыть временный PR #5 без merge;
+4. только после этого готовить PR #3 и backend PR #7 к отдельному подтверждению merge владельцем.
+
+P1 phone/Firebase auth до закрытия этого gate не начинается.
