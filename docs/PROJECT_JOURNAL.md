@@ -343,3 +343,52 @@ Merge и production deploy не выполнялись.
 - административная модерация документов/автомобиля.
 
 Merge и production deploy не выполнялись.
+
+
+## 2026-11-07 — Backend Phase 1D: private uploads and registration submission
+
+В `uber-v3/arch/spec-v1-backend-phase1` реализован следующий этап утверждённого D3.
+
+Реализовано:
+- migration `0009_driver_private_uploads.sql`;
+- одноразовые `driver_upload_sessions` с атомарным `claim_id`;
+- `POST /v1/driver/uploads` — выдача ограниченной upload-session;
+- `PUT /v1/driver/uploads/{id}` — приватная бинарная загрузка;
+- private object storage через fail-closed binding `DRIVER_PRIVATE_FILES`;
+- постоянный публичный URL не создаётся и не возвращается;
+- `Content-Length` проверяется до чтения binary body;
+- тип/размер/назначение/vehicle ownership проверяются сервером;
+- при ошибке после object write выполняется best-effort компенсация object/claim;
+- metadata сохраняется в `document_resources` / `vehicle_photos`;
+- audit: `driver.private_resource_uploaded`;
+- чистая проверка полноты регистрации;
+- `POST /v1/driver/registration/submit`;
+- обязательные driver materials: passport main/registration, passport selfie, identity reference selfie, driver licence front/back;
+- для автомобиля: usage basis, STS front/back, 7 утверждённых фото;
+- `rental_contract` обязателен только при `usage_basis=rental`;
+- хотя бы один автомобиль должен быть полностью готов;
+- неполный дополнительный автомобиль не блокирует submit;
+- успешный submit переводит профиль в `submitted`, а полные автомобили — в `pending_review`;
+- `submitted → under_review` намеренно оставлен административному этапу;
+- audit: `driver.registration_submitted`.
+
+Storage configuration не добавлялась в production: реальный R2 bucket и `DRIVER_UPLOAD_MAX_BYTES` должны быть явно настроены для выбранного окружения перед E2E/deploy.
+
+Проверки:
+- GitHub Actions Backend tests run #101: **PASS**;
+- head: `bb4bbdfd1cc3d3f40d32d3c3cd2c48f76f803d39`;
+- D1 migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- one-time upload lifecycle: PASS;
+- повторный PUT: blocked;
+- registration readiness: PASS;
+- rental-contract conditional rule: PASS;
+- incomplete extra vehicle does not block: PASS;
+- registration submit transaction: PASS.
+
+Дополнительный аудит phone uniqueness:
+- текущая глобальная защита номера не ослаблялась автоматически;
+- безопасная политика повторного использования номера после disabled/suspended отдельно не определена ТЗ;
+- ослабление сейчас могло бы позволить обход административной блокировки новой регистрацией.
+
+Merge и production deploy не выполнялись.
