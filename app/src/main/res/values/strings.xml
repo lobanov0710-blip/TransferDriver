@@ -199,4 +199,21 @@
     <string name="support_category_conflict">Конфликтная ситуация</string>
     <string name="support_category_other">Другое</string>
 
+    <string name="login_phone_subtitle">Вход по номеру телефона водителя</string>
+    <string name="login_phone_hint">+7 999 123-45-67</string>
+    <string name="login_send_code">Получить код</string>
+    <string name="login_sms_code_hint">Код из SMS</string>
+    <string name="login_verify_code">Подтвердить код</string>
+    <string name="login_resend_code">Отправить код ещё раз</string>
+
+    <string name="error_phone_invalid">Введите корректный номер телефона</string>
+    <string name="error_phone_rate_limited">Слишком много попыток. Повторите позже</string>
+    <string name="error_phone_verification_failed">Не удалось подтвердить номер телефона</string>
+    <string name="error_resend_unavailable">Запросите новый код подтверждения</string>
+    <string name="error_sms_session_missing">Сначала запросите код подтверждения</string>
+    <string name="error_sms_code_invalid">Введите корректный код из SMS</string>
+    <string name="error_sms_code_rejected">Код неверен или устарел</string>
+    <string name="error_app_check_failed">Не удалось подтвердить целостность приложения</string>
+    <string name="error_driver_role_required">Доступ разрешён только водителям</string>
+
 </resources>
