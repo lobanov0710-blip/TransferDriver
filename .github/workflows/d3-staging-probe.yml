@@ -1,0 +1,42 @@
+name: D3 staging route probe
+
+on:
+  push:
+    branches:
+      - 'probe/d3-staging-e2e'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Probe staging Driver v1 routes without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://uber-v3-staging.lobanov0710.workers.dev'
+
+          probe() {
+            local path="$1"
+            local expected="$2"
+            local code
+            code="$(curl --silent --show-error --location               --connect-timeout 10 --max-time 20               --output /tmp/d3-probe-body               --write-out '%{http_code}'               "$BASE$path")"
+
+            echo "$path HTTP=$code EXPECTED=$expected"
+
+            if [[ "$code" != "$expected" ]]; then
+              echo "Unexpected staging route status for $path"
+              exit 1
+            fi
+          }
+
+          probe '/v1/driver/me' '401'
+          probe '/v1/driver/photo-checks' '401'
+          probe '/v1/driver/support-cases' '401'
+          probe '/v1/driver/uploads' '405'
+
+          echo 'D3_STAGING_ROUTE_PROBE=PASS'
