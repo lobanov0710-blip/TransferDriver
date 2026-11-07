@@ -757,3 +757,34 @@ Idempotency-Key/expectedRevision/audit; затем полный photo-check elig
 - merge и production deploy не выполнялись.
 
 Дальнейшая работа остаётся по утверждённому ТЗ и журналу: D1–D3 утверждены; D4–D7 не выбираются без отдельного решения владельца. Android затем должен быть переведён на assigned-only `/v1` flow после закрытия текущих D3 backend-блокеров.
+
+## 2026-11-07 — D3: terminal mutations hardened
+
+В backend `uber-v3/arch/spec-v1-backend-phase1` закрыт обязательный D3 blocker
+для публичных terminal mutations `done/canceled`.
+
+Контракт `POST /orders/{orderId}/status` теперь требует:
+- `Idempotency-Key`;
+- `expectedRevision`;
+- текущую server-authoritative staff authorization.
+
+Success mutation атомарно связывает D1 idempotency claim, изменение `orders`,
+terminal state `order_assignments`, success `audit_events` и сохранение
+idempotent response. `done` доступен только authenticated driver своей поездки;
+`canceled` — OWNER/DISPATCHER с `orders.cancel`. Stale revision, losing claim
+и changed-body replay не создают ложный success audit. Raw idempotency key в D1
+не сохраняется; migration 0015 хранит только opaque internal claim marker.
+
+Проверки backend:
+- 15 migrations PASS;
+- terminal real-SQLite suite 7/7 PASS;
+- полный npm test PASS;
+- npm audit PASS;
+- local workerd/D1 audit check PASS;
+- Worker dry-run PASS;
+- GitHub Actions run 173 PASS, tested code head
+  `1f115c517be8cf1635b9b2f14531c0e4dec9f51a`.
+
+Merge/deploy не выполнялись. D4–D7 остаются неутверждёнными.
+Следующий D3-подэтап: server-authoritative photo-control eligibility, затем
+support/photo-control API и миграция Android к assigned-only `/v1` flow.
