@@ -200,3 +200,26 @@ ARCH-11.16 — уведомления водителя об изменении �
   поставщика, D5 — отдельного правового решения. До этих решений соответствующие
   новые функции не реализуются с предположительными правами/verification.
 - Merge, deploy, выпуск рабочего APK и создание Firebase-проекта не выполнены.
+
+
+## 2026-11-07 — Утверждены технические решения D1–D3
+
+Владелец проекта утвердил D1–D3 из `docs/TECHNICAL_DECISIONS_V1_0_PROPOSED.md`.
+
+Утверждено:
+
+- **D1 — приложения и Firebase:** Driver сохраняет package `ru.transferservis.driver`; Transfer Admin проектируется отдельно на Java + XML с отдельным package/app data/Keystore/session context; Firebase Phone Auth вводится для Driver.
+- **D2 — Firebase identity → staff session:** Firebase ID token не используется как staff JWT; backend выполняет exchange и после собственной проверки выдаёт существующую access JWT + rotating refresh session; roles/status остаются server-authoritative.
+- **D3 — D1 и API:** утверждена additive-модель новых сущностей `driver_profiles`, `vehicles`, `document_resources`, `driver_availability`, `order_assignments`, `identity_verifications`, `vehicle_photo_checks`, `staff_permissions`, support/chat/calls/audit и базовые группы `/v1` API-контрактов.
+
+Обязательные условия реализации:
+- additive migrations;
+- deny-by-default authorization;
+- mutation с Idempotency-Key и revision/optimistic locking;
+- атомарные проверки assignment/permissions;
+- audit критических операций;
+- негативные contract tests на подмену role/phone/driverId/vehicleId, replay и доступ к чужим ресурсам.
+
+D4–D7 не утверждены и остаются отдельными решениями.
+
+Утверждение D1–D3 разрешает переход к backend Phase 1 в отдельной ветке. Merge и production deploy не разрешались.
