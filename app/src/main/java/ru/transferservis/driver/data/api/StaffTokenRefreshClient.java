@@ -78,7 +78,7 @@ public final class StaffTokenRefreshClient {
     public StaffTokenRefreshClient() {
 
         OkHttpClient okHttpClient =
-                new OkHttpClient.Builder()
+                SecureHttpClient.newBuilder()
                         .build();
 
         Retrofit retrofit =

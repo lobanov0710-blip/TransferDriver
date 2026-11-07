@@ -91,6 +91,7 @@
     <string name="order_accepting">Принимаем…</string>
 
     <string name="order_start">Начать поездку</string>
+    <string name="order_verification_required">Требуется фотопроверка</string>
     <string name="order_starting">Начинаем…</string>
 
     <string name="order_finish">Завершить поездку</string>
@@ -121,5 +122,81 @@
     <string name="order_details_passenger_title">Пассажир</string>
     <string name="order_details_load_failed">Не удалось загрузить заявку</string>
     <string name="order_details_unavailable">Эта заявка больше недоступна</string>
+
+    <string name="retry">Повторить</string>
+    <string name="refresh">Обновить</string>
+
+    <string name="photo_control_button">Фотоконтроль</string>
+    <string name="support_button">Поддержка</string>
+
+    <string name="photo_control_title">Фотоконтроль</string>
+    <string name="photo_control_detail_title">Фотоконтроль автомобиля</string>
+    <string name="photo_control_loading">Загрузка фотоконтроля…</string>
+    <string name="photo_control_ready">Открытые проверки</string>
+    <string name="photo_control_empty">Активных фотопроверок нет</string>
+    <string name="photo_control_empty_short">Нет активных фотопроверок</string>
+    <string name="photo_control_load_failed">Не удалось загрузить фотоконтроль</string>
+    <string name="photo_control_reason_default">Проверка состояния автомобиля</string>
+    <string name="photo_control_progress_format">Загружено: %1$d из %2$d</string>
+    <string name="photo_control_deadline_unknown">Срок не указан</string>
+    <string name="photo_control_deadline_format">Контрольный срок: %1$s, %2$s</string>
+    <string name="photo_control_completed">Проверка завершена или больше не активна</string>
+    <string name="photo_control_capture_required">Сделайте недостающие фотографии автомобиля</string>
+    <string name="photo_control_retake_required">Требуется повторная фотосъёмка</string>
+    <string name="photo_control_uploading">Защищённая загрузка фото…</string>
+    <string name="photo_control_upload_success">Фото загружено</string>
+    <string name="photo_control_upload_failed">Не удалось загрузить фото</string>
+    <string name="photo_control_camera_failed">Не удалось открыть камеру</string>
+    <string name="photo_control_processing_failed">Не удалось обработать фотографию</string>
+    <string name="photo_control_changed_reload">Состояние проверки изменилось. Данные обновлены</string>
+    <string name="photo_control_capture_format">Снять: %1$s</string>
+    <string name="photo_control_uploaded_format">✓ %1$s</string>
+    <string name="photo_control_retake_format">Переснять: %1$s</string>
+    <string name="photo_control_retry_upload_format">Повторить загрузку: %1$s</string>
+
+    <string name="photo_kind_left">Левый бок</string>
+    <string name="photo_kind_front">Спереди</string>
+    <string name="photo_kind_right">Правый бок</string>
+    <string name="photo_kind_rear">Сзади</string>
+    <string name="photo_kind_open_trunk">Открытый багажник</string>
+    <string name="photo_kind_rear_cabin">Задняя часть салона</string>
+    <string name="photo_kind_front_cabin">Передняя часть салона</string>
+
+    <string name="support_title">Поддержка</string>
+    <string name="support_case_title">Обращение</string>
+    <string name="support_loading">Загрузка обращений…</string>
+    <string name="support_ready">Ваши обращения</string>
+    <string name="support_empty">Обращений пока нет</string>
+    <string name="support_empty_short">Нет обращений</string>
+    <string name="support_load_failed">Не удалось загрузить обращения</string>
+    <string name="support_create">Новое обращение</string>
+    <string name="support_create_retry">Повторить создание обращения</string>
+    <string name="support_creating">Создание обращения…</string>
+    <string name="support_create_failed">Не удалось создать обращение</string>
+    <string name="support_create_conflict">Состояние изменилось. Обновляем список</string>
+    <string name="support_choose_category">Причина обращения</string>
+    <string name="support_message_hint">Сообщение поддержке</string>
+    <string name="support_message_required">Введите сообщение</string>
+    <string name="support_send">Отправить</string>
+    <string name="support_sending">Отправка сообщения…</string>
+    <string name="support_send_failed">Не удалось отправить сообщение</string>
+    <string name="support_updated_reload">Обращение изменилось. Данные обновляются</string>
+    <string name="support_revision_invalid">Некорректная версия обращения</string>
+    <string name="support_case_ready">Можно написать в поддержку</string>
+    <string name="support_case_closed">Обращение закрыто</string>
+    <string name="support_no_order">без привязки к заказу</string>
+    <string name="support_case_meta_format">%1$s · %2$s</string>
+    <string name="support_updated_format">Обновлено: %1$s, %2$s</string>
+    <string name="support_sender_driver">Вы</string>
+    <string name="support_sender_admin">Поддержка</string>
+
+    <string name="support_category_passenger_no_show">Пассажир не вышел</string>
+    <string name="support_category_delay">Опоздание</string>
+    <string name="support_category_vehicle">Автомобиль</string>
+    <string name="support_category_route">Маршрут</string>
+    <string name="support_category_unable">Не могу завершить заказ</string>
+    <string name="support_category_reassignment">Переназначение</string>
+    <string name="support_category_conflict">Конфликтная ситуация</string>
+    <string name="support_category_other">Другое</string>
 
 </resources>

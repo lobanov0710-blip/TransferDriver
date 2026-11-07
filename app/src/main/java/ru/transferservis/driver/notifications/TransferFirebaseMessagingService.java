@@ -6,9 +6,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
-import java.util.UUID;
 
 import ru.transferservis.driver.data.session.SecureSessionStore;
+import ru.transferservis.driver.security.UuidValidator;
 
 public final class TransferFirebaseMessagingService
         extends FirebaseMessagingService {
@@ -101,7 +101,7 @@ public final class TransferFirebaseMessagingService
                         )
                 );
 
-        if (!isUuid(
+        if (!UuidValidator.isCanonical(
                 orderId
         )) {
 
@@ -133,36 +133,6 @@ public final class TransferFirebaseMessagingService
                 .notifyNewOrder(
                         orderId
                 );
-    }
-
-    private boolean isUuid(
-            String value
-    ) {
-
-        if (
-                value == null
-                        ||
-                        value.length()
-                                != 36
-        ) {
-
-            return false;
-        }
-
-        try {
-
-            UUID.fromString(
-                    value
-            );
-
-            return true;
-
-        } catch (
-                IllegalArgumentException error
-        ) {
-
-            return false;
-        }
     }
 
     private String clean(
