@@ -24,7 +24,7 @@ public final class OrdersViewModel
             new ArrayList<>();
 
     private OrderSection selectedSection =
-            OrderSection.NEW;
+            OrderSection.ACTIVE;
 
     private final MutableLiveData<Boolean> loading =
             new MutableLiveData<>(
@@ -36,7 +36,7 @@ public final class OrdersViewModel
 
     private final MutableLiveData<OrderSection> section =
             new MutableLiveData<>(
-                    OrderSection.NEW
+                    OrderSection.ACTIVE
             );
 
     private final MutableLiveData<OrderCounts> counts =
@@ -194,41 +194,14 @@ public final class OrdersViewModel
         }
 
         /*
-         * GET /orders сообщает:
+         * /v1/driver/assignments возвращает
+         * только server-assigned active
+         * назначения текущего водителя.
          *
-         * total = всё доступное после
-         * authorization/status filtering.
-         *
-         * count = реально возвращённое
-         * количество после limit.
-         *
-         * Если total != count,
-         * локально точные счётчики
-         * получить нельзя.
+         * Свободные заказы Driver больше
+         * не получает и локально не принимает.
          */
-        boolean complete =
-                response.getTotal()
-                        == response.getCount()
-                        &&
-                        response.getCount()
-                                == allOrders.size();
-
-        if (!complete) {
-
-            counts.setValue(
-                    OrderCounts.unavailable()
-            );
-
-            return;
-        }
-
-        int newCount =
-                0;
-
         int activeCount =
-                0;
-
-        int historyCount =
                 0;
 
         for (
@@ -252,38 +225,25 @@ public final class OrdersViewModel
                             .getStatus()
                             .trim();
 
-            switch (status) {
+            if (
+                    "taken".equals(
+                            status
+                    )
+                            ||
+                            "in_progress".equals(
+                                    status
+                            )
+            ) {
 
-                case "new":
-
-                    newCount++;
-
-                    break;
-
-                case "taken":
-                case "in_progress":
-
-                    activeCount++;
-
-                    break;
-
-                case "done":
-                case "canceled":
-
-                    historyCount++;
-
-                    break;
-
-                default:
-                    break;
+                activeCount++;
             }
         }
 
         counts.setValue(
                 OrderCounts.exact(
-                        newCount,
+                        0,
                         activeCount,
-                        historyCount
+                        0
                 )
         );
     }
