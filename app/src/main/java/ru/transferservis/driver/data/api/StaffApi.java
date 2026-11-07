@@ -27,11 +27,6 @@ public interface StaffApi {
     );
 
 
-    @POST("staff/login")
-    Call<StaffLoginResponse> login(
-            @Body LoginRequest request
-    );
-
     @POST("staff/refresh")
     Call<StaffLoginResponse> refresh(
             @Body StaffRefreshTokenRequest request
