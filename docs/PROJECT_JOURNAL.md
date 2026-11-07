@@ -500,3 +500,50 @@ Private resource access:
 Merge и production deploy не выполнялись.
 
 Следующий release-blocker: заменить driver self-take модель на server-authoritative assignment `order + driver + vehicle`.
+
+
+## 2026-11-07 — Server-authoritative order assignment and targeted Driver push
+
+В `uber-v3/arch/spec-v1-backend-phase1` закрыт основной blocker аудита: Driver больше не выбирает свободный заказ самостоятельно.
+
+Assignment:
+- добавлены `orders.revision` и internal `last_assignment_id`;
+- добавлены `POST /v1/admin/orders/{orderId}/assign` и `/reassign`;
+- assign требует `orders.assign`, reassign — `orders.reassign`;
+- обязательны `Idempotency-Key`, `expectedRevision`, reason;
+- assignment связывает `order + driver + vehicle`;
+- hard gates: driver registration approved, identity verified, vehicle approved и принадлежит driver;
+- если Driver online с другим active vehicle, назначение выбранного другого автомобиля запрещается;
+- reassign атомарно отзывает старый assignment и создаёт новый;
+- state change, assignment, audit и idempotency выполняются одной D1-транзакцией;
+- D6 ranking/ETA/service-buffer не реализовывались, так как D6 не утверждён.
+
+Legacy self-selection removed:
+- Driver `new -> taken` через `/orders/{id}/status` теперь запрещён;
+- legacy `GET /orders` больше не показывает Driver свободные `new` заказы;
+- Driver получает только назначенные ему заказы;
+- добавлен `GET /v1/driver/assignments`.
+
+Push:
+- широковещательный `new_order` удалён;
+- создание неназначенного заказа не отправляет Driver push;
+- push-target query требует конкретный accountId и активную session family;
+- assign: targeted `order_assigned` только новому Driver;
+- reassign: `order_assignment_revoked` старому Driver + `order_assigned` новому;
+- payload содержит только opaque routing/state metadata, без passenger PII;
+- idempotent replay не создаёт повторный push;
+- push остаётся best-effort и не влияет на успешность D1 assignment.
+
+Проверки:
+- GitHub Actions Backend tests run #140: **PASS**;
+- head: `83b4b289fc288368fbcd94bd0cb13f3abd6b47ef`;
+- migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- assigned-only Driver visibility: PASS;
+- Driver self-take rejection: PASS;
+- assignment/reassignment transaction tests: PASS;
+- assignment permission/eligibility tests: PASS;
+- targeted push selection/scheduling: PASS;
+- staging FCM remains disabled: PASS.
+
+Merge и production deploy не выполнялись.
