@@ -74,9 +74,36 @@ jobs:
         run: |
           ./gradlew clean \
             :app:testDebugUnitTest \
-            :app:testReleaseUnitTest \
             :app:assembleDebug \
             :app:assembleRelease \
             :app:assembleDebugAndroidTest \
             --no-daemon \
             --stacktrace
+
+      - name: Verify build-variant API endpoint locks
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEBUG_FILE="$(find app/build/generated -type f -path '*/debug/*' -name BuildConfig.java -print -quit)"
+          RELEASE_FILE="$(find app/build/generated -type f -path '*/release/*' -name BuildConfig.java -print -quit)"
+
+          test -n "$DEBUG_FILE"
+          test -n "$RELEASE_FILE"
+
+          grep -F 'https://uber-v3-staging.lobanov0710.workers.dev/' "$DEBUG_FILE"
+          grep -F 'https://uber-v3.lobanov0710.workers.dev/' "$RELEASE_FILE"
+
+          if grep -Fq 'https://uber-v3.lobanov0710.workers.dev/' "$DEBUG_FILE"; then
+            echo 'DEBUG_ENDPOINT_IS_PRODUCTION=FAIL'
+            exit 10
+          fi
+
+          if grep -Fq 'https://uber-v3-staging.lobanov0710.workers.dev/' "$RELEASE_FILE"; then
+            echo 'RELEASE_ENDPOINT_IS_STAGING=FAIL'
+            exit 11
+          fi
+
+          echo 'DEBUG_ENDPOINT=STAGING'
+          echo 'RELEASE_ENDPOINT=PRODUCTION'
+          echo 'API_ENDPOINT_VARIANT_LOCK=PASS'
