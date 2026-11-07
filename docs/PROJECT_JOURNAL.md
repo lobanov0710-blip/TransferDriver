@@ -445,3 +445,58 @@ Admin foundation:
 - фактическая R2/Firebase конфигурация и E2E.
 
 Merge и production deploy не выполнялись.
+
+
+## 2026-11-07 — Item moderation, idempotency and protected private reads
+
+В `uber-v3/arch/spec-v1-backend-phase1` завершён следующий backend-подэтап D3.
+
+Item-level moderation:
+- добавлен review detail для регистрации без раскрытия private object keys;
+- документы модерируются с `drivers.verify_documents`;
+- vehicle и vehicle photos — с `vehicles.verify`;
+- identity manual `verified` запрещён до утверждения и реализации D4;
+- финальное registration `approved` fail-closed:
+  - требуется `identity_status=verified`;
+  - обязательные driver documents должны быть verified;
+  - требуется минимум один approved vehicle;
+- `changes_required` и `rejected` поддерживаются как moderation decisions;
+- документы и vehicle photos получили собственный `revision`;
+- модерируемые сущности используют internal `last_review_id` для точной связи state change → moderation history → audit.
+
+Idempotency:
+- добавлена `mutation_idempotency`;
+- raw `Idempotency-Key` не сохраняется;
+- сохраняются SHA-256 key/request digests;
+- internal claim защищает concurrent retries;
+- повтор ключа с другим запросом отвергается;
+- moderation mutation routes требуют `Idempotency-Key`.
+
+Private resource access:
+- добавлен защищённый backend/R2 read endpoint;
+- public/permanent URL не создаётся;
+- passport/licence documents требуют `drivers.verify_documents`;
+- identity selfie resources требуют `drivers.verify_identity`;
+- vehicle photos требуют `vehicles.verify`;
+- OWNER имеет override;
+- успешный private read записывается в audit;
+- response использует `no-store`, `nosniff`, без filename/private object key.
+
+Также исправлен CORS contract:
+- разрешены `Idempotency-Key`, `X-Firebase-AppCheck`;
+- объявлены используемые GET/POST/PUT/PATCH/DELETE/OPTIONS.
+
+Проверки:
+- GitHub Actions Backend tests run #123: **PASS**;
+- head: `1acc3b95ee0ace26a8f8e125a79e1e8569e324e3`;
+- D1 migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- mutation idempotency tests: PASS;
+- item moderation policy tests: PASS;
+- D4 identity fail-closed test: PASS;
+- private resource permission/audit tests: PASS;
+- CORS contract tests: PASS.
+
+Merge и production deploy не выполнялись.
+
+Следующий release-blocker: заменить driver self-take модель на server-authoritative assignment `order + driver + vehicle`.
