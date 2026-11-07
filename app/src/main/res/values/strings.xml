@@ -91,6 +91,7 @@
     <string name="order_accepting">Принимаем…</string>
 
     <string name="order_start">Начать поездку</string>
+    <string name="order_verification_required">Требуется фотопроверка</string>
     <string name="order_starting">Начинаем…</string>
 
     <string name="order_finish">Завершить поездку</string>
