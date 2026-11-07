@@ -547,3 +547,65 @@ Push:
 - staging FCM remains disabled: PASS.
 
 Merge и production deploy не выполнялись.
+
+
+## 2026-11-07 — Driver availability and trip operational verification gate
+
+В `uber-v3/arch/spec-v1-backend-phase1` реализованы следующие утверждённые D3-контракты.
+
+Driver availability:
+- добавлен `PUT /v1/driver/availability`;
+- input: `activeVehicleId + requestedState + expectedRevision`;
+- driverId определяется только из authenticated staff session;
+- mutation требует `Idempotency-Key`;
+- `on_line` разрешён только при:
+  - registration_status=approved;
+  - identity_status=verified;
+  - approved vehicle, принадлежащем Driver;
+- переключение active vehicle из состояния `on_line` на другой автомобиль запрещено; сначала требуется перейти `off_line`;
+- состояние, audit и idempotency меняются атомарно;
+- D6 ranking/timeouts и D7 GPS-параметры не добавлялись.
+
+Проверка availability:
+- GitHub Actions run #145: **PASS**;
+- head контрольной точки: `25597b68ec3f149ee22a080c6ac8bad1a5a5e50b`.
+
+Trip verification / operational phases:
+- migration `0014_assignment_operational_phases.sql`;
+- assignment phases:
+  - assigned;
+  - en_route_to_pickup;
+  - arrived;
+  - in_trip;
+- добавлена `assignment_revision` в trip verification binding;
+- добавлен `POST /v1/driver/assignments/{id}/verification-challenges`;
+- challenge создаётся только для собственного active assignment в фазе `assigned`;
+- challenge binding: assignment/order/driver/vehicle + assignment revision + server timestamps;
+- повторная активная pending challenge на ту же assignment revision блокируется;
+- точный TTL не выбран автоматически: runtime требует `TRIP_VERIFICATION_CHALLENGE_TTL_SECONDS`, иначе fail-closed 503;
+- raw challenge secret не возвращается и не хранится; D1 хранит только digest;
+- публичного API для установки `verified` нет, так как D4 face/liveness provider ещё не утверждён;
+- добавлен `POST /v1/driver/assignments/{id}/phase`;
+- `assigned -> en_route_to_pickup` требует exact verificationSessionId со state=verified и полной tuple-binding;
+- `en_route_to_pickup -> arrived -> in_trip` выполняются последовательно с expectedRevision;
+- переход `in_trip` атомарно переводит core order `taken -> in_progress`;
+- legacy Driver `taken -> in_progress` через `/orders/{id}/status` запрещён, поэтому selfie gate нельзя обойти старым API;
+- Idempotency-Key и audit обязательны.
+
+Проверка trip operational:
+- GitHub Actions run #152: **PASS**;
+- head: `c82da0db757e9a3d056ed8b3fd041c7410cd9aaa`;
+- D1 migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- challenge binding tests: PASS;
+- verified-session SQL gate: PASS;
+- client cannot set verification result: PASS;
+- legacy in_progress bypass rejection: PASS;
+- in_trip -> core in_progress atomic test: PASS.
+
+Ограничение:
+- до отдельного утверждения D4 реальный face/liveness provider и переход verification state в `verified` намеренно отсутствуют;
+- фактическое значение challenge TTL не настраивалось;
+- merge/deploy не выполнялись.
+
+Следующий consistency-fix: синхронизировать terminal core states `done/canceled` с `order_assignments.state`.
