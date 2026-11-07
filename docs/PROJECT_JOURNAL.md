@@ -392,3 +392,56 @@ Storage configuration не добавлялась в production: реальны�
 - ослабление сейчас могло бы позволить обход административной блокировки новой регистрацией.
 
 Merge и production deploy не выполнялись.
+
+
+## 2026-11-07 — Backend Phase 1D completed; admin moderation API started
+
+В ветке `uber-v3/arch/spec-v1-backend-phase1` продолжена реализация утверждённых D1–D3.
+
+Phase 1D:
+- реализованы one-time private upload sessions;
+- private resources сохраняются только через будущий приватный R2 binding `DRIVER_PRIVATE_FILES`;
+- постоянные public URL не используются;
+- upload session атомарно claim-ится до записи объекта;
+- повторное использование consumed upload запрещено;
+- при ошибке finalization выполняется best-effort compensation;
+- добавлены документы водителя и автомобиля;
+- добавлены 7 обязательных типов фото автомобиля;
+- добавлен `POST /v1/driver/registration/submit`;
+- completeness check требует профиль, обязательные документы и минимум один полный автомобиль;
+- rental contract обязателен только при `usage_basis=rental`;
+- успешная отправка переводит регистрацию в `submitted`, готовые автомобили в `pending_review`;
+- действия аудируются.
+
+Runtime intentionally fail-closed:
+- без `DRIVER_PRIVATE_FILES` upload не выдаётся;
+- без `DRIVER_UPLOAD_MAX_BYTES` бинарная загрузка не разрешается;
+- фактический R2 bucket и byte limit не создавались и не выбирались автоматически.
+
+Admin foundation:
+- реализован server-authoritative OWNER/DISPATCHER overlay через `staff_owner_binding` и `staff_permissions`;
+- OWNER имеет полный override;
+- dispatcher получает только явные granular permissions;
+- legacy staff/order admin paths усилены permission checks;
+- добавлена очередь регистрации `GET /v1/admin/registrations`;
+- добавлен старт модерации `POST /v1/admin/registrations/{driverId}/review`;
+- просмотр очереди требует `drivers.read`;
+- старт проверки требует OWNER либо sensitive permission `drivers.verify_documents` / `drivers.verify_identity`;
+- transition `submitted -> under_review` выполняется с `expectedRevision`, moderation history и audit.
+
+Проверки:
+- GitHub Actions Backend tests run #111: **PASS**;
+- head: `a234340f2b6142ccd0f497772f5f0a431c6cad49`;
+- D1 migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- private upload lifecycle/readiness/submit tests: PASS;
+- OWNER/DISPATCHER authorization tests: PASS;
+- admin registration moderation permissions tests: PASS.
+
+Остаётся:
+- решения по отдельным элементам: identity/document/vehicle/vehicle_photo;
+- changes_required/approved/rejected moderation flow;
+- private resource read endpoint для уполномоченного администратора;
+- фактическая R2/Firebase конфигурация и E2E.
+
+Merge и production deploy не выполнялись.
