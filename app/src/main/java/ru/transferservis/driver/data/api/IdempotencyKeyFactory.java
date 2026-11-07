@@ -29,11 +29,9 @@ public final class IdempotencyKeyFactory {
 
         String canonical =
                 "driver.order.done"
-                        + "
-"
+                        + "\n"
                         + orderId.trim()
-                        + "
-"
+                        + "\n"
                         + expectedRevision;
 
         return "android-done-"
