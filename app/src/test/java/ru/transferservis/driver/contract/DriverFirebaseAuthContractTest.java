@@ -74,6 +74,27 @@ public final class DriverFirebaseAuthContractTest {
     }
 
     @Test
+    public void driverClientDoesNotExposeLegacyPasswordLoginMethod() {
+
+        boolean hasLegacyLogin =
+                Arrays.stream(
+                                StaffApi.class
+                                        .getDeclaredMethods()
+                        )
+                        .anyMatch(
+                                method ->
+                                        "login".equals(
+                                                method.getName()
+                                        )
+                        );
+
+        assertFalse(
+                hasLegacyLogin
+        );
+    }
+
+
+    @Test
     public void exchangeBodyContainsOnlyFirebaseTokenAndInstallationId() {
 
         Set<String> fields =
