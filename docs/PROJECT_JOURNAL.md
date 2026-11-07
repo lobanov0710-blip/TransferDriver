@@ -246,3 +246,49 @@ Phase 1A не изменяет текущие production order transitions и п
 Следующий этап: Phase 1B — Firebase identity → staff session exchange с server-authoritative verification и negative/replay contract tests.
 
 Merge и production deploy не выполнялись.
+
+
+## 2026-11-07 — Backend Phase 1B: Firebase identity → staff session implemented
+
+В ветке `uber-v3/arch/spec-v1-backend-phase1` продолжена реализация утверждённого D2.
+
+Реализовано:
+- `POST /v1/driver/session/exchange`;
+- серверная проверка Firebase Authentication ID token:
+  - RS256/kid/signature;
+  - aud/iss/sub;
+  - exp/iat/auth_time;
+  - только `firebase.sign_in_provider=phone`;
+  - номер телефона принимается только из подписанного Firebase token claim;
+- Firebase App Check через отдельный `X-Firebase-AppCheck`, fail-closed;
+- raw Firebase ID/App Check tokens не сохраняются в D1 и не логируются;
+- replay-защита Firebase ID token через SHA-256 digest;
+- существующая staff access JWT + rotating refresh session используется без отдельной параллельной session architecture;
+- новый водитель создаётся с `registration_status=draft` и `identity_status=pending`; подтверждение телефона не даёт доступ к линии/заказам;
+- клиентские поля `phone`, `role`, `driverId` в exchange request отвергаются;
+- блокированный staff account не получает новую session;
+- rate-limit:
+  - installation: 5/min;
+  - phone: 5/min;
+  - отдельный IP bucket;
+  - progressive delay;
+  - в D1 сохраняются только digest bucket keys, без raw phone/IP/installation;
+- добавлены additive migrations `0006_driver_firebase_auth.sql` и `0007_driver_exchange_rate_limits.sql`;
+- VIN в migration 0005 исправлен: обязательный, но не UNIQUE, так как уникальность VIN владельцем отдельно не утверждалась;
+- CI дополнен offline SQLite smoke-проверкой всех D1 migrations.
+
+Проверки:
+- GitHub Actions Backend tests run #84: **PASS**;
+- head: `dc924d5429de98a87298dbfa86e6a68d9bceb1de`;
+- SQL migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- Firebase ID token crypto tests: PASS;
+- Firebase App Check crypto tests: PASS;
+- session exchange negative/replay tests: PASS;
+- rate-limit tests: PASS;
+- migration privacy/invariant tests: PASS.
+
+Ограничение:
+- реальный E2E Firebase Phone Auth/App Check не выполнен, так как production Firebase project/app credentials/config в backend ветку не добавлялись и deploy не выполнялся.
+
+Merge и production deploy не выполнялись.
