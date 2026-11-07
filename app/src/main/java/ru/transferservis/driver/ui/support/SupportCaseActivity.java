@@ -31,6 +31,15 @@ public final class SupportCaseActivity
     private static final String EXTRA_CASE_ID =
             "support_case_id";
 
+    private static final String STATE_PENDING_KEY =
+            "support_pending_key";
+
+    private static final String STATE_PENDING_MESSAGE =
+            "support_pending_message";
+
+    private static final String STATE_PENDING_REVISION =
+            "support_pending_revision";
+
     private final DriverV1Repository repository =
             new DriverV1Repository();
 
@@ -167,6 +176,45 @@ public final class SupportCaseActivity
                         loadCase()
         );
 
+        if (savedInstanceState != null) {
+
+            pendingKey =
+                    savedInstanceState
+                            .getString(
+                                    STATE_PENDING_KEY
+                            );
+
+            pendingMessage =
+                    savedInstanceState
+                            .getString(
+                                    STATE_PENDING_MESSAGE
+                            );
+
+            if (
+                    savedInstanceState.containsKey(
+                            STATE_PENDING_REVISION
+                    )
+            ) {
+
+                pendingRevision =
+                        savedInstanceState
+                                .getLong(
+                                        STATE_PENDING_REVISION
+                                );
+            }
+
+            if (pendingMessage != null) {
+
+                input.setText(
+                        pendingMessage
+                );
+
+                input.setSelection(
+                        input.length()
+                );
+            }
+        }
+
         input.addTextChangedListener(
                 new TextWatcher() {
 
@@ -216,6 +264,34 @@ public final class SupportCaseActivity
         );
 
         loadCase();
+    }
+
+    @Override
+    protected void onSaveInstanceState(
+            Bundle outState
+    ) {
+
+        outState.putString(
+                STATE_PENDING_KEY,
+                pendingKey
+        );
+
+        outState.putString(
+                STATE_PENDING_MESSAGE,
+                pendingMessage
+        );
+
+        if (pendingRevision != null) {
+
+            outState.putLong(
+                    STATE_PENDING_REVISION,
+                    pendingRevision
+            );
+        }
+
+        super.onSaveInstanceState(
+                outState
+        );
     }
 
     private void loadCase() {
