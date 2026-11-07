@@ -732,3 +732,13 @@ Idempotency-Key/expectedRevision/audit; затем полный photo-check elig
   конструктора; использован штатный convertV4MiniflareOptions из установленного
   Miniflare 5. Проверки и security guards не отключались.
 - Production, master/main, merge и deploy не изменялись.
+
+
+### Финальная проверка backend CI run 158
+
+- https://github.com/lobanov0710-blip/uber-v3/actions/runs/42369380643 — PASS.
+- Проверен commit `26ca78ed3d84a3ee77c86ee386bf512812d36e1a`.
+- Node 22 / npm 11.9.0: locked install, audit, все миграции, 57 наборов,
+  отдельная проверка local workerd/D1 и Worker dry-run прошли.
+- Исправления опубликованы в PR #28; Android зависимости, отчёт и этот журнал —
+  в PR #6. Оба PR остаются Draft, merge/deploy не выполнялись.
