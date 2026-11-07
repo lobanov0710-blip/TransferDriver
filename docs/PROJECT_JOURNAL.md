@@ -1128,3 +1128,133 @@ Merge и production deploy не выполнялись.
 
 Следующий D3 checkpoint: STAGING E2E photo upload/support с тестовыми данными,
 после чего D3 client flow можно считать готовым к переходу к D4.
+
+## 2026-11-07 — D2 Android phone identity + D3 STAGING E2E gate
+
+Перед authenticated D3 STAGING E2E устранён найденный D2 client gap:
+backend уже поддерживал Firebase phone identity -> staff session, но Driver Android
+ещё использовал legacy login/password.
+
+### Build environment lock
+
+Driver API endpoint разделён по build variant:
+
+- debug -> `https://uber-v3-staging.lobanov0710.workers.dev/`;
+- release -> `https://uber-v3.lobanov0710.workers.dev/`.
+
+`ApiEndpointPolicy` принимает только заранее разрешённый exact host текущего
+variant. Cross-environment credential routing запрещён.
+
+CI теперь собирает:
+- `:app:testDebugUnitTest`;
+- `:app:assembleDebug`;
+- `:app:assembleRelease`;
+- `:app:assembleDebugAndroidTest`.
+
+После сборки CI проверяет generated BuildConfig:
+- debug содержит только STAGING endpoint;
+- release содержит только production endpoint.
+
+### D2 Firebase phone authentication
+
+Добавлены:
+- Firebase Authentication;
+- Firebase App Check Play Integrity;
+- `DriverPhoneNormalizer`;
+- `DriverFirebaseSessionExchangeRequest`;
+- `DriverFirebaseSessionRepository`;
+- contract/unit tests для phone normalization и D2 exchange.
+
+Driver login flow теперь:
+
+1. ввод номера телефона;
+2. Firebase Phone Auth отправляет SMS;
+3. водитель вводит 6-значный код;
+4. Android получает Firebase ID token;
+5. Android получает Firebase App Check token;
+6. Android отправляет:
+   - header `X-Firebase-AppCheck`;
+   - body `firebaseIdToken + installationId`;
+   в `POST /v1/driver/session/exchange`;
+7. backend остаётся authoritative по phone/role/driver identity;
+8. полученная staff session сохраняется существующим `SecureSessionStore`
+   через Android Keystore;
+9. после успешного входа выполняется push registration.
+
+Client body намеренно не содержит `phone`, `role` или `driverId`.
+
+Legacy Driver-side `staff/login` удалён:
+- `StaffApi.login(...)` отсутствует;
+- `LoginRequest.java` удалён;
+- `StaffRepository` оставлен только для logout;
+- refresh/logout существующей staff-session сохранены.
+
+### Privacy / App Check policy
+
+- SMS code не сохраняется в Bundle/SharedPreferences;
+- phone input имеет `saveEnabled=false` и не записывается в saved-state Bundle;
+- Firebase ID token и App Check token не сохраняются и не логируются;
+- после создания Firebase credential SMS поле очищается;
+- raw Firebase exception text пользователю не выводится;
+- App Check provider: **Play Integrity**;
+- `firebase-appcheck-debug` намеренно не используется;
+- CI fail-closed запрещает появление Firebase debug provider dependency.
+
+Для реального STAGING E2E Play Integrity должен быть корректно настроен для
+реального тестового канала/установки приложения. Synthetic CI Firebase config
+проверяет compile/contracts, но не считается реальной Firebase identity проверкой.
+
+### STAGING readiness result
+
+Read-only backend audit показал, что текущий deployed STAGING ещё не готов к
+authenticated D3 E2E:
+
+- deployed Worker не содержит Driver v1 routes (`/v1/driver/me` -> 404);
+- staging D1 имеет 13 pending migrations `0005`–`0017`;
+- private `DRIVER_PRIVATE_FILES` R2 binding отсутствует;
+- D2 Firebase project/app identifiers в staging Worker отсутствуют;
+- `staff_accounts=0`;
+- remote writes/deploy не выполнялись.
+
+Backend отдельно подтвердил:
+- static migration safety PASS;
+- Time Travel available;
+- schema-only export + local simulation `0005`–`0017` PASS;
+- production не изменялся.
+
+### Android CI
+
+Промежуточные red checks:
+- run 119: после удаления `LoginRequest` осталась legacy декларация
+  `StaffApi.login(...)`; удалена;
+- run 124: новый D2 contract test имел конфликт имён локальных переменных;
+  исправлен без изменения production code.
+
+Итоговый D2 Android code head перед этой записью:
+`3ac62926ae18879e1c75eef0640a6fc203f0af5f`.
+
+GitHub Actions run 125 — PASS:
+- JVM tests — PASS;
+- debug APK — PASS;
+- release APK — PASS;
+- debug AndroidTest APK — PASS;
+- debug endpoint -> STAGING — PASS;
+- release endpoint -> production — PASS;
+- Play Integrity App Check policy — PASS.
+
+### Следующий gate
+
+До реального authenticated D3 STAGING E2E нужны отдельные подтверждённые
+infrastructure actions:
+
+1. подтвердить реальные Firebase project ID / project number / Driver app ID и
+   App Check/Phone Auth configuration;
+2. подтвердить отдельный private staging R2 bucket;
+3. применить staging D1 migrations `0005`–`0017`;
+4. сформировать staging Wrangler config, прошедший backend fail-closed preflight;
+5. выполнить deployment **только** `uber-v3-staging`;
+6. повторить route probe;
+7. выполнить phone auth -> session exchange -> photo upload -> support E2E.
+
+Ни migrations apply, ни R2 creation/binding, ни staging deploy в этом checkpoint
+не выполнялись. Production не изменялся. D4–D7 не затрагивались.
