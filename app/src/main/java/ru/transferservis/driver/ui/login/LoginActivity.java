@@ -40,9 +40,6 @@ public final class LoginActivity
     private static final String STATE_VERIFICATION_ID =
             "driver_phone_verification_id";
 
-    private static final String STATE_PHONE =
-            "driver_phone_value";
-
     private EditText editPhone;
     private EditText editSmsCode;
 
@@ -221,21 +218,6 @@ public final class LoginActivity
                                     )
                     );
 
-            String restoredPhone =
-                    clean(
-                            savedInstanceState
-                                    .getString(
-                                            STATE_PHONE
-                                    )
-                    );
-
-            if (!restoredPhone.isEmpty()) {
-
-                editPhone.setText(
-                        restoredPhone
-                );
-            }
-
             if (!clean(
                     verificationId
             ).isEmpty()) {
@@ -281,15 +263,6 @@ public final class LoginActivity
         outState.putString(
                 STATE_VERIFICATION_ID,
                 verificationId
-        );
-
-        outState.putString(
-                STATE_PHONE,
-                editPhone == null
-                        ? null
-                        : editPhone
-                                .getText()
-                                .toString()
         );
 
         super.onSaveInstanceState(
@@ -577,9 +550,7 @@ public final class LoginActivity
         }
 
         if (
-                code.length() < 4
-                        ||
-                        code.length() > 8
+                code.length() != 6
                         ||
                         !TextUtils.isDigitsOnly(
                                 code
