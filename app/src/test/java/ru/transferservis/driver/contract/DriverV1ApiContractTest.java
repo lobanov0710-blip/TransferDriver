@@ -9,6 +9,8 @@ import java.util.Arrays;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Url;
 
 import ru.transferservis.driver.data.api.DriverV1Api;
 import ru.transferservis.driver.data.model.SupportMessageRequest;
@@ -157,6 +159,95 @@ public final class DriverV1ApiContractTest {
         assertEquals(
                 7L,
                 request.getExpectedRevision()
+        );
+    }
+
+
+    @Test
+    public void privatePhotoUploadUsesIssueThenRelativePut()
+            throws Exception {
+
+        POST issue =
+                DriverV1Api.class
+                        .getMethod(
+                                "issuePrivateUpload",
+                                ru.transferservis.driver.data.model.DriverUploadIssueRequest.class
+                        )
+                        .getAnnotation(
+                                POST.class
+                        );
+
+        assertNotNull(
+                issue
+        );
+
+        assertEquals(
+                "v1/driver/uploads",
+                issue.value()
+        );
+
+
+        Method putMethod =
+                DriverV1Api.class
+                        .getMethod(
+                                "uploadPrivateResource",
+                                String.class,
+                                String.class,
+                                okhttp3.RequestBody.class
+                        );
+
+        PUT put =
+                putMethod.getAnnotation(
+                        PUT.class
+                );
+
+        assertNotNull(
+                put
+        );
+
+        assertEquals(
+                "",
+                put.value()
+        );
+
+
+        boolean relativeUrl =
+                Arrays.stream(
+                                putMethod
+                                        .getParameterAnnotations()[0]
+                        )
+                        .anyMatch(
+                                annotation ->
+                                        annotation instanceof Url
+                        );
+
+        assertTrue(
+                relativeUrl
+        );
+
+
+        boolean contentTypeHeader =
+                Arrays.stream(
+                                putMethod
+                                        .getParameterAnnotations()[1]
+                        )
+                        .filter(
+                                annotation ->
+                                        annotation instanceof Header
+                        )
+                        .map(
+                                annotation ->
+                                        (Header) annotation
+                        )
+                        .anyMatch(
+                                header ->
+                                        "Content-Type".equals(
+                                                header.value()
+                                        )
+                        );
+
+        assertTrue(
+                contentTypeHeader
         );
     }
 }
