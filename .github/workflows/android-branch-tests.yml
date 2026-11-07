@@ -74,7 +74,9 @@ jobs:
         run: |
           ./gradlew clean \
             :app:testDebugUnitTest \
+            :app:testReleaseUnitTest \
             :app:assembleDebug \
+            :app:assembleRelease \
             :app:assembleDebugAndroidTest \
             --no-daemon \
             --stacktrace
