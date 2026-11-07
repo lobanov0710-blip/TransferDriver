@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-branch-tests-${{ github.ref }}
+  group: android-branch-tests-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
