@@ -292,3 +292,54 @@ Merge и production deploy не выполнялись.
 - реальный E2E Firebase Phone Auth/App Check не выполнен, так как production Firebase project/app credentials/config в backend ветку не добавлялись и deploy не выполнялся.
 
 Merge и production deploy не выполнялись.
+
+
+## 2026-11-07 — Backend Phase 1C foundation: driver profile and vehicles
+
+В `uber-v3/arch/spec-v1-backend-phase1` реализован следующий этап D3.
+
+Добавлено:
+- migration `0008_driver_registration_details.sql`;
+- в `driver_profiles`: `full_name`, `birth_date`, `revision`, `submitted_at`;
+- в `vehicles`: `usage_basis`;
+- отдельная `vehicle_photos` с утверждёнными 7 типами фото:
+  - left;
+  - front;
+  - right;
+  - rear;
+  - open_trunk;
+  - rear_cabin;
+  - front_cabin;
+- `GET /v1/driver/me`;
+- `PUT /v1/driver/registration`;
+- `POST /v1/driver/vehicles`;
+- `PATCH /v1/driver/vehicles/{id}`.
+
+Инварианты:
+- driverId не принимается от клиента; используется только authenticated staff principal;
+- профиль изменяется через `expectedRevision`;
+- vehicle update изменяется через `expectedRevision`;
+- несколько автомобилей на одного водителя разрешены;
+- повторный VIN сервером не запрещается, так как уникальность VIN отдельно не утверждалась;
+- критические изменения VIN/госномера/usage basis переводят approved автомобиль в `pending_review`;
+- критическое изменение текущего active vehicle запрещается до выхода с линии;
+- suspended/rejected vehicle нельзя редактировать обычным self-service PATCH;
+- клиент не может установить registration status/approval самостоятельно.
+
+Проверки:
+- GitHub Actions Backend tests run #89: **PASS**;
+- head: `bd9470a425f41c0274c68a3b02bbd3916574aaee`;
+- D1 migration smoke: PASS;
+- полный backend test suite: PASS;
+- driver registration service contracts: PASS;
+- duplicate VIN allowed contract: PASS;
+- revision conflict: PASS;
+- active vehicle critical-change block: PASS.
+
+Не реализовано в этом подэтапе:
+- private upload issuance/storage;
+- обязательный комплект документов;
+- registration submit completeness;
+- административная модерация документов/автомобиля.
+
+Merge и production deploy не выполнялись.
