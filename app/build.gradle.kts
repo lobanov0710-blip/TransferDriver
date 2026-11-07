@@ -93,6 +93,14 @@ dependencies {
         "com.google.firebase:firebase-messaging"
     )
 
+    implementation(
+        "com.google.firebase:firebase-auth"
+    )
+
+    implementation(
+        "com.google.firebase:firebase-appcheck-playintegrity"
+    )
+
     testImplementation(libs.junit)
 
     androidTestImplementation(
