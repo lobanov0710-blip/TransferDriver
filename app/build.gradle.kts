@@ -10,6 +10,10 @@ android {
         version = release(37)
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "ru.transferservis.driver"
 
@@ -19,11 +23,25 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField(
+            "String",
+            "DRIVER_API_BASE_URL",
+            "\"https://uber-v3.lobanov0710.workers.dev/\""
+        )
+
         testInstrumentationRunner =
             "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "DRIVER_API_BASE_URL",
+                "\"https://uber-v3-staging.lobanov0710.workers.dev/\""
+            )
+        }
+
         release {
             optimization {
                 enable = true
