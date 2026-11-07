@@ -609,3 +609,35 @@ Trip verification / operational phases:
 - merge/deploy не выполнялись.
 
 Следующий consistency-fix: синхронизировать terminal core states `done/canceled` с `order_assignments.state`.
+
+
+## 2026-11-07 — Terminal order/assignment lifecycle synchronized
+
+В `uber-v3/arch/spec-v1-backend-phase1` устранён consistency-риск terminal order states.
+
+Изменено:
+- legacy repository self-take `takeOrderForDriver()` удалён;
+- repository больше не разрешает прямой `taken -> in_progress`; старт поездки остаётся только через verified assignment phase;
+- `in_progress -> done` теперь одной D1 batch-транзакцией:
+  - переводит core order в `done`;
+  - переводит active `in_trip` assignment в `completed`;
+- admin `canceled` одной D1 batch-транзакцией:
+  - переводит order в `canceled`;
+  - active assignment переводит в `revoked` и устанавливает `revoked_at`;
+- pre-migration/legacy orders без `order_assignments` остаются совместимыми: terminal core transition допускает 0 assignment changes;
+- terminal repository дополнительно требует корректный assignment phase для нового assignment-backed flow.
+
+Проверки:
+- GitHub Actions Backend tests run #155: **PASS**;
+- head: `0d764bc4ce4b60360448ec54b61d8d7f03727e8d`;
+- D1 migration smoke: PASS;
+- полный backend `npm test`: PASS;
+- direct repository `taken -> in_progress` rejection: PASS;
+- done -> assignment completed: PASS;
+- canceled -> assignment revoked: PASS;
+- legacy order compatibility: PASS;
+- router batch fixtures: PASS.
+
+Merge и production deploy не выполнялись.
+
+Следующий hardening-пункт D3: привести публичные terminal mutations `done/canceled` к обязательным `Idempotency-Key + expectedRevision + audit` перед дальнейшим расширением support/photo-control API.
