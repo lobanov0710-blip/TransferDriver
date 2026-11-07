@@ -7,9 +7,16 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
+
+import okhttp3.RequestBody;
 
 import ru.transferservis.driver.data.model.DriverPhotoChecksResponse;
+import ru.transferservis.driver.data.model.DriverUploadIssueRequest;
+import ru.transferservis.driver.data.model.DriverUploadIssueResponse;
+import ru.transferservis.driver.data.model.PrivateUploadResponse;
 import ru.transferservis.driver.data.model.SupportCaseCreateRequest;
 import ru.transferservis.driver.data.model.SupportCaseResponse;
 import ru.transferservis.driver.data.model.SupportCasesResponse;
@@ -67,5 +74,27 @@ public interface DriverV1Api {
 
             @Body
             SupportMessageRequest request
+    );
+
+
+    @Headers("X-Staff-Auth: true")
+    @POST("v1/driver/uploads")
+    Call<DriverUploadIssueResponse> issuePrivateUpload(
+            @Body
+            DriverUploadIssueRequest request
+    );
+
+
+    @Headers("X-Staff-Auth: true")
+    @PUT
+    Call<PrivateUploadResponse> uploadPrivateResource(
+            @Url
+            String relativePath,
+
+            @Header("Content-Type")
+            String contentType,
+
+            @Body
+            RequestBody body
     );
 }
