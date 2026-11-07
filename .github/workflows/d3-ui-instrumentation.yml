@@ -83,6 +83,4 @@ jobs:
           disable-animations: true
           script: |
             chmod +x ./gradlew
-            ./gradlew :app:connectedDebugAndroidTest \
-              --no-daemon \
-              --stacktrace
+            ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
