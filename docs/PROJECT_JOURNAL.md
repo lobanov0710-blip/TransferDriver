@@ -788,3 +788,45 @@ idempotent response. `done` доступен только authenticated driver �
 Merge/deploy не выполнялись. D4–D7 остаются неутверждёнными.
 Следующий D3-подэтап: server-authoritative photo-control eligibility, затем
 support/photo-control API и миграция Android к assigned-only `/v1` flow.
+
+## 2026-11-07 — D3: photo-control eligibility и support API foundation
+
+В `uber-v3/arch/spec-v1-backend-phase1` после terminal hardening начат
+следующий утверждённый D3-блок.
+
+Photo-control:
+- добавлен `POST /v1/admin/vehicles/{vehicleId}/photo-checks`;
+- обязательны staff authorization, `vehicles.verify`, `Idempotency-Key`
+  и `expectedRevision`;
+- monthly check получает строго 24 часа grace согласно ТЗ;
+- complaint/manual поддерживают режимы `after_current_trip` и `immediate`;
+- eligibility встроена непосредственно в D1 SQL для `on_line`,
+  assign и reassign;
+- grace разрешает работу до срока, после grace новые выход на линию/назначение
+  запрещены;
+- внеплановый blocking check запрещает новые назначения немедленно;
+- активная поездка автоматически не отменяется без отдельного admin решения.
+
+Support:
+- добавлен `POST /v1/driver/support-cases`;
+- только собственный Driver case;
+- категории соответствуют ТЗ;
+- обязательный `Idempotency-Key`;
+- чужой order нельзя привязать к case;
+- support API не предоставляет отмену заказа;
+- create фиксирует `revision=1`, success mutation проходит через audit.
+
+Проверки backend:
+- migration smoke 16/16 PASS;
+- полный npm test PASS;
+- photo-control/support real-SQLite 5/5 PASS;
+- workerd/D1 check PASS;
+- Worker dry-run PASS;
+- GitHub Actions run 188 PASS,
+  tested head `4b8de9e44d44098917909fafcb9e81fbf5e13838`.
+
+Это foundation, а не объявление полного photo-control/support завершённым.
+Открыты: review/result photo-check, привязка private контрольных фото,
+monthly due generation и дальнейший support lifecycle/chat.
+VoIP/retention/юридические решения D5 не реализовывались.
+Merge/deploy не выполнялись; D4–D7 остаются неутверждёнными.
