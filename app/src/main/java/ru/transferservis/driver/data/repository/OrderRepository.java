@@ -5,13 +5,13 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import ru.transferservis.driver.data.api.ApiClient;
+import ru.transferservis.driver.data.api.IdempotencyKeyFactory;
 import ru.transferservis.driver.data.api.OrderApi;
 import ru.transferservis.driver.data.api.StaffAuthInterceptor;
 import ru.transferservis.driver.data.model.DriverAssignmentDto;
@@ -267,9 +267,11 @@ public final class OrderRepository {
                 );
 
         String idempotencyKey =
-                "android-done-"
-                        +
-                        UUID.randomUUID();
+                IdempotencyKeyFactory
+                        .forTerminalDone(
+                                safeOrderId,
+                                expectedRevision
+                        );
 
         orderApi
                 .changeOrderStatus(
