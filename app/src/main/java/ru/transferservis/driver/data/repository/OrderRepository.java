@@ -19,6 +19,7 @@ import ru.transferservis.driver.data.model.DriverAssignmentsResponse;
 import ru.transferservis.driver.data.model.OrderStatusRequest;
 import ru.transferservis.driver.data.model.OrderTransitionResponse;
 import ru.transferservis.driver.data.model.OrdersResponse;
+import ru.transferservis.driver.data.model.StaffOrderDto;
 
 public final class OrderRepository {
 
