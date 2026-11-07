@@ -713,3 +713,22 @@ Backend inventory: `uber-v3/docs/AUDIT_DEPENDENCIES_2026-11-07.json`.
 Следующий D3-подэтап остаётся: terminal mutations с обязательными
 Idempotency-Key/expectedRevision/audit; затем полный photo-check eligibility
 и миграция Android на assigned-only /v1 flow. Эти блокеры не объявляются закрытыми.
+
+### Проверка опубликованных изменений и CI
+
+- Driver audit commit: `42e6730cff4d7233fca1625f81002bc28a9e12b3` (PR #6).
+- Backend audit commit: `e774e4fe6e25956aff5e8a474ffdb1e5808134cc` (PR #28).
+- CI run 156 выявил несовместимость npm 10.9.9 со scoped-overrides lock,
+  проверенным локально на npm 11.9.0. Это ошибка воспроизводимости установки,
+  а не провал пройденных локальных regression tests.
+- Исправление `0e43d577d8a74e2df09f9cea025df4597653b83a` закрепляет npm 11.9.0,
+  packageManager/engines и SHA actions, отключает сохранение checkout credentials.
+- GitHub Actions run 157: PASS. Установка lock, audit, migrations, все 57 наборов
+  тестов и Worker bundle прошли на GitHub runner Node 22.
+- Дополнительно выполнена локальная проверка availability SQL в workerd/D1:
+  success / existing_idempotency / conflict, ровно одна audit-запись.
+  Проверка вынесена в `uber-v3/tools/check_availability_d1.mjs` и добавлена в CI.
+- При подготовке локального Miniflare smoke были отклонены устаревшие параметры
+  конструктора; использован штатный convertV4MiniflareOptions из установленного
+  Miniflare 5. Проверки и security guards не отключались.
+- Production, master/main, merge и deploy не изменялись.
