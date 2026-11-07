@@ -107,3 +107,18 @@ jobs:
           echo 'DEBUG_ENDPOINT=STAGING'
           echo 'RELEASE_ENDPOINT=PRODUCTION'
           echo 'API_ENDPOINT_VARIANT_LOCK=PASS'
+
+      - name: Verify App Check provider policy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          grep -F 'firebase-appcheck-playintegrity' app/build.gradle.kts
+
+          if grep -Fq 'firebase-appcheck-debug' app/build.gradle.kts; then
+            echo 'APP_CHECK_DEBUG_PROVIDER=FORBIDDEN'
+            exit 12
+          fi
+
+          echo 'APP_CHECK_PROVIDER=PLAY_INTEGRITY'
+          echo 'APP_CHECK_DEBUG_PROVIDER=ABSENT'
