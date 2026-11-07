@@ -9,22 +9,46 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import ru.transferservis.driver.security.SecureActivity;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.firebase.FirebaseException;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
+
+import java.util.concurrent.TimeUnit;
 
 import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.StaffDto;
 import ru.transferservis.driver.data.model.StaffLoginResponse;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.notifications.PushDeviceRegistrar;
+import ru.transferservis.driver.notifications.PushTokenStore;
+import ru.transferservis.driver.security.DriverPhoneNormalizer;
+import ru.transferservis.driver.security.SecureActivity;
 import ru.transferservis.driver.ui.main.DriverMainActivity;
 
-public class LoginActivity extends SecureActivity {
+public final class LoginActivity
+        extends SecureActivity {
 
-    private EditText editLogin;
-    private EditText editPassword;
+    private static final String STATE_VERIFICATION_ID =
+            "driver_phone_verification_id";
 
-    private Button buttonLogin;
+    private static final String STATE_PHONE =
+            "driver_phone_value";
+
+    private EditText editPhone;
+    private EditText editSmsCode;
+
+    private Button buttonSendCode;
+    private Button buttonVerifyCode;
+    private Button buttonResendCode;
 
     private ProgressBar progressLogin;
 
@@ -33,6 +57,119 @@ public class LoginActivity extends SecureActivity {
     private LoginViewModel viewModel;
 
     private SecureSessionStore sessionStore;
+
+    private FirebaseAuth firebaseAuth;
+
+    private FirebaseAppCheck firebaseAppCheck;
+
+    private PhoneAuthProvider.ForceResendingToken
+            forceResendingToken;
+
+    private String verificationId;
+
+    private boolean localBusy;
+
+    private final PhoneAuthProvider
+            .OnVerificationStateChangedCallbacks
+            verificationCallbacks =
+            new PhoneAuthProvider
+                    .OnVerificationStateChangedCallbacks() {
+
+                @Override
+                public void onVerificationCompleted(
+                        @NonNull PhoneAuthCredential credential
+                ) {
+
+                    editSmsCode.setText(
+                            ""
+                    );
+
+                    completeFirebaseSignIn(
+                            credential
+                    );
+                }
+
+                @Override
+                public void onVerificationFailed(
+                        @NonNull FirebaseException exception
+                ) {
+
+                    localBusy =
+                            false;
+
+                    updateBusyState();
+
+                    if (
+                            exception instanceof
+                                    FirebaseTooManyRequestsException
+                    ) {
+
+                        showLoginError(
+                                getString(
+                                        R.string.error_phone_rate_limited
+                                )
+                        );
+
+                        return;
+                    }
+
+                    if (
+                            exception instanceof
+                                    FirebaseAuthInvalidCredentialsException
+                    ) {
+
+                        editPhone.setError(
+                                getString(
+                                        R.string.error_phone_invalid
+                                )
+                        );
+
+                        showLoginError(
+                                getString(
+                                        R.string.error_phone_invalid
+                                )
+                        );
+
+                        return;
+                    }
+
+                    showLoginError(
+                            getString(
+                                    R.string.error_phone_verification_failed
+                            )
+                    );
+                }
+
+                @Override
+                public void onCodeSent(
+                        @NonNull String newVerificationId,
+                        @NonNull PhoneAuthProvider
+                                .ForceResendingToken token
+                ) {
+
+                    verificationId =
+                            newVerificationId;
+
+                    forceResendingToken =
+                            token;
+
+                    localBusy =
+                            false;
+
+                    showCodeStep();
+
+                    updateBusyState();
+
+                    textLoginError.setVisibility(
+                            View.GONE
+                    );
+
+                    textLoginError.setText(
+                            ""
+                    );
+                }
+            };
+
 
     @Override
     protected void onCreate(
@@ -62,32 +199,130 @@ public class LoginActivity extends SecureActivity {
                 R.layout.activity_login
         );
 
+        firebaseAuth =
+                FirebaseAuth.getInstance();
+
+        firebaseAppCheck =
+                FirebaseAppCheck.getInstance();
+
         initViews();
 
         initViewModel();
 
         observeViewModel();
 
-        buttonLogin.setOnClickListener(
-                view -> submitLogin()
+        if (savedInstanceState != null) {
+
+            verificationId =
+                    clean(
+                            savedInstanceState
+                                    .getString(
+                                            STATE_VERIFICATION_ID
+                                    )
+                    );
+
+            String restoredPhone =
+                    clean(
+                            savedInstanceState
+                                    .getString(
+                                            STATE_PHONE
+                                    )
+                    );
+
+            if (!restoredPhone.isEmpty()) {
+
+                editPhone.setText(
+                        restoredPhone
+                );
+            }
+
+            if (!clean(
+                    verificationId
+            ).isEmpty()) {
+
+                showCodeStep();
+            }
+        }
+
+        buttonSendCode.setOnClickListener(
+                view ->
+                        startPhoneVerification(
+                                false
+                        )
+        );
+
+        buttonResendCode.setOnClickListener(
+                view ->
+                        startPhoneVerification(
+                                true
+                        )
+        );
+
+        buttonVerifyCode.setOnClickListener(
+                view ->
+                        verifySmsCode()
+        );
+
+        updateBusyState();
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(
+            @NonNull Bundle outState
+    ) {
+
+        /*
+         * verificationId is an opaque Firebase
+         * workflow identifier. SMS codes and
+         * Firebase/App Check tokens are never
+         * written into this Bundle.
+         */
+        outState.putString(
+                STATE_VERIFICATION_ID,
+                verificationId
+        );
+
+        outState.putString(
+                STATE_PHONE,
+                editPhone == null
+                        ? null
+                        : editPhone
+                                .getText()
+                                .toString()
+        );
+
+        super.onSaveInstanceState(
+                outState
         );
     }
 
+
     private void initViews() {
 
-        editLogin =
+        editPhone =
                 findViewById(
-                        R.id.editLogin
+                        R.id.editPhone
                 );
 
-        editPassword =
+        editSmsCode =
                 findViewById(
-                        R.id.editPassword
+                        R.id.editSmsCode
                 );
 
-        buttonLogin =
+        buttonSendCode =
                 findViewById(
-                        R.id.buttonLogin
+                        R.id.buttonSendCode
+                );
+
+        buttonVerifyCode =
+                findViewById(
+                        R.id.buttonVerifyCode
+                );
+
+        buttonResendCode =
+                findViewById(
+                        R.id.buttonResendCode
                 );
 
         progressLogin =
@@ -101,6 +336,7 @@ public class LoginActivity extends SecureActivity {
                 );
     }
 
+
     private void initViewModel() {
 
         viewModel =
@@ -112,13 +348,15 @@ public class LoginActivity extends SecureActivity {
                         );
     }
 
+
     private void observeViewModel() {
 
         viewModel
                 .getLoading()
                 .observe(
                         this,
-                        this::showLoading
+                        loading ->
+                                updateBusyState()
                 );
 
         viewModel
@@ -143,7 +381,11 @@ public class LoginActivity extends SecureActivity {
                             StaffLoginResponse response =
                                     result.getResponse();
 
-                            if (response == null) {
+                            if (
+                                    response == null
+                                            ||
+                                            response.getStaff() == null
+                            ) {
 
                                 showLoginError(
                                         getString(
@@ -157,11 +399,18 @@ public class LoginActivity extends SecureActivity {
                             StaffDto staff =
                                     response.getStaff();
 
-                            if (staff == null) {
+                            if (
+                                    staff.getRole() == null
+                                            ||
+                                            !"driver".equalsIgnoreCase(
+                                                    staff.getRole()
+                                                            .trim()
+                                            )
+                            ) {
 
                                 showLoginError(
                                         getString(
-                                                R.string.error_invalid_server_response
+                                                R.string.error_driver_role_required
                                         )
                                 );
 
@@ -183,87 +432,423 @@ public class LoginActivity extends SecureActivity {
                                 return;
                             }
 
+                            editSmsCode.setText(
+                                    ""
+                            );
+
+                            verificationId =
+                                    null;
+
+                            forceResendingToken =
+                                    null;
+
                             new PushDeviceRegistrar(
                                     LoginActivity.this
                             )
                                     .registerIfNeeded();
-
-                            editPassword.setText(
-                                    ""
-                            );
 
                             openDriverMain();
                         }
                 );
     }
 
-    private void submitLogin() {
+
+    private void startPhoneVerification(
+            boolean forceResend
+    ) {
 
         clearErrors();
 
-        String login =
-                editLogin
+        String normalizedPhone =
+                DriverPhoneNormalizer
+                        .normalize(
+                                editPhone
+                                        .getText()
+                                        .toString()
+                        );
+
+        if (normalizedPhone == null) {
+
+            editPhone.setError(
+                    getString(
+                            R.string.error_phone_invalid
+                    )
+            );
+
+            return;
+        }
+
+        editPhone.setText(
+                normalizedPhone
+        );
+
+        if (
+                forceResend
+                        &&
+                        forceResendingToken == null
+        ) {
+
+            showLoginError(
+                    getString(
+                            R.string.error_resend_unavailable
+                    )
+            );
+
+            return;
+        }
+
+        if (!forceResend) {
+
+            firebaseAuth.signOut();
+
+            verificationId =
+                    null;
+
+            forceResendingToken =
+                    null;
+
+            editSmsCode.setText(
+                    ""
+            );
+        }
+
+        localBusy =
+                true;
+
+        updateBusyState();
+
+        PhoneAuthOptions.Builder builder =
+                PhoneAuthOptions
+                        .newBuilder(
+                                firebaseAuth
+                        )
+                        .setPhoneNumber(
+                                normalizedPhone
+                        )
+                        .setTimeout(
+                                60L,
+                                TimeUnit.SECONDS
+                        )
+                        .setActivity(
+                                this
+                        )
+                        .setCallbacks(
+                                verificationCallbacks
+                        );
+
+        if (forceResend) {
+
+            builder.setForceResendingToken(
+                    forceResendingToken
+            );
+        }
+
+        PhoneAuthProvider
+                .verifyPhoneNumber(
+                        builder.build()
+                );
+    }
+
+
+    private void verifySmsCode() {
+
+        clearErrors();
+
+        String safeVerificationId =
+                clean(
+                        verificationId
+                );
+
+        String code =
+                editSmsCode
                         .getText()
                         .toString()
                         .trim();
 
-        String password =
-                editPassword
-                        .getText()
-                        .toString();
+        if (safeVerificationId.isEmpty()) {
 
-        boolean valid =
-                true;
-
-        if (
-                TextUtils.isEmpty(
-                        login
-                )
-        ) {
-
-            editLogin.setError(
+            showLoginError(
                     getString(
-                            R.string.error_login_required
+                            R.string.error_sms_session_missing
                     )
             );
 
-            valid =
-                    false;
-        }
-
-        if (
-                TextUtils.isEmpty(
-                        password
-                )
-        ) {
-
-            editPassword.setError(
-                    getString(
-                            R.string.error_password_required
-                    )
-            );
-
-            valid =
-                    false;
-        }
-
-        if (!valid) {
             return;
         }
 
-        viewModel.login(
-                login,
-                password
+        if (
+                code.length() < 4
+                        ||
+                        code.length() > 8
+                        ||
+                        !TextUtils.isDigitsOnly(
+                                code
+                        )
+        ) {
+
+            editSmsCode.setError(
+                    getString(
+                            R.string.error_sms_code_invalid
+                    )
+            );
+
+            return;
+        }
+
+        PhoneAuthCredential credential =
+                PhoneAuthProvider
+                        .getCredential(
+                                safeVerificationId,
+                                code
+                        );
+
+        /*
+         * Drop visible SMS code immediately.
+         * Firebase owns the credential object.
+         */
+        editSmsCode.setText(
+                ""
+        );
+
+        completeFirebaseSignIn(
+                credential
         );
     }
 
+
+    private void completeFirebaseSignIn(
+            PhoneAuthCredential credential
+    ) {
+
+        if (credential == null) {
+            return;
+        }
+
+        localBusy =
+                true;
+
+        updateBusyState();
+
+        firebaseAuth
+                .signInWithCredential(
+                        credential
+                )
+                .addOnCompleteListener(
+                        this,
+                        task -> {
+
+                            if (
+                                    !task.isSuccessful()
+                                            ||
+                                            task.getResult() == null
+                                            ||
+                                            task.getResult()
+                                                    .getUser() == null
+                            ) {
+
+                                localBusy =
+                                        false;
+
+                                updateBusyState();
+
+                                showLoginError(
+                                        getString(
+                                                R.string.error_sms_code_rejected
+                                        )
+                                );
+
+                                return;
+                            }
+
+                            FirebaseUser user =
+                                    task.getResult()
+                                            .getUser();
+
+                            requestFirebaseIdToken(
+                                    user
+                            );
+                        }
+                );
+    }
+
+
+    private void requestFirebaseIdToken(
+            FirebaseUser user
+    ) {
+
+        if (user == null) {
+
+            localBusy =
+                    false;
+
+            updateBusyState();
+
+            showLoginError(
+                    getString(
+                            R.string.error_phone_verification_failed
+                    )
+            );
+
+            return;
+        }
+
+        user
+                .getIdToken(
+                        true
+                )
+                .addOnCompleteListener(
+                        this,
+                        task -> {
+
+                            if (
+                                    !task.isSuccessful()
+                                            ||
+                                            task.getResult() == null
+                            ) {
+
+                                localBusy =
+                                        false;
+
+                                updateBusyState();
+
+                                showLoginError(
+                                        getString(
+                                                R.string.error_phone_verification_failed
+                                        )
+                                );
+
+                                return;
+                            }
+
+                            String firebaseIdToken =
+                                    clean(
+                                            task.getResult()
+                                                    .getToken()
+                                    );
+
+                            if (firebaseIdToken.isEmpty()) {
+
+                                localBusy =
+                                        false;
+
+                                updateBusyState();
+
+                                showLoginError(
+                                        getString(
+                                                R.string.error_phone_verification_failed
+                                        )
+                                );
+
+                                return;
+                            }
+
+                            requestAppCheckToken(
+                                    firebaseIdToken
+                            );
+                        }
+                );
+    }
+
+
+    private void requestAppCheckToken(
+            String firebaseIdToken
+    ) {
+
+        firebaseAppCheck
+                .getAppCheckToken(
+                        false
+                )
+                .addOnCompleteListener(
+                        this,
+                        task -> {
+
+                            if (
+                                    !task.isSuccessful()
+                                            ||
+                                            task.getResult() == null
+                            ) {
+
+                                localBusy =
+                                        false;
+
+                                updateBusyState();
+
+                                showLoginError(
+                                        getString(
+                                                R.string.error_app_check_failed
+                                        )
+                                );
+
+                                return;
+                            }
+
+                            String appCheckToken =
+                                    clean(
+                                            task.getResult()
+                                                    .getToken()
+                                    );
+
+                            if (appCheckToken.isEmpty()) {
+
+                                localBusy =
+                                        false;
+
+                                updateBusyState();
+
+                                showLoginError(
+                                        getString(
+                                                R.string.error_app_check_failed
+                                        )
+                                );
+
+                                return;
+                            }
+
+                            String installationId =
+                                    new PushTokenStore(
+                                            getApplicationContext()
+                                    )
+                                            .getOrCreateInstallationId();
+
+                            localBusy =
+                                    false;
+
+                            viewModel
+                                    .exchangeFirebaseSession(
+                                            firebaseIdToken,
+                                            appCheckToken,
+                                            installationId
+                                    );
+
+                            updateBusyState();
+                        }
+                );
+    }
+
+
+    private void showCodeStep() {
+
+        editSmsCode.setVisibility(
+                View.VISIBLE
+        );
+
+        buttonVerifyCode.setVisibility(
+                View.VISIBLE
+        );
+
+        buttonResendCode.setVisibility(
+                View.VISIBLE
+        );
+    }
+
+
     private void clearErrors() {
 
-        editLogin.setError(
+        editPhone.setError(
                 null
         );
 
-        editPassword.setError(
+        editSmsCode.setError(
                 null
         );
 
@@ -276,18 +861,20 @@ public class LoginActivity extends SecureActivity {
         );
     }
 
+
     private void showLoginError(
             String message
     ) {
 
-        String safeMessage =
-                message;
+        localBusy =
+                false;
 
-        if (
-                safeMessage == null
-                        ||
-                        safeMessage.trim().isEmpty()
-        ) {
+        String safeMessage =
+                clean(
+                        message
+                );
+
+        if (safeMessage.isEmpty()) {
 
             safeMessage =
                     getString(
@@ -303,38 +890,53 @@ public class LoginActivity extends SecureActivity {
                 View.VISIBLE
         );
 
-        editPassword.setText(
-                ""
-        );
+        updateBusyState();
     }
 
-    private void showLoading(
-            Boolean loading
-    ) {
 
-        boolean isLoading =
-                Boolean.TRUE.equals(
-                        loading
-                );
+    private void updateBusyState() {
+
+        boolean viewModelBusy =
+                viewModel != null
+                        &&
+                        Boolean.TRUE.equals(
+                                viewModel
+                                        .getLoading()
+                                        .getValue()
+                        );
+
+        boolean busy =
+                localBusy
+                        ||
+                        viewModelBusy;
 
         progressLogin.setVisibility(
-                isLoading
+                busy
                         ? View.VISIBLE
                         : View.GONE
         );
 
-        buttonLogin.setEnabled(
-                !isLoading
+        editPhone.setEnabled(
+                !busy
         );
 
-        editLogin.setEnabled(
-                !isLoading
+        editSmsCode.setEnabled(
+                !busy
         );
 
-        editPassword.setEnabled(
-                !isLoading
+        buttonSendCode.setEnabled(
+                !busy
+        );
+
+        buttonVerifyCode.setEnabled(
+                !busy
+        );
+
+        buttonResendCode.setEnabled(
+                !busy
         );
     }
+
 
     private void openDriverMain() {
 
@@ -349,5 +951,15 @@ public class LoginActivity extends SecureActivity {
         );
 
         finish();
+    }
+
+
+    private String clean(
+            String value
+    ) {
+
+        return value == null
+                ? ""
+                : value.trim();
     }
 }
