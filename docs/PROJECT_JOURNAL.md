@@ -978,3 +978,105 @@ D4–D7 остаются неутверждёнными.
 Следующий безопасный этап: Android UI для server-backed photo-control/support
 (список проверок, private photo upload flow, support list/detail/chat) без
 реализации/выбора face-liveness provider до отдельного утверждения D4.
+
+## 2026-11-07 — D3 Android UI: photo-control + support/chat
+
+Завершён следующий рекомендованный D3 client stage поверх уже проверенных
+server-authoritative contracts.
+
+### Photo-control UI
+
+Добавлены:
+- раздел **«Фотоконтроль»** из главного Driver screen;
+- список собственных открытых `/v1/driver/photo-checks`;
+- восстановление фактически принятых backend ракурсов через `uploadedKinds`;
+- detail screen с 7 обязательными ракурсами:
+  `left/front/right/rear/open_trunk/rear_cabin/front_cabin`;
+- повторная съёмка для `failed/manual_review`;
+- server refresh после network uncertainty, чтобы не считать локальный state
+  источником истины.
+
+Private upload flow:
+1. Android запрашивает upload session через `POST /v1/driver/uploads`;
+2. backend возвращает relative private PUT path;
+3. Android отправляет бинарный JPEG через authenticated `PUT`;
+4. permanent/public URL в Android не создаётся.
+
+Camera privacy hardening:
+- снимок создаётся только во внутреннем cache через restricted `FileProvider`;
+- FileProvider разрешён только для `cache/photo-control/`;
+- перед upload изображение декодируется, orientation применяется локально,
+  JPEG пересохраняется и EXIF metadata не переносится;
+- максимальная сторона при пересохранении ограничена 2048 px;
+- временные файлы удаляются после подтверждённого результата/выхода;
+- незавершённая operation сохраняет private cache path при configuration change;
+- old cache cleanup удаляет файлы старше 24 часов;
+- photo screens наследуют `SecureActivity` / `FLAG_SECURE`.
+
+D4 face/liveness не реализован и не подменён vehicle photo-control.
+
+### Support UI / chat
+
+Добавлены:
+- раздел **«Поддержка»** из главного Driver screen;
+- список собственных support cases;
+- создание case по утверждённым категориям;
+- detail screen и Driver↔Admin chat;
+- closed case блокирует отправку на клиенте, backend остаётся authoritative;
+- support API не меняет order state и не предоставляет Driver отмену заказа.
+
+Idempotency:
+- create-case mutation сохраняет тот же random key при network uncertainty;
+- message mutation сохраняет `Idempotency-Key + message + expectedRevision`
+  до подтверждённого результата;
+- pending message identity сохраняется через configuration change;
+- при 409 клиент очищает pending mutation и перечитывает server state.
+
+### API/client contracts
+
+Добавлены Java DTO/Repository contracts для:
+- `GET /v1/driver/photo-checks`;
+- `POST /v1/driver/uploads`;
+- private `PUT` по relative upload path;
+- support list/create/detail/message APIs.
+
+`DriverV1ApiContractTest` расширен private-upload contract:
+- issue endpoint фиксирован;
+- PUT использует `@Url`;
+- `Content-Type` обязателен.
+
+Backend recovery contract:
+- `uploadedKinds` добавлен в `GET /v1/driver/photo-checks`;
+- backend GitHub Actions run 220 — PASS на
+  `abb787ddd1017c0b7e0a20ca68b62a530f8eea44`;
+- journal-only final backend head
+  `634043b6daf60b980622d89f3380d9f72f81a4de`;
+- backend run 222 — PASS.
+
+### Android CI
+
+CI упрощён до одного push validation для рабочих `arch/**` / `fix/**`
+веток. Это устранило двойные push+PR runs, которые взаимно отменяли друг друга.
+
+Android code head перед этой записью:
+`9c96eeaba7612b76fd88b1bfcda5093592c29024`.
+
+GitHub Actions run 89:
+- `:app:testDebugUnitTest` — PASS;
+- `:app:assembleDebug` — PASS;
+- `BUILD SUCCESSFUL in 2m 6s`.
+
+Ограничение проверки:
+- JVM contracts и debug assembly подтверждены;
+- camera launch, FileProvider grant, реальный private upload и UI interaction
+  на Android emulator/device этим GitHub runner не выполнялись.
+  Не считать их runtime-PASS до отдельного instrumentation/E2E прогона.
+
+Merge и production deploy не выполнялись.
+D4–D7 остаются неутверждёнными.
+
+Следующий безопасный D3 шаг:
+1. добавить instrumentation tests для photo-control/support UI;
+2. провести STAGING E2E private photo upload + support chat;
+3. после подтверждения D3 client flow вернуться к D4 как к release blocker
+   начала поездки.
