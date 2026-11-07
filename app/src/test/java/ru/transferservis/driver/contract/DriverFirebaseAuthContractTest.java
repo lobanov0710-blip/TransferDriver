@@ -46,13 +46,13 @@ public final class DriverFirebaseAuthContractTest {
                 post.value()
         );
 
-        Annotation[] headers =
+        Annotation[] parameterAnnotations =
                 method
                         .getParameterAnnotations()[0];
 
         boolean hasAppCheck =
                 Arrays.stream(
-                                headers
+                                parameterAnnotations
                         )
                         .filter(
                                 annotation ->
@@ -73,13 +73,13 @@ public final class DriverFirebaseAuthContractTest {
                 hasAppCheck
         );
 
-        Headers headers =
+        Headers methodHeaders =
                 method.getAnnotation(
                         Headers.class
                 );
 
         assertNull(
-                headers
+                methodHeaders
         );
     }
 
