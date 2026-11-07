@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
 import ru.transferservis.driver.data.api.StaffApi;
@@ -70,6 +71,15 @@ public final class DriverFirebaseAuthContractTest {
 
         assertTrue(
                 hasAppCheck
+        );
+
+        Headers headers =
+                method.getAnnotation(
+                        Headers.class
+                );
+
+        assertNull(
+                headers
         );
     }
 
