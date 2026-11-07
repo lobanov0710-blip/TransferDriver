@@ -1,5 +1,7 @@
 package ru.transferservis.driver.data.model;
 
+import java.util.List;
+
 public final class DriverPhotoCheckDto {
 
     private String id;
@@ -15,6 +17,7 @@ public final class DriverPhotoCheckDto {
     private String restrictionMode;
 
     private Integer uploadedKindCount;
+    private List<String> uploadedKinds;
     private Integer requiredKindCount;
 
     private Long createdAt;
@@ -58,6 +61,10 @@ public final class DriverPhotoCheckDto {
 
     public Integer getUploadedKindCount() {
         return uploadedKindCount;
+    }
+
+    public List<String> getUploadedKinds() {
+        return uploadedKinds;
     }
 
     public Integer getRequiredKindCount() {
