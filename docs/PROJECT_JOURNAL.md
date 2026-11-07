@@ -641,3 +641,75 @@ Trip verification / operational phases:
 Merge и production deploy не выполнялись.
 
 Следующий hardening-пункт D3: привести публичные terminal mutations `done/canceled` к обязательным `Idempotency-Key + expectedRevision + audit` перед дальнейшим расширением support/photo-control API.
+
+## 2026-11-07 — Аудит репозиториев и исправления по его результатам
+
+Основание: владелец поручил провести аудит и продолжить согласно ТЗ и аудиту.
+Проверены актуальные Driver `7ff12dab4d7392ab4bb785d8388045345274216b`
+и backend `0d764bc4ce4b60360448ec54b61d8d7f03727e8d`.
+D1–D3 уже утверждены; повторное утверждение не запрашивалось.
+D4–D7 по-прежнему не утверждены. Использованы отдельные worktree, прежние
+локальные изменения не перезаписаны.
+
+### Найдено и исправлено
+
+- Реальный SQLite воспроизвёл ложные success audit/idempotency при проигравшем
+  claim и stale revision в availability и фазах поездки. Связаны SQL-операции
+  через `changes()` внутри одной batch-транзакции; после commit JS-проверка
+  больше не является единственной защитой.
+- Idempotency replay перенесён перед изменяемыми revision/state-предусловиями
+  в assign, reassign, availability, phase, verification challenge.
+  Текущая авторизация и ownership остаются до выдачи сохранённого результата.
+- Запрещена смена/сброс active vehicle при активном assignment.
+- Переход off_line разрешён после отзыва approval, без ослабления допуска on_line.
+- Из обычных логов убраны адреса маршрута и raw Error в router/worker/staff auth.
+  Неиспользуемый HTTP helper больше не пишет URL/body/exception в лог.
+- Для всех JSON API-ответов принудительно установлены no-store/nosniff.
+- npm audit первоначально: 4 high entries в toolchain dependency tree.
+  Scoped Miniflare overrides: sharp 0.35.5, undici 7.30.1, обновлён lock.
+  Повторная проверка: 0 известных advisories.
+- OSV выявил GHSA-3cqm-mf7h-prrj (OkHttp 3.14.9) и
+  GHSA-w33c-445m-f8w7 (Okio 1.17.2). Android явно использует OkHttp 4.12.0
+  и Okio JVM 3.6.0; JVM runner обновлён на новые jar/Kotlin stdlib.
+- CI backend расширен npm ci --ignore-scripts, npm audit --audit-level=high
+  и Worker bundle --dry-run. Lifecycle scripts пакетов не выполнялись.
+
+### Проверки
+
+- До исправлений: 5 failing availability-сценариев, воспроизведение phase race,
+  4 failing privacy-теста. После исправлений все эти сценарии проходят.
+- Backend `npm test`: 57 наборов PASS, включая 19 новых сценариев
+  (15 реальных SQLite + 4 privacy). Проверены rollback при audit failure,
+  проигравшие claims, stale keys, changed-body replay, отзыв permissions,
+  повторы фаз arrived/in_trip и challenge после изменения фазы.
+- Все 14 D1 migrations: PASS, foreign_key_check чистый.
+- Android: 10 JUnit PASS на новых HTTP jar; 6 configuration/source guards PASS.
+- Gradle debugRuntimeClasspath: BUILD SUCCESSFUL, 129 компонентов;
+  OSV batch для всех 129: 0 advisories. Это проверка графа, не APK.
+- npm ci --ignore-scripts и wrangler deploy --dry-run: PASS;
+  bundle сохранён локально, deployment не выполнялся.
+- git diff --check и bash -n runner: PASS.
+- Ограниченный поиск ключевых литералов не нашёл полных приватных ключей;
+  PEM-marker в firebaseMessaging — шаблон разбора, не secret.
+
+### Ошибки среды и оставшиеся ограничения
+
+- Первый Node --test запуск в sandbox завершился ошибкой test subprocess;
+  прямой node tests/... воспроизвёл реальные ошибки и используется в npm scripts.
+- npm cache по умолчанию был read-only; применён npm_config_cache в /workspace.
+  HOME не изменялся; proxy и TLS-проверка сохранены.
+- Первоначальная Android-попытка в sandbox не смогла открыть служебный socket;
+  повтор со штатным сетевым разрешением дошёл до SDK location not found.
+- Android SDK/Firebase config отсутствуют: APK, Android lint/unit/instrumentation
+  и реальный Firebase/R2/D1 E2E не подтверждены. Поддельный config не создавался.
+- Нет production deployment, merge, настройки реальных credentials или
+  выбора D4/D5/D6/D7 вместо владельца.
+
+Подробности, приоритеты и ограничения: `docs/AUDIT_2026-11-07.md`.
+Инвентаризация Android graph: `docs/AUDIT_ANDROID_COMPONENTS_2026-11-07.json`.
+Backend inventory: `uber-v3/docs/AUDIT_DEPENDENCIES_2026-11-07.json`.
+Исправления сохраняются в существующих Draft PR Driver #6 и backend #28.
+
+Следующий D3-подэтап остаётся: terminal mutations с обязательными
+Idempotency-Key/expectedRevision/audit; затем полный photo-check eligibility
+и миграция Android на assigned-only /v1 flow. Эти блокеры не объявляются закрытыми.

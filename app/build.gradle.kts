@@ -55,6 +55,9 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    // Override Retrofit's vulnerable legacy HTTP dependencies.
+    implementation(libs.okhttp)
+    implementation(libs.okio)
 
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
