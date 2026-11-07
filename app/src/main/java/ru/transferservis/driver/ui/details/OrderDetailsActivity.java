@@ -938,36 +938,48 @@ public final class OrderDetailsActivity
                 return;
         }
 
-        new MaterialAlertDialogBuilder(
-                this
-        )
-                .setTitle(
-                        titleResource
+        androidx.appcompat.app.AlertDialog confirmationDialog =
+                new MaterialAlertDialogBuilder(
+                        this
                 )
-                .setMessage(
-                        getString(
-                                messageResource,
-                                buildRoute(
-                                        currentOrder
+                        .setTitle(
+                                titleResource
+                        )
+                        .setMessage(
+                                getString(
+                                        messageResource,
+                                        buildRoute(
+                                                currentOrder
+                                        )
                                 )
                         )
-                )
-                .setNegativeButton(
-                        R.string.cancel_button,
-                        null
-                )
-                .setPositiveButton(
-                        positiveResource,
-                        (
-                                dialog,
-                                which
-                        ) ->
-                                viewModel
-                                        .transitionOrder(
-                                                currentTargetStatus
-                                        )
-                )
-                .show();
+                        .setNegativeButton(
+                                R.string.cancel_button,
+                                null
+                        )
+                        .setPositiveButton(
+                                positiveResource,
+                                (
+                                        dialog,
+                                        which
+                                ) ->
+                                        viewModel
+                                                .transitionOrder(
+                                                        currentTargetStatus
+                                                )
+                        )
+                        .create();
+
+        if (confirmationDialog.getWindow() != null) {
+
+            confirmationDialog
+                    .getWindow()
+                    .addFlags(
+                            android.view.WindowManager.LayoutParams.FLAG_SECURE
+                    );
+        }
+
+        confirmationDialog.show();
     }
 
     private void handleActionResult(
