@@ -2,12 +2,14 @@ package ru.transferservis.driver.data.api;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.HTTP;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 
 import ru.transferservis.driver.data.model.BasicResponse;
+import ru.transferservis.driver.data.model.DriverFirebaseSessionExchangeRequest;
 import ru.transferservis.driver.data.model.LoginRequest;
 import ru.transferservis.driver.data.model.PushDeviceRegistrationRequest;
 import ru.transferservis.driver.data.model.PushDeviceUnregistrationRequest;
@@ -15,6 +17,16 @@ import ru.transferservis.driver.data.model.StaffLoginResponse;
 import ru.transferservis.driver.data.model.StaffRefreshTokenRequest;
 
 public interface StaffApi {
+
+    @POST("v1/driver/session/exchange")
+    Call<StaffLoginResponse> exchangeDriverFirebaseSession(
+            @Header("X-Firebase-AppCheck")
+            String firebaseAppCheckToken,
+
+            @Body
+            DriverFirebaseSessionExchangeRequest request
+    );
+
 
     @POST("staff/login")
     Call<StaffLoginResponse> login(
