@@ -35,6 +35,18 @@ public final class PhotoCheckActivity
     private static final String EXTRA_CHECK_ID =
             "photo_check_id";
 
+    private static final String STATE_CAPTURE_KIND =
+            "photo_capture_kind";
+
+    private static final String STATE_CAPTURE_PATH =
+            "photo_capture_path";
+
+    private static final String STATE_PENDING_KIND =
+            "photo_pending_kind";
+
+    private static final String STATE_PENDING_PATH =
+            "photo_pending_path";
+
     private static final String[] KINDS = {
             "left",
             "front",
@@ -217,6 +229,57 @@ public final class PhotoCheckActivity
                         loadCheck()
         );
 
+        if (savedInstanceState != null) {
+
+            captureKind =
+                    savedInstanceState
+                            .getString(
+                                    STATE_CAPTURE_KIND
+                            );
+
+            String capturePath =
+                    savedInstanceState
+                            .getString(
+                                    STATE_CAPTURE_PATH
+                            );
+
+            if (
+                    capturePath != null
+                            &&
+                            !capturePath.trim().isEmpty()
+            ) {
+
+                captureFile =
+                        new File(
+                                capturePath
+                        );
+            }
+
+            pendingUploadKind =
+                    savedInstanceState
+                            .getString(
+                                    STATE_PENDING_KIND
+                            );
+
+            String pendingPath =
+                    savedInstanceState
+                            .getString(
+                                    STATE_PENDING_PATH
+                            );
+
+            if (
+                    pendingPath != null
+                            &&
+                            !pendingPath.trim().isEmpty()
+            ) {
+
+                pendingUploadFile =
+                        new File(
+                                pendingPath
+                        );
+            }
+        }
+
         takePicture =
                 registerForActivityResult(
                         new ActivityResultContracts.TakePicture(),
@@ -234,15 +297,56 @@ public final class PhotoCheckActivity
     }
 
     @Override
+    protected void onSaveInstanceState(
+            Bundle outState
+    ) {
+
+        outState.putString(
+                STATE_CAPTURE_KIND,
+                captureKind
+        );
+
+        outState.putString(
+                STATE_CAPTURE_PATH,
+                captureFile == null
+                        ? null
+                        : captureFile.getAbsolutePath()
+        );
+
+        outState.putString(
+                STATE_PENDING_KIND,
+                pendingUploadKind
+        );
+
+        outState.putString(
+                STATE_PENDING_PATH,
+                pendingUploadFile == null
+                        ? null
+                        : pendingUploadFile.getAbsolutePath()
+        );
+
+        super.onSaveInstanceState(
+                outState
+        );
+    }
+
+    @Override
     protected void onDestroy() {
 
-        deleteQuietly(
-                captureFile
-        );
+        if (
+                isFinishing()
+                        &&
+                        !isChangingConfigurations()
+        ) {
 
-        deleteQuietly(
-                pendingUploadFile
-        );
+            deleteQuietly(
+                    captureFile
+            );
+
+            deleteQuietly(
+                    pendingUploadFile
+            );
+        }
 
         super.onDestroy();
     }
