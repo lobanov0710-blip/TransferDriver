@@ -10,7 +10,6 @@ import retrofit2.http.PUT;
 
 import ru.transferservis.driver.data.model.BasicResponse;
 import ru.transferservis.driver.data.model.DriverFirebaseSessionExchangeRequest;
-import ru.transferservis.driver.data.model.LoginRequest;
 import ru.transferservis.driver.data.model.PushDeviceRegistrationRequest;
 import ru.transferservis.driver.data.model.PushDeviceUnregistrationRequest;
 import ru.transferservis.driver.data.model.StaffLoginResponse;
