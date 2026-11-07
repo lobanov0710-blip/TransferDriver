@@ -882,3 +882,99 @@ Merge/deploy не выполнялись. D4–D7 остаются неутве�
 Следующий D3 этап для Android: перейти на готовые assigned-only/photo-check/support
 `/v1` contracts и закрепить contract/instrumentation tests без локального
 дублирования серверных прав.
+
+## 2026-11-07 — D3 Android alignment: assigned-only + hardened terminal + photo/support contracts
+
+Android `TransferDriver/arch/spec-v1-security-baseline` приведён к уже готовым
+server-authoritative D3 backend contracts без обхода D4.
+
+### Заказы
+
+Legacy driver flow больше не используется приложением:
+
+- удалён API read `GET /orders`;
+- источник списка — только `GET /v1/driver/assignments`;
+- nested assignment response адаптируется в UI model с обязательными
+  `orderRevision`, `assignmentRevision`, `assignmentId`, `phase`,
+  `phaseUpdatedAt` и `vehicleId`;
+- главный экран по умолчанию открывает active assigned orders;
+- Driver больше не получает/не принимает свободные `new` заказы через Android;
+- driver-side `new -> taken` удалён;
+- legacy `taken -> in_progress` удалён.
+
+Для `taken` UI показывает disabled действие **«Требуется фотопроверка»**.
+До отдельного утверждения D4 приложение не создаёт fake `verified`, не обходит
+verification challenge и не подменяет liveness локальным флагом.
+
+### Terminal done
+
+Сохранён только разрешённый terminal transition `in_progress -> done`.
+
+Android отправляет:
+- `Idempotency-Key`;
+- `expectedRevision`;
+- body `status=done`.
+
+Idempotency key сделан replay-stable:
+`android-done-<SHA-256(operation + orderId + expectedRevision)>`.
+Повтор того же логического запроса после неопределённого network outcome получает
+тот же key; изменение revision создаёт другой key.
+
+### Photo-control / Support data contracts
+
+Добавлены Java DTO/Retrofit contracts для:
+- `GET /v1/driver/photo-checks`;
+- `GET /v1/driver/support-cases`;
+- `POST /v1/driver/support-cases`;
+- `GET /v1/driver/support-cases/{caseId}`;
+- `POST /v1/driver/support-cases/{caseId}/messages`.
+
+Support message contract содержит обязательные `Idempotency-Key` и
+`expectedRevision`.
+
+UI photo-control/support пока намеренно не объявляется завершённым:
+сначала зафиксирован безопасный data-contract layer. Camera/private-upload UI
+будет подключаться без изменения D4 face/liveness решения.
+
+### Regression/CI
+
+Добавлены JVM contract tests:
+- `DriverOrderApiContractTest`;
+- `DriverV1ApiContractTest`;
+- `IdempotencyKeyFactoryTest`.
+
+Они фиксируют отсутствие legacy `getOrders`, assigned-only URL,
+terminal `Idempotency-Key + expectedRevision`, driver photo/support URLs и
+стабильность terminal idempotency key.
+
+Добавлен branch CI:
+- pinned `actions/checkout@v5`;
+- pinned `actions/setup-java@v5`;
+- Java 17 + Gradle cache;
+- synthetic Firebase config только для CI, без production credentials;
+- `clean :app:testDebugUnitTest :app:assembleDebug`;
+- concurrency дедуплицирует push/PR runs одного head.
+
+Промежуточные CI failures использовались как red checks:
+- run 26: обнаружен отсутствующий import `StaffOrderDto`;
+- run 34: обнаружен неверный escaping canonical separator в
+  `IdempotencyKeyFactory`;
+оба исправлены без ослабления контрактов.
+
+Итоговый code head:
+`9e86d874c38ad32dac8bb49bd153a8e77c270dca`.
+
+GitHub Actions run 36:
+- `:app:testDebugUnitTest` — PASS;
+- `:app:assembleDebug` — PASS;
+- `BUILD SUCCESSFUL`.
+
+Backend final D3 head `91da54124c999d4a88b60eceee456fea357236b2`
+ранее подтверждён GitHub Actions run 218 — PASS.
+
+Merge и production deploy не выполнялись.
+D4–D7 остаются неутверждёнными.
+
+Следующий безопасный этап: Android UI для server-backed photo-control/support
+(список проверок, private photo upload flow, support list/detail/chat) без
+реализации/выбора face-liveness provider до отдельного утверждения D4.
