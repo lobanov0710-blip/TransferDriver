@@ -223,3 +223,26 @@ ARCH-11.16 — уведомления водителя об изменении �
 D4–D7 не утверждены и остаются отдельными решениями.
 
 Утверждение D1–D3 разрешает переход к backend Phase 1 в отдельной ветке. Merge и production deploy не разрешались.
+
+
+## 2026-11-07 — Backend Phase 1A started after D1–D3 approval
+
+После утверждения D1–D3 начата реализация backend foundation в отдельной ветке `uber-v3/arch/spec-v1-backend-phase1`.
+
+Создан Draft PR `uber-v3 #28`:
+- additive migration `migrations/0005_driver_platform_core.sql`;
+- добавлены базовые сущности: `driver_profiles`, `vehicles`, `document_resources`, `driver_availability`, `staff_owner_binding`, `staff_permissions`, `order_assignments`, `identity_verifications`, `vehicle_photo_checks`, `support_cases`, `chat_messages`, `calls`, `audit_events`;
+- DB-инварианты связывают active vehicle и assignment vehicle с тем же driver;
+- допускается только один текущий assignment на order;
+- identity verification привязана к точной связке assignment/order/driver/vehicle;
+- добавлен migration contract test и включён в общий backend `npm test`.
+
+GitHub Actions:
+- Backend tests run #63: **PASS**;
+- tested head: `78e5b09338a8a4964b9533783ee76ebfc3b1b248`.
+
+Phase 1A не изменяет текущие production order transitions и пока не реализует Firebase exchange или новые `/v1` endpoints.
+
+Следующий этап: Phase 1B — Firebase identity → staff session exchange с server-authoritative verification и negative/replay contract tests.
+
+Merge и production deploy не выполнялись.
