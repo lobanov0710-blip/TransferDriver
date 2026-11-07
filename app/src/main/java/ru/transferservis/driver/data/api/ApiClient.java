@@ -90,4 +90,12 @@ public final class ApiClient {
                         OrderApi.class
                 );
     }
+
+    public static DriverV1Api getDriverV1Api() {
+
+        return getRetrofit()
+                .create(
+                        DriverV1Api.class
+                );
+    }
 }
