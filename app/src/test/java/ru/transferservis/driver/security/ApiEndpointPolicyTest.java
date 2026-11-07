@@ -4,15 +4,19 @@ import java.net.URI;
 
 import org.junit.Test;
 
+import ru.transferservis.driver.BuildConfig;
+
 import static org.junit.Assert.*;
 
 public class ApiEndpointPolicyTest {
 
     @Test
-    public void debugBuildUsesStagingEndpoint() {
+    public void buildVariantUsesLockedEnvironmentEndpoint() {
 
         assertEquals(
-                ApiEndpointPolicy.STAGING_BASE_URL,
+                BuildConfig.DEBUG
+                        ? ApiEndpointPolicy.STAGING_BASE_URL
+                        : ApiEndpointPolicy.PRODUCTION_BASE_URL,
                 ApiEndpointPolicy.BASE_URL
         );
 
@@ -24,10 +28,15 @@ public class ApiEndpointPolicyTest {
                 )
         );
 
+        String configuredHostUrl =
+                BuildConfig.DEBUG
+                        ? "https://UBER-V3-STAGING.LOBANOV0710.WORKERS.DEV:443/v1/driver/me"
+                        : "https://UBER-V3.LOBANOV0710.WORKERS.DEV:443/v1/driver/me";
+
         assertTrue(
                 ApiEndpointPolicy.isAllowed(
                         URI.create(
-                                "https://UBER-V3-STAGING.LOBANOV0710.WORKERS.DEV:443/v1/driver/me"
+                                configuredHostUrl
                         )
                 )
         );
@@ -40,7 +49,9 @@ public class ApiEndpointPolicyTest {
         assertFalse(
                 ApiEndpointPolicy.isAllowed(
                         URI.create(
-                                ApiEndpointPolicy.PRODUCTION_BASE_URL
+                                BuildConfig.DEBUG
+                                        ? ApiEndpointPolicy.PRODUCTION_BASE_URL
+                                        : ApiEndpointPolicy.STAGING_BASE_URL
                         )
                 )
         );
