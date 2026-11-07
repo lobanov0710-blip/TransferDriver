@@ -830,3 +830,55 @@ Support:
 monthly due generation и дальнейший support lifecycle/chat.
 VoIP/retention/юридические решения D5 не реализовывались.
 Merge/deploy не выполнялись; D4–D7 остаются неутверждёнными.
+
+## 2026-11-07 — D3: photo-control lifecycle и Driver↔Admin support/chat
+
+Backend `uber-v3/arch/spec-v1-backend-phase1` завершил следующие утверждённые
+D3 server-authoritative контуры.
+
+### Photo-control lifecycle
+
+- private контрольные фото связаны с конкретным `photoCheckId`;
+- registration photos и photo-control photos изолированы друг от друга;
+- Driver получает только собственные открытые проверки;
+- Admin с `vehicles.verify` получает bundle проверки и выполняет review;
+- review mutation требует `Idempotency-Key + expectedRevision + audit`;
+- PASS допускается только при полном наборе 7 контрольных фото;
+- после PASS backend фиксирует last-pass и следующий due;
+- следующий due рассчитывается как один календарный месяц с end-of-month clamp;
+- initial vehicle approval также создаёт первый server due;
+- hourly system cron materializes due checks;
+- `on_line`/assign/reassign дополнительно fail-closed по stored due + 24h,
+  поэтому пропуск cron не открывает просроченный автомобиль.
+
+Photo-control lifecycle SQLite: 6/6 PASS. Migration smoke: 17/17.
+GitHub Actions run 206: PASS на
+`9e93988b509e26acbcc4de6e6be3c11c870d0c48`.
+
+### Driver ↔ Admin support/chat
+
+Добавлены client-facing backend contracts:
+- Driver list/detail своих support cases;
+- Driver message в собственный case;
+- Admin list/detail, reply и status;
+- dispatcher permission: `support.manage`;
+- OWNER override остаётся server-authoritative.
+
+Message/status mutations требуют `Idempotency-Key + expectedRevision` и audit.
+Закрытый case не принимает новые сообщения. Ни один support endpoint не меняет
+order status и не даёт Driver право отмены заказа.
+
+Support chat live-D1 retention: 30 календарных дней согласно утверждённому ТЗ.
+Expired message скрывается по server timestamp и удаляется scheduled cleanup.
+Chat body не сохраняется в idempotency result; после retention удаляется и
+message-operation request digest. Backup retention/VoIP/legal policy этим этапом
+не утверждаются и не реализуются.
+
+Support lifecycle SQLite: 5/5 PASS. Полный npm test/workerd/D1/Worker dry-run PASS.
+GitHub Actions run 216: PASS на
+`92cb7013c934125b243a911e7bf188dbeebf9efd`.
+
+Merge/deploy не выполнялись. D4–D7 остаются неутверждёнными.
+Следующий D3 этап для Android: перейти на готовые assigned-only/photo-check/support
+`/v1` contracts и закрепить contract/instrumentation tests без локального
+дублирования серверных прав.
