@@ -1080,3 +1080,51 @@ D4–D7 остаются неутверждёнными.
 2. провести STAGING E2E private photo upload + support chat;
 3. после подтверждения D3 client flow вернуться к D4 как к release blocker
    начала поездки.
+
+## 2026-11-07 — D3 Android instrumentation security checkpoint
+
+После D3 photo-control/support UI добавлен и фактически выполнен Android
+instrumentation security suite.
+
+Canonical branch содержит:
+- `DriverUiSecurityInstrumentationTest`;
+- обычный branch CI дополнительно собирает `:app:assembleDebugAndroidTest`,
+  чтобы instrumentation sources/test APK всегда компилировались.
+
+Проверки на Android emulator API 35:
+1. `PhotoSanitizer` пересохраняет JPEG без GPS EXIF metadata;
+2. private `FileProvider`:
+   - `exported=false`;
+   - `grantUriPermissions=true`;
+   - разрешает только `cache/photo-control/`;
+   - произвольный файл из остального app cache не выдаётся;
+3. `PhotoChecksActivity`, `PhotoCheckActivity`,
+   `SupportCasesActivity`, `SupportCaseActivity` подтверждены как
+   `exported=false`.
+
+Обычная canonical CI:
+- code head перед этой записью:
+  `8ba482d5cce746ec6877572a47c35ad54372d006`;
+- GitHub Actions run 92 — PASS:
+  JVM tests + debug APK + debug AndroidTest APK.
+
+Emulator validation выполнена на временной ветке
+`fix/d3-ui-instrumentation-ci`, которая отличается от canonical code только
+workflow-файлом instrumentation:
+- первый run 1 завершился FAIL из-за quoting shell-команды:
+  Gradle получил `\` как имя task; emulator/KVM были исправны;
+- workflow command исправлен без изменения app code;
+- instrumentation run 2 — PASS;
+- `:app:connectedDebugAndroidTest` — PASS;
+- устройство: `test(AVD) - API 35`;
+- `BUILD SUCCESSFUL in 1m 6s`.
+
+Это подтверждает именно security/runtime invariants выше.
+Полный пользовательский E2E с реальной камерой, STAGING private upload и
+двусторонним support backend ещё не объявляется PASS.
+
+D4 face/liveness по-прежнему не выбран и не реализован.
+Merge и production deploy не выполнялись.
+
+Следующий D3 checkpoint: STAGING E2E photo upload/support с тестовыми данными,
+после чего D3 client flow можно считать готовым к переходу к D4.
