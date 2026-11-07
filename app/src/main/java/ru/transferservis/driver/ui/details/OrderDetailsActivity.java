@@ -702,35 +702,33 @@ public final class OrderDetailsActivity
 
         switch (status) {
 
-            case "new":
-
-                currentTargetStatus =
-                        "taken";
-
-                buttonDetailsAction.setText(
-                        R.string.order_accept
-                );
-
-                buttonDetailsAction.setVisibility(
-                        View.VISIBLE
-                );
-
-                break;
-
             case "taken":
 
+                /*
+                 * D4 liveness provider не утверждён.
+                 * Не используем legacy in_progress
+                 * и не подменяем verified локально.
+                 */
                 currentTargetStatus =
-                        "in_progress";
+                        null;
 
                 buttonDetailsAction.setText(
-                        R.string.order_start
+                        R.string.order_verification_required
                 );
 
                 buttonDetailsAction.setVisibility(
                         View.VISIBLE
                 );
 
-                break;
+                buttonDetailsAction.setEnabled(
+                        false
+                );
+
+                buttonDetailsAction.setOnClickListener(
+                        null
+                );
+
+                return;
 
             case "in_progress":
 
@@ -800,6 +798,13 @@ public final class OrderDetailsActivity
 
         buttonDetailsAction.setEnabled(
                 !processing
+                        &&
+                        "in_progress".equals(
+                                clean(
+                                        currentOrder
+                                                .getStatus()
+                                )
+                        )
         );
 
         if (!processing) {
@@ -812,18 +817,10 @@ public final class OrderDetailsActivity
 
             switch (status) {
 
-                case "new":
-
-                    buttonDetailsAction.setText(
-                            R.string.order_accept
-                    );
-
-                    break;
-
                 case "taken":
 
                     buttonDetailsAction.setText(
-                            R.string.order_start
+                            R.string.order_verification_required
                     );
 
                     break;
@@ -846,22 +843,6 @@ public final class OrderDetailsActivity
         switch (
                 processingTarget
         ) {
-
-            case "taken":
-
-                buttonDetailsAction.setText(
-                        R.string.order_accepting
-                );
-
-                break;
-
-            case "in_progress":
-
-                buttonDetailsAction.setText(
-                        R.string.order_starting
-                );
-
-                break;
 
             case "done":
 
@@ -894,32 +875,6 @@ public final class OrderDetailsActivity
         switch (
                 currentTargetStatus
         ) {
-
-            case "taken":
-
-                titleResource =
-                        R.string.order_accept_confirm_title;
-
-                messageResource =
-                        R.string.order_accept_confirm_message;
-
-                positiveResource =
-                        R.string.order_accept;
-
-                break;
-
-            case "in_progress":
-
-                titleResource =
-                        R.string.order_start_confirm_title;
-
-                messageResource =
-                        R.string.order_start_confirm_message;
-
-                positiveResource =
-                        R.string.order_start;
-
-                break;
 
             case "done":
 
