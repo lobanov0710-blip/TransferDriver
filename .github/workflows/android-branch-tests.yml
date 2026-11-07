@@ -72,6 +72,9 @@ jobs:
 
       - name: Run JVM tests and assemble debug
         run: |
-          ./gradlew clean :app:testDebugUnitTest :app:assembleDebug \
+          ./gradlew clean \
+            :app:testDebugUnitTest \
+            :app:assembleDebug \
+            :app:assembleDebugAndroidTest \
             --no-daemon \
             --stacktrace
