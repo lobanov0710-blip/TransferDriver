@@ -441,6 +441,19 @@ public final class PhotoCheckActivity
             );
         }
 
+        if (
+                !replacementAllowed
+                        &&
+                        pendingUploadKind != null
+                        &&
+                        uploadedKinds.contains(
+                                pendingUploadKind
+                        )
+        ) {
+
+            clearPendingUpload();
+        }
+
         for (String kind : KINDS) {
 
             Button button =
