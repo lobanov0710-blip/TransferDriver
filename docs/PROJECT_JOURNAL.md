@@ -742,3 +742,18 @@ Idempotency-Key/expectedRevision/audit; затем полный photo-check elig
   отдельная проверка local workerd/D1 и Worker dry-run прошли.
 - Исправления опубликованы в PR #28; Android зависимости, отчёт и этот журнал —
   в PR #6. Оба PR остаются Draft, merge/deploy не выполнялись.
+
+## 2026-11-07 — P2: защита окна диалога подтверждения заказа
+
+Исправлен P2 в Android Driver:
+- в `OrderDetailsActivity` диалог подтверждения перехода статуса теперь сначала создаётся через `MaterialAlertDialogBuilder.create()`;
+- до `show()` на собственное окно диалога устанавливается `WindowManager.LayoutParams.FLAG_SECURE`;
+- сохранена защита базового `SecureActivity`, но диалог больше не полагается только на флаг Activity;
+- изменение ограничено окном подтверждения и не меняет контракт переходов статусов или backend.
+
+Проверка исходника:
+- `FLAG_SECURE` применяется к `confirmationDialog.getWindow()` до `confirmationDialog.show()`;
+- null-window обрабатывается fail-safe без падения;
+- merge и production deploy не выполнялись.
+
+Дальнейшая работа остаётся по утверждённому ТЗ и журналу: D1–D3 утверждены; D4–D7 не выбираются без отдельного решения владельца. Android затем должен быть переведён на assigned-only `/v1` flow после закрытия текущих D3 backend-блокеров.
