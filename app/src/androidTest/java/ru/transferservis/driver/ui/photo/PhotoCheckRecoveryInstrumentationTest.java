@@ -15,6 +15,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +37,9 @@ public final class PhotoCheckRecoveryInstrumentationTest {
         final List<DriverPhotoCheckDto> checks = new ArrayList<>();
         int loads;
         int uploads;
+        boolean simulateTimeout;
+        String lastUploadKind;
+        File lastUploadFile;
 
         @Override
         public void getPhotoChecks(DriverV1Repository.PhotoChecksCallback callback) {
@@ -46,7 +52,12 @@ public final class PhotoCheckRecoveryInstrumentationTest {
                 DriverPhotoCheckDto check, String kind, File file,
                 DriverV1Repository.UploadCallback callback) {
             uploads++;
-            throw new AssertionError("Photo upload must not occur during state recovery");
+            lastUploadKind = kind;
+            lastUploadFile = file;
+            if (!simulateTimeout) {
+                throw new AssertionError("Unexpected photo upload");
+            }
+            callback.onError(0, "Synthetic timeout");
         }
 
         void setUploaded(String... kinds) {
@@ -114,4 +125,95 @@ public final class PhotoCheckRecoveryInstrumentationTest {
             PhotoCheckGatewayFactory.setTestGateway(null);
         }
     }
+    private static File createPendingFile(PhotoCheckActivity activity) {
+        try {
+            File directory = new File(activity.getCacheDir(), "photo-control");
+            assertTrue(directory.isDirectory() || directory.mkdirs());
+            File file = File.createTempFile("sanitized_test_", ".jpg", directory);
+            try (FileOutputStream output = new FileOutputStream(file)) {
+                output.write(new byte[]{1, 2, 3, 4});
+            }
+            return file;
+        } catch (IOException error) {
+            throw new AssertionError(error);
+        }
+    }
+
+    private static void setPending(PhotoCheckActivity activity, String kind, File file) {
+        try {
+            Field kindField = PhotoCheckActivity.class.getDeclaredField("pendingUploadKind");
+            Field fileField = PhotoCheckActivity.class.getDeclaredField("pendingUploadFile");
+            kindField.setAccessible(true);
+            fileField.setAccessible(true);
+            kindField.set(activity, kind);
+            fileField.set(activity, file);
+        } catch (ReflectiveOperationException error) {
+            throw new AssertionError(error);
+        }
+    }
+
+    @Test
+    public void pendingPrivateFileSurvivesRecreationAndTimeoutForExplicitRetry() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.simulateTimeout = true;
+        gateway.setUploaded();
+        final File[] pending = new File[1];
+        try (ActivityScenario<PhotoCheckActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                pending[0] = createPendingFile(activity);
+                setPending(activity, "left", pending[0]);
+            });
+            scenario.recreate();
+            scenario.onActivity(activity -> {
+                Button left = activity.findViewById(R.id.buttonPhotoLeft);
+                assertTrue(pending[0].isFile());
+                assertTrue(left.isEnabled());
+                assertTrue(left.getText().toString().contains(
+                        activity.getString(R.string.photo_kind_left)));
+                assertEquals(0, gateway.uploads);
+                left.performClick();
+                assertEquals(1, gateway.uploads);
+                assertEquals("left", gateway.lastUploadKind);
+                assertEquals(pending[0].getAbsolutePath(),
+                        gateway.lastUploadFile.getAbsolutePath());
+                assertTrue(pending[0].isFile());
+                assertTrue(left.isEnabled());
+                assertTrue(gateway.loads >= 3);
+            });
+        } finally {
+            SupportCleanup.delete(pending[0]);
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    @Test
+    public void serverAcknowledgementClearsPendingFileAfterRecreation() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        final File[] pending = new File[1];
+        try (ActivityScenario<PhotoCheckActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                pending[0] = createPendingFile(activity);
+                setPending(activity, "front", pending[0]);
+            });
+            gateway.setUploaded("front");
+            scenario.recreate();
+            scenario.onActivity(activity -> {
+                assertFalse(pending[0].exists());
+                assertFalse(((Button) activity.findViewById(R.id.buttonPhotoFront))
+                        .isEnabled());
+                assertEquals(0, gateway.uploads);
+            });
+        } finally {
+            SupportCleanup.delete(pending[0]);
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    private static final class SupportCleanup {
+        static void delete(File file) {
+            if (file != null && file.exists()) file.delete();
+        }
+    }
+
 }
