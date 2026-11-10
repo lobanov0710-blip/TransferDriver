@@ -41,15 +41,24 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 | UI-05 | NOT RUN | Pending private photo across Activity recreation |
 | UI-06 | NOT RUN | Timeout and server reconciliation; private upload deferred while R2 off |
 | UI-07 | NOT RUN | Own support case create/list interaction |
-| UI-08 | NOT RUN | Stable pending message replay |
-| UI-09 | NOT RUN | HTTP 409 refresh and pending clear |
-| UI-10 | NOT RUN | Closed case interaction |
+| UI-08 | PARTIAL | Emulator: offline retry after Activity recreation reuses key/body/revision; server replay acceptance untested |
+| UI-09 | PARTIAL | Emulator: HTTP 409 refreshes case and next send uses new key/revision; server response contract not E2E |
+| UI-10 | PARTIAL | Emulator: closed case disables composer; server-closed-after-conflict test added, pending CI |
 | UI-11 | NOT RUN | Assigned-only gate at runtime |
 | UI-12 | NOT RUN | Terminal done UI replay interaction |
 | UI-13 | PARTIAL | Login FLAG_SECURE + inheritance passed; real confirmation dialog runtime untested |
 
 No staging/production calls were made by these emulator checks. R2 remains
 unconfigured, so do not simulate a successful private photo upload.
+
+## Synthetic support UI instrumentation — 2026-11-10
+
+- [Android branch tests 42883503403](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42883503403): PASS at `c4f10984f8f5f404ccd288169f9856265c36f8af`.
+- [Android emulator 42883503884](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42883503884): PASS at the same SHA.
+- `SupportCaseUiInstrumentationTest` exercises UI-08 (offline replay across Activity recreation), UI-09 (409 refresh and new revision/key), UI-10 (closed case disabled and secure window).
+- Uses a **debug-source-set-only** fake `SupportCaseGateway`; the release source set has a separate factory that always creates `DriverV1Repository`. No live API, STAGING, production or R2.
+- Follow-up test for **server-side closure discovered on HTTP 409** added in `f820f6935cc8f05b453cb9211c9e2ac6f71e9ead`, CI result pending at time of this note.
+- UI-08/09/10 are **partial** against full acceptance requirements until server-backed and UI-state edge cases are independently verified. Do not treat synthetic emulator PASS as STAGING E2E.
 
 ## Required execution evidence
 
