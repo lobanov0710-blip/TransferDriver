@@ -412,8 +412,10 @@ public final class PhotoCheckActivity
                                         currentCheck =
                                                 null;
 
+                                        // Absence from the assigned-only list is not proof
+                                        // of completion: it may also mean revoked access.
                                         status.setText(
-                                                R.string.photo_control_completed
+                                                R.string.photo_control_load_failed
                                         );
 
                                         reason.setText(
