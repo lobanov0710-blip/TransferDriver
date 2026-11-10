@@ -1080,3 +1080,50 @@ D4–D7 остаются неутверждёнными.
 2. провести STAGING E2E private photo upload + support chat;
 3. после подтверждения D3 client flow вернуться к D4 как к release blocker
    начала поездки.
+
+## 2026-11-10 — D3 Android security instrumentation расширена, emulator PASS
+
+В отдельной ветке `fix/d3-ui-instrumentation-ci` расширены существующие
+instrumentation tests без изменения production, R2, D4–D7 или архитектуры.
+
+Реальное чтение исходников выявило пробел `PhotoSanitizer`: EXIF ориентации
+с зеркалированием (flip/transpose/transverse) не применялись к пикселям.
+Добавлена нормализация всех восьми стандартных EXIF orientations перед
+созданием JPEG. Исходные EXIF/GPS сведения не копируются в результат.
+
+Добавлены Android-эмуляторные тесты:
+- четырёхквадрантная проверка horizontal flip, clockwise 90°, transpose;
+- fail-closed на пустом файле;
+- фактический `FLAG_SECURE` окна LoginActivity до/после recreation;
+- наследование SecureActivity пятью экранами order/photo/support;
+- ранее существующие GPS metadata, FileProvider boundary и manifest
+  non-exported проверки сохранены.
+
+Первый полный run [42862000650](
+https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42862000650)
+выявил 9/10 PASS, 1/10 FAIL: тест требовал EXIF orientation=NORMAL (1)
+на JPEG без ориентационного тега, где Android возвращал UNDEFINED (0).
+Действительная проверка transform/pixel прошла; assertion исправлена на
+нормальную/отсутствующую ориентацию. В workflow добавлен вывод XML отчёта
+только при ошибке; сохранён исходный failing run для аудита.
+
+Итоговые проверки кода на `060a06a250fdd6ee5335633105c854992b6caa04`:
+- Android branch tests run
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42862576550 — PASS;
+- D3 UI instrumentation run
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42862576549 — PASS;
+- 10 Android instrumentation tests выполнялись на API 35 emulator,
+  `connectedDebugAndroidTest` — PASS;
+- сборка и JVM-контракты в отдельном CI — PASS.
+
+Граница выполненной приёмки: подтверждены локальные Android security
+properties, EXIF-санитизация, FileProvider и базовый secure window.
+Это НЕ подтверждает end-to-end камеру/внешнее camera app, серверный
+`uploadedKinds` recovery, HTTP 409 support replay, реальный
+photo upload, chat interaction, Firebase и STAGING E2E.
+
+R2 пока не создаётся, не подключается и не вызывается. D4 face/liveness
+не затрагивается. Merge в master, production deployment и удалённые
+D1 migrations не выполнялись. Следующий необходимый шаг — изолированные
+UI/contract tests support/photo recovery с синтетическим backend, затем
+узкий STAGING support chat E2E без private photo storage.
