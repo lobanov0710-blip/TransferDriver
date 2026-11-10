@@ -1260,3 +1260,34 @@ CI запущен, итог на момент записи **не подтвер
 Эти тесты не проверяют реальный camera app/URI grant,
 private upload или R2; UI-02 остаётся PARTIAL.
 Production, STAGING, merge, D4 и remote migrations не затронуты.
+
+## 2026-11-10 — D3 photo pending retry / timeout recovery tests
+
+Предыдущие photo-control UI tests на SHA `61fe2138771388c7495c9ab4b705f0a14bb33db2`
+завершились PASS:
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42886168284
+  (Android branch tests);
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42886168323
+  (D3 UI instrumentation).
+
+В `PhotoCheckRecoveryInstrumentationTest` добавлены два
+Android emulator сценария на синтетическом gateway и private
+cache-файле:
+- UI-05: pending `sanitized` file и kind восстанавливаются после
+  `ActivityScenario.recreate()`; явная повторная отправка после
+  сетевого timeout сохраняет исходный файл; передаётся тот же kind;
+  серверный state перечитывается, upload не запускается автоматически.
+- UI-06 partial: после `recreate()` сервер возвращает
+  `uploadedKinds`, содержащий ожидающий ракурс; локальный pending
+  файл удаляется, повторная отправка блокируется.
+
+Файл создан в private app cache, никакого вызова камеры,
+реального R2/HTTP upload или внешнего backend не выполняется.
+Test code commit `4191f9e0223637f52d83eff3ecd74f6b0a1e869d`.
+CI запущен, результат на момент записи не подтверждён:
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42888790438
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42888790491
+
+Сценарии не заменяют end-to-end проверку сетевого timeout
+или полноценную проверку безопасности FileProvider grants.
+Production, STAGING, R2, D4, merge и migrations не затронуты.
