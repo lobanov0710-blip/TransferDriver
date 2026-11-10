@@ -21,6 +21,7 @@ import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.SupportCaseDto;
 import ru.transferservis.driver.data.model.SupportMessageDto;
 import ru.transferservis.driver.data.repository.DriverV1Repository;
+import ru.transferservis.driver.data.repository.SupportCaseGateway;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.security.SecureActivity;
 import ru.transferservis.driver.ui.login.LoginActivity;
@@ -40,8 +41,7 @@ public final class SupportCaseActivity
     private static final String STATE_PENDING_REVISION =
             "support_pending_revision";
 
-    private final DriverV1Repository repository =
-            new DriverV1Repository();
+    private SupportCaseGateway repository;
 
     private SupportMessageAdapter adapter;
 
@@ -93,6 +93,8 @@ public final class SupportCaseActivity
         setContentView(
                 R.layout.activity_support_case
         );
+
+        repository = SupportCaseGatewayFactory.create();
 
         caseId =
                 getIntent()
