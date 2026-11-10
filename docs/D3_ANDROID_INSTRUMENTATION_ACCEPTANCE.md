@@ -1,6 +1,6 @@
 # D3 Android — instrumentation acceptance matrix
 
-Status: planned, NOT EXECUTED. Scope: TransferDriver Java/XML, isolated debug instrumentation. No R2, production, real passenger data, or D4 liveness.
+Status: PARTIALLY EXECUTED (security subset PASS on Android emulator; full D3 UI/E2E NOT ACCEPTED). Scope: TransferDriver Java/XML, isolated debug instrumentation. No R2, production, real passenger data, or D4 liveness.
 
 ## Test cases
 
@@ -19,6 +19,37 @@ Status: planned, NOT EXECUTED. Scope: TransferDriver Java/XML, isolated debug in
 | UI-11 | assigned order in taken phase | open details | no self-take or direct trip start; verification gate remains disabled |
 | UI-12 | own in_progress order | submit done twice | stable Idempotency-Key and expectedRevision; terminal result follows backend |
 | UI-13 | screenshot/recents capture | open photo/support/details screens and confirmation dialog | FLAG_SECURE applied; dialog flag set before show |
+
+## Actual execution — 2026-11-10
+
+Instrumented test suite: **10/10 PASS**, Android API 35 emulator, code SHA
+`060a06a250fdd6ee5335633105c854992b6caa04`.
+
+- [D3 UI instrumentation run 42862576549](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42862576549): PASS.
+- [Android branch tests run 42862576550](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42862576550): PASS.
+- Real Android checks: FileProvider scope, non-exported screens, sanitized EXIF/GPS, EXIF mirror/rotation/transpose, invalid JPEG fail-closed, secure LoginActivity window after recreation and secure inheritance of sensitive screens.
+- Earlier [run 42862000650](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42862000650) was 9/10: an overly strict assertion rejected absent EXIF orientation. The production image transform passed; test corrected and re-run.
+
+Coverage against the **13-case matrix** (do not mark an entire case PASS from partial evidence):
+
+| Case | Status | Evidence still required |
+|---|---|---|
+| UI-01 | NOT RUN | Own-check list/detail against controlled backend |
+| UI-02 | NOT RUN | Server uploadedKinds recreation/recovery |
+| UI-03 | NOT RUN | Camera denied/unavailable behavior |
+| UI-04 | PARTIAL | FileProvider scope passed; external camera URI grants untested |
+| UI-05 | NOT RUN | Pending private photo across Activity recreation |
+| UI-06 | NOT RUN | Timeout and server reconciliation; private upload deferred while R2 off |
+| UI-07 | NOT RUN | Own support case create/list interaction |
+| UI-08 | NOT RUN | Stable pending message replay |
+| UI-09 | NOT RUN | HTTP 409 refresh and pending clear |
+| UI-10 | NOT RUN | Closed case interaction |
+| UI-11 | NOT RUN | Assigned-only gate at runtime |
+| UI-12 | NOT RUN | Terminal done UI replay interaction |
+| UI-13 | PARTIAL | Login FLAG_SECURE + inheritance passed; real confirmation dialog runtime untested |
+
+No staging/production calls were made by these emulator checks. R2 remains
+unconfigured, so do not simulate a successful private photo upload.
 
 ## Required execution evidence
 
