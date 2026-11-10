@@ -96,9 +96,15 @@ public final class DriverV1Repository {
     private final DriverV1Api api;
 
     public DriverV1Repository() {
+        this(ApiClient.getDriverV1Api());
+    }
 
-        api =
-                ApiClient.getDriverV1Api();
+    // Package-private seam for isolated contract tests; production uses ApiClient.
+    DriverV1Repository(DriverV1Api api) {
+        if (api == null) {
+            throw new IllegalArgumentException("DriverV1Api required");
+        }
+        this.api = api;
     }
 
     public void getPhotoChecks(
