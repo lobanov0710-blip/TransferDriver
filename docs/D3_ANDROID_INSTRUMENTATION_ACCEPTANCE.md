@@ -43,7 +43,7 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 | UI-07 | NOT RUN | Own support case create/list interaction |
 | UI-08 | PARTIAL | Emulator: offline retry after Activity recreation reuses key/body/revision; server replay acceptance untested |
 | UI-09 | PARTIAL | Emulator: HTTP 409 refreshes case and next send uses new key/revision; server response contract not E2E |
-| UI-10 | PARTIAL | Emulator: closed case disables composer; server-closed-after-conflict test added, pending CI |
+| UI-10 | PARTIAL | Emulator PASS: closed case and server-side closure discovered after 409 disable composer; real backend E2E pending |
 | UI-11 | NOT RUN | Assigned-only gate at runtime |
 | UI-12 | NOT RUN | Terminal done UI replay interaction |
 | UI-13 | PARTIAL | Login FLAG_SECURE + inheritance passed; real confirmation dialog runtime untested |
@@ -57,8 +57,16 @@ unconfigured, so do not simulate a successful private photo upload.
 - [Android emulator 42883503884](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42883503884): PASS at the same SHA.
 - `SupportCaseUiInstrumentationTest` exercises UI-08 (offline replay across Activity recreation), UI-09 (409 refresh and new revision/key), UI-10 (closed case disabled and secure window).
 - Uses a **debug-source-set-only** fake `SupportCaseGateway`; the release source set has a separate factory that always creates `DriverV1Repository`. No live API, STAGING, production or R2.
-- Follow-up test for **server-side closure discovered on HTTP 409** added in `f820f6935cc8f05b453cb9211c9e2ac6f71e9ead`, CI result pending at time of this note.
+- Follow-up test for **server-side closure discovered on HTTP 409** added in `f820f6935cc8f05b453cb9211c9e2ac6f71e9ead`, and passed on Android emulator in the final run below.
 - UI-08/09/10 are **partial** against full acceptance requirements until server-backed and UI-state edge cases are independently verified. Do not treat synthetic emulator PASS as STAGING E2E.
+
+## Final verification of support UI tests and release source set
+
+- Code SHA: `e8f43f9c053e6dca32cf6ee88c63e9aa9acdf8d7`.
+- [Android branch tests 42884298313](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42884298313): PASS; Gradle executed `:app:testDebugUnitTest`, `:app:assembleDebug`, `:app:assembleDebugAndroidTest` and `:app:compileReleaseJavaWithJavac`.
+- [Android emulator 42884298225](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42884298225): PASS; includes UI recovery from 409 into a **closed** case.
+- Release Java compilation passed; no signed release artifact or production deploy was made.
+- UI-08/09/10 still require backend-backed authorization/idempotency/replay E2E for full acceptance. Photo-control private upload remains blocked on deferred R2.
 
 ## Required execution evidence
 
