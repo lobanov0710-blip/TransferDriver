@@ -40,9 +40,12 @@ public final class PhotoSanitizerOrientationInstrumentationTest {
                 bitmap.recycle();
             }
             ExifInterface exif = new ExifInterface(result.getAbsolutePath());
-            assertEquals(ExifInterface.ORIENTATION_NORMAL,
-                    exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_NORMAL));
+            int normalizedOrientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+            assertTrue("Output must not require EXIF transform",
+                    normalizedOrientation == ExifInterface.ORIENTATION_NORMAL
+                            || normalizedOrientation == ExifInterface.ORIENTATION_UNDEFINED);
             assertNull(exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
         });
     }
