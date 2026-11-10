@@ -112,19 +112,12 @@ public final class PhotoSanitizer {
                             ExifInterface.ORIENTATION_NORMAL
                     );
 
-            int rotation =
-                    rotationDegrees(
+            Matrix matrix =
+                    orientationTransform(
                             orientation
                     );
 
-            if (rotation != 0) {
-
-                Matrix matrix =
-                        new Matrix();
-
-                matrix.postRotate(
-                        rotation
-                );
+            if (!matrix.isIdentity()) {
 
                 output =
                         Bitmap.createBitmap(
@@ -193,23 +186,48 @@ public final class PhotoSanitizer {
         }
     }
 
-    private static int rotationDegrees(
+    private static Matrix orientationTransform(
             int orientation
     ) {
 
+        Matrix matrix = new Matrix();
+
         switch (orientation) {
 
-            case ExifInterface.ORIENTATION_ROTATE_90:
-                return 90;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1f, 1f);
+                break;
 
             case ExifInterface.ORIENTATION_ROTATE_180:
-                return 180;
+                matrix.setRotate(180f);
+                break;
+
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setScale(1f, -1f);
+                break;
+
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90f);
+                matrix.postScale(-1f, 1f);
+                break;
+
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.setRotate(90f);
+                break;
+
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(-90f);
+                matrix.postScale(-1f, 1f);
+                break;
 
             case ExifInterface.ORIENTATION_ROTATE_270:
-                return 270;
+                matrix.setRotate(-90f);
+                break;
 
             default:
-                return 0;
+                break;
         }
+
+        return matrix;
     }
 }
