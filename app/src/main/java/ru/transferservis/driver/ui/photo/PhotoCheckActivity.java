@@ -25,6 +25,7 @@ import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.DriverPhotoCheckDto;
 import ru.transferservis.driver.data.model.PrivateResourceDto;
 import ru.transferservis.driver.data.repository.DriverV1Repository;
+import ru.transferservis.driver.data.repository.PhotoCheckGateway;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.security.SecureActivity;
 import ru.transferservis.driver.ui.login.LoginActivity;
@@ -57,8 +58,7 @@ public final class PhotoCheckActivity
             "front_cabin"
     };
 
-    private final DriverV1Repository repository =
-            new DriverV1Repository();
+    private PhotoCheckGateway repository;
 
     private final Map<String, Button> buttons =
             new HashMap<>();
@@ -112,6 +112,8 @@ public final class PhotoCheckActivity
         setContentView(
                 R.layout.activity_photo_check
         );
+
+        repository = PhotoCheckGatewayFactory.create();
 
         checkId =
                 getIntent()
