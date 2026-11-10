@@ -1194,3 +1194,37 @@ CI на `c4f10984f8f5f404ccd288169f9856265c36f8af`:
 support/chat E2E и не фото-upload. Проверка `src/release` компиляцией
 будет отдельным release gate. R2 не использовался. Merge,
 production deployment, remote migrations и D4 не выполнялись.
+
+## 2026-11-10 — D3 support UI regression and release compile verified
+
+Итоговый SHA с кодом и CI workflow:
+`e8f43f9c053e6dca32cf6ee88c63e9aa9acdf8d7`.
+
+- GitHub Actions Android branch tests run
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42884298313
+  — **PASS**. По логу выполнены `testDebugUnitTest`,
+  `assembleDebug`, `assembleDebugAndroidTest`,
+  `compileReleaseJavaWithJavac`.
+- GitHub Actions D3 UI instrumentation run
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42884298225
+  — **PASS** на Android API 35 emulator.
+- Добавленный регрессионный UI тест подтверждает: после
+  синтетического HTTP 409 и последующей загрузки закрытого обращения
+  ввод и кнопка отправки отключаются, фантомное доставленное
+  сообщение не отображается.
+- Release source set `SupportCaseGatewayFactory` компилируется,
+  test injection остаётся только в Debug source set.
+
+В ходе сверки серверного кода `uber-v3`
+(`fix/d3-terminal-hardening-ci`) подтверждён формат
+`getDriverSupportCase -> {ok, supportCase}` и требование
+`expectedRevision` для `postDriverSupportMessage`. Полное
+серверное E2E по этому шагу не запускалось.
+
+Ограничения: PASS относится к синтетическому UI/contract тестированию
+и компиляции Release Java, **не** к подписанному релизу,
+реальному STAGING support/chat E2E, реальному private photo upload,
+D4 или production. Следующий безопасный шаг — закрывать оставшиеся
+D3 photo-control state/recovery tests и проводить строго необходимый
+STAGING support/chat E2E без R2. R2 provisioning, production deploy,
+remote migrations и merge не выполнялись.
