@@ -47,6 +47,7 @@ public final class SupportCaseUiInstrumentationTest {
         int revision = 7;
         boolean closed;
         boolean conflictFirst;
+        boolean closeOnConflict;
         boolean networkFailure = true;
 
         @Override
@@ -78,6 +79,7 @@ public final class SupportCaseUiInstrumentationTest {
 
             if (conflictFirst && mutations.size() == 1) {
                 revision = 8;
+                closed = closeOnConflict;
                 callback.onConflict();
             } else if (networkFailure) {
                 callback.onError(0, "Synthetic network failure");
@@ -103,6 +105,9 @@ public final class SupportCaseUiInstrumentationTest {
                 activity.findViewById(R.id.buttonSendSupportMessage).performClick();
                 assertEquals(1, gateway.mutations.size());
                 assertEquals(7, gateway.mutations.get(0).revision);
+                assertEquals(0, ((androidx.recyclerview.widget.RecyclerView)
+                        activity.findViewById(R.id.recyclerSupportMessages))
+                        .getAdapter().getItemCount());
             });
 
             scenario.recreate();
@@ -140,6 +145,30 @@ public final class SupportCaseUiInstrumentationTest {
                 assertEquals(8, gateway.mutations.get(1).revision);
                 assertNotEquals(gateway.mutations.get(0).key,
                         gateway.mutations.get(1).key);
+            });
+        } finally {
+            SupportCaseGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    @Test
+    public void conflictWithServerSideClosureDisablesComposer() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.conflictFirst = true;
+        gateway.closeOnConflict = true;
+        try (ActivityScenario<SupportCaseActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                EditText input = activity.findViewById(R.id.editSupportMessage);
+                Button send = activity.findViewById(R.id.buttonSendSupportMessage);
+                input.setText("Already resolved");
+                send.performClick();
+                assertEquals(1, gateway.mutations.size());
+                assertEquals(2, gateway.loads);
+                assertFalse(input.isEnabled());
+                assertFalse(send.isEnabled());
+                assertEquals(0, ((androidx.recyclerview.widget.RecyclerView)
+                        activity.findViewById(R.id.recyclerSupportMessages))
+                        .getAdapter().getItemCount());
             });
         } finally {
             SupportCaseGatewayFactory.setTestGateway(null);
