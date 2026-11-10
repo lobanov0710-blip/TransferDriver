@@ -76,5 +76,6 @@ jobs:
             :app:testDebugUnitTest \
             :app:assembleDebug \
             :app:assembleDebugAndroidTest \
+            :app:compileReleaseJavaWithJavac \
             --no-daemon \
             --stacktrace
