@@ -1152,3 +1152,45 @@ GitHub CI для SHA `3eedfcfe98f09ee4198d7c1028dd34ed99344996`:
 
 Статус на момент записи: проверки запущены, результат ещё не подтверждён.
 Merge, production deploy, D1 migration, R2 provisioning и D4 не выполнялись.
+
+## 2026-11-10 — D3 support UI instrumentation, synthetic backend
+
+Сверены GitHub Actions для предыдущих repository contract tests:
+- Android branch tests
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42865299795 — PASS;
+- D3 UI instrumentation
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42865299804 — PASS;
+- SHA `08304573fc2f7b58aaca74ca33e48029373fd24e`.
+
+Для безопасной проверки поведения `SupportCaseActivity` добавлена
+узкая абстракция `SupportCaseGateway` с двумя методами
+`getSupportCase/sendSupportMessage`. `DriverV1Repository` реализует
+её без изменения сетевого контракта. Вариант `src/debug` допускает
+package-private synthetic override только внутри процесса тестов;
+вариант `src/release` всегда создаёт штатный `DriverV1Repository`
+и не имеет test override.
+
+Добавлены реальные emulator UI tests на синтетических данных:
+- UI-08: offline error, Activity recreation, сохранение текста,
+  `Idempotency-Key` и `expectedRevision` при повторной отправке;
+- UI-09: HTTP 409, загрузка обновлённого обращения, новая ревизия и
+  новый ключ на следующую отправку;
+- UI-10: закрытое обращение блокирует поле ввода и кнопку отправки;
+- `FLAG_SECURE` на экране обращения до/после recreation.
+
+CI на `c4f10984f8f5f404ccd288169f9856265c36f8af`:
+- Android branch tests:
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42883503403 — PASS;
+- D3 UI instrumentation:
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42883503884 — PASS.
+
+Дополнительно добавлен сценарий HTTP 409, при котором сервер
+сообщает, что обращение закрыто: интерфейс обязан запретить отправку
+и не показывать неотправленное сообщение как доставленное.
+Коммит `f820f6935cc8f05b453cb9211c9e2ac6f71e9ead`;
+его CI на момент записи не подтверждён.
+
+Важная граница: это UI tests с подставным API, не реальные STAGING
+support/chat E2E и не фото-upload. Проверка `src/release` компиляцией
+будет отдельным release gate. R2 не использовался. Merge,
+production deployment, remote migrations и D4 не выполнялись.
