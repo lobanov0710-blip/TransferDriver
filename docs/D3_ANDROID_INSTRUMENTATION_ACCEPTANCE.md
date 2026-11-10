@@ -38,8 +38,8 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 | UI-02 | PARTIAL (CI PENDING) | Synthetic emulator test added for uploadedKinds after Activity recreation; real server E2E still required |
 | UI-03 | NOT RUN | Camera denied/unavailable behavior |
 | UI-04 | PARTIAL | FileProvider scope passed; external camera URI grants untested |
-| UI-05 | NOT RUN | Pending private photo across Activity recreation |
-| UI-06 | NOT RUN | Timeout and server reconciliation; private upload deferred while R2 off |
+| UI-05 | PARTIAL (CI PENDING) | Synthetic pending private file survives Activity recreation; retry after timeout tested without live upload |
+| UI-06 | PARTIAL (CI PENDING) | Synthetic timeout and uploadedKinds reconciliation tested; private R2 upload and real HTTP remain deferred |
 | UI-07 | NOT RUN | Own support case create/list interaction |
 | UI-08 | PARTIAL | Emulator: offline retry after Activity recreation reuses key/body/revision; server replay acceptance untested |
 | UI-09 | PARTIAL | Emulator: HTTP 409 refreshes case and next send uses new key/revision; server response contract not E2E |
