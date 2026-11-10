@@ -1228,3 +1228,35 @@ D4 или production. Следующий безопасный шаг — зак�
 D3 photo-control state/recovery tests и проводить строго необходимый
 STAGING support/chat E2E без R2. R2 provisioning, production deploy,
 remote migrations и merge не выполнялись.
+
+## 2026-11-10 — D3 photo-control server-state recovery instrumentation
+
+В `PhotoCheckActivity` выявлена fail-open ошибка: если заданный
+`photo_check_id` отсутствует в ответе assigned-only списка,
+интерфейс выставлял `photo_control_completed`. Отсутствие записи
+не доказывает завершение (возможны потеря доступа, несогласованность
+сервера или удаление записи). Исправлено на
+`photo_control_load_failed` с отключёнными кнопками.
+
+Добавлен `PhotoCheckGateway` для изолированной проверки чтения
+состояния и загрузки: Debug factory допускает synthetic gateway,
+Release factory всегда возвращает штатный `DriverV1Repository`.
+Изменения HTTP-контракта и R2 отсутствуют.
+
+Новые Android instrumentation tests в
+`PhotoCheckRecoveryInstrumentationTest`:
+- UI-02 partial: `uploadedKinds` перечитываются после
+  `ActivityScenario.recreate()`; ранее/вновь загруженные ракурсы
+  недоступны, незагруженные доступны;
+- missing assigned check: fail-closed status, кнопки отключены;
+- recovery не вызывает `uploadPhotoCheckImage`;
+- `FLAG_SECURE` на экране.
+
+Кодовый коммит `61fe2138771388c7495c9ab4b705f0a14bb33db2`.
+CI запущен, итог на момент записи **не подтверждён**:
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42886168284
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42886168323
+
+Эти тесты не проверяют реальный camera app/URI grant,
+private upload или R2; UI-02 остаётся PARTIAL.
+Production, STAGING, merge, D4 и remote migrations не затронуты.
