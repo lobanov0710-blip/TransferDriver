@@ -1127,3 +1127,28 @@ R2 пока не создаётся, не подключается и не вы�
 D1 migrations не выполнялись. Следующий необходимый шаг — изолированные
 UI/contract tests support/photo recovery с синтетическим backend, затем
 узкий STAGING support chat E2E без private photo storage.
+
+## 2026-11-10 — D3 support mutation isolated contract tests
+
+В ветке `fix/d3-ui-instrumentation-ci` добавлен package-private
+конструктор `DriverV1Repository(DriverV1Api)` для подстановки
+синтетического API в JVM-тестах. Публичный конструктор продолжает
+использовать штатный `ApiClient.getDriverV1Api()`.
+
+Новый `DriverV1RepositorySupportContractTest` проверяет:
+1. локальную валидацию обязательных `caseId/body/expectedRevision/Idempotency-Key`
+   без сетевого обращения при некорректных аргументах;
+2. точную передачу key/revision/body и единственный callback onConflict
+   при HTTP 409 (без автоматического повтора);
+3. синтетический сетевой сбой и возможность повторной отправки с тем же
+   key/revision по решению вызывающего кода.
+
+Ни один тест не использует настоящий backend, реальные токены,
+production, STAGING или R2. Это repository contract coverage,
+а не подтверждение UI-09/08 или STAGING E2E.
+GitHub CI для SHA `3eedfcfe98f09ee4198d7c1028dd34ed99344996`:
+- Android branch tests: https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42865226999
+- D3 UI instrumentation: https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42865227127
+
+Статус на момент записи: проверки запущены, результат ещё не подтверждён.
+Merge, production deploy, D1 migration, R2 provisioning и D4 не выполнялись.
