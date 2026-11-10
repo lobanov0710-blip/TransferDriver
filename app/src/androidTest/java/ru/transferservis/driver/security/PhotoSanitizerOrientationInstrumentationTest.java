@@ -32,8 +32,10 @@ public final class PhotoSanitizerOrientationInstrumentationTest {
             try {
                 assertEquals(120, bitmap.getWidth());
                 assertEquals(80, bitmap.getHeight());
-                assertBlue(bitmap.getPixel(10, 40));
-                assertRed(bitmap.getPixel(110, 40));
+                assertColor(bitmap.getPixel(10, 10), Color.BLUE);
+                assertColor(bitmap.getPixel(110, 10), Color.RED);
+                assertColor(bitmap.getPixel(10, 70), Color.YELLOW);
+                assertColor(bitmap.getPixel(110, 70), Color.GREEN);
             } finally {
                 bitmap.recycle();
             }
@@ -53,8 +55,10 @@ public final class PhotoSanitizerOrientationInstrumentationTest {
             try {
                 assertEquals(80, bitmap.getWidth());
                 assertEquals(120, bitmap.getHeight());
-                assertRed(bitmap.getPixel(40, 10));
-                assertBlue(bitmap.getPixel(40, 110));
+                assertColor(bitmap.getPixel(10, 10), Color.GREEN);
+                assertColor(bitmap.getPixel(70, 10), Color.RED);
+                assertColor(bitmap.getPixel(10, 110), Color.YELLOW);
+                assertColor(bitmap.getPixel(70, 110), Color.BLUE);
             } finally {
                 bitmap.recycle();
             }
@@ -69,8 +73,10 @@ public final class PhotoSanitizerOrientationInstrumentationTest {
             try {
                 assertEquals(80, bitmap.getWidth());
                 assertEquals(120, bitmap.getHeight());
-                assertRed(bitmap.getPixel(40, 10));
-                assertBlue(bitmap.getPixel(40, 110));
+                assertColor(bitmap.getPixel(10, 10), Color.RED);
+                assertColor(bitmap.getPixel(70, 10), Color.GREEN);
+                assertColor(bitmap.getPixel(10, 110), Color.BLUE);
+                assertColor(bitmap.getPixel(70, 110), Color.YELLOW);
             } finally {
                 bitmap.recycle();
             }
@@ -112,10 +118,15 @@ public final class PhotoSanitizerOrientationInstrumentationTest {
         File result = new File(directory, "result.jpg");
         Bitmap original = Bitmap.createBitmap(120, 80, Bitmap.Config.ARGB_8888);
         try {
-            original.eraseColor(Color.RED);
-            for (int x = 60; x < 120; x++) {
+            for (int x = 0; x < 120; x++) {
                 for (int y = 0; y < 80; y++) {
-                    original.setPixel(x, y, Color.BLUE);
+                    int color;
+                    if (x < 60) {
+                        color = y < 40 ? Color.RED : Color.GREEN;
+                    } else {
+                        color = y < 40 ? Color.BLUE : Color.YELLOW;
+                    }
+                    original.setPixel(x, y, color);
                 }
             }
             try (FileOutputStream stream = new FileOutputStream(source)) {
@@ -141,11 +152,12 @@ public final class PhotoSanitizerOrientationInstrumentationTest {
         }
     }
 
-    private static void assertRed(int pixel) {
-        assertTrue("Expected red region", Color.red(pixel) > Color.blue(pixel) + 80);
-    }
-
-    private static void assertBlue(int pixel) {
-        assertTrue("Expected blue region", Color.blue(pixel) > Color.red(pixel) + 80);
+    private static void assertColor(int pixel, int expected) {
+        assertTrue("Wrong R channel",
+                Math.abs(Color.red(pixel) - Color.red(expected)) < 60);
+        assertTrue("Wrong G channel",
+                Math.abs(Color.green(pixel) - Color.green(expected)) < 60);
+        assertTrue("Wrong B channel",
+                Math.abs(Color.blue(pixel) - Color.blue(expected)) < 60);
     }
 }
