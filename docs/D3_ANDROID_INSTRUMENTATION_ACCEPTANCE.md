@@ -35,7 +35,7 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 | Case | Status | Evidence still required |
 |---|---|---|
 | UI-01 | NOT RUN | Own-check list/detail against controlled backend |
-| UI-02 | NOT RUN | Server uploadedKinds recreation/recovery |
+| UI-02 | PARTIAL (CI PENDING) | Synthetic emulator test added for uploadedKinds after Activity recreation; real server E2E still required |
 | UI-03 | NOT RUN | Camera denied/unavailable behavior |
 | UI-04 | PARTIAL | FileProvider scope passed; external camera URI grants untested |
 | UI-05 | NOT RUN | Pending private photo across Activity recreation |
@@ -67,6 +67,13 @@ unconfigured, so do not simulate a successful private photo upload.
 - [Android emulator 42884298225](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42884298225): PASS; includes UI recovery from 409 into a **closed** case.
 - Release Java compilation passed; no signed release artifact or production deploy was made.
 - UI-08/09/10 still require backend-backed authorization/idempotency/replay E2E for full acceptance. Photo-control private upload remains blocked on deferred R2.
+
+## Photo-control recovery test — pending CI
+
+- Commit `61fe2138771388c7495c9ab4b705f0a14bb33db2`: fixes false-completed UI when assigned-only check is absent; adds debug-only fake gateway and Android emulator recovery tests.
+- [Android branch tests 42886168284](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42886168284) — outcome pending.
+- [Android instrumentation 42886168323](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42886168323) — outcome pending.
+- No actual photo upload, camera intent, R2 or production calls; do not mark UI-02 fully accepted from this synthetic test.
 
 ## Required execution evidence
 
