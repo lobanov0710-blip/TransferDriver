@@ -84,3 +84,14 @@ jobs:
           script: |
             chmod +x ./gradlew
             ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+
+      - name: Print instrumentation XML report on failure
+        if: failure()
+        shell: bash
+        run: |
+          report_dir=app/build/outputs/androidTest-results/connected
+          if [[ ! -d "$report_dir" ]]; then
+            echo "No connected AndroidTest XML directory found"
+            exit 0
+          fi
+          find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,200p' {} \;
