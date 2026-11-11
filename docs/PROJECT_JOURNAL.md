@@ -1291,3 +1291,31 @@ CI запущен, результат на момент записи не под
 Сценарии не заменяют end-to-end проверку сетевого timeout
 или полноценную проверку безопасности FileProvider grants.
 Production, STAGING, R2, D4, merge и migrations не затронуты.
+
+## 2026-11-11 — D3 photo timeout recovery PASS; stale refresh hardening
+
+Проверены итоги CI на `4191f9e0223637f52d83eff3ecd74f6b0a1e869d`:
+- Android branch tests https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42888790438 — PASS;
+- Android emulator https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42888790491 — PASS.
+
+`D3_ANDROID_INSTRUMENTATION_ACCEPTANCE.md` обновлён: UI-02/05/06
+остаются PARTIAL, но synthetic emulator проверки отмечены как PASS.
+Live HTTP/R2 и camera URI grant не проверены.
+
+При ревизии `PhotoCheckActivity.loadCheck().onError` выявлена
+новая fail-open ситуация: после успешной загрузки состояния при
+последующем сбое refresh ранее доступные кнопки оставались
+активными на основании устаревшего `currentCheck`.
+Исправлено: при ошибке refresh `currentCheck = null` и все
+photo actions отключаются до успешного повторного получения
+серверного состояния. Коммит `a393fa68f82f6861a1beec25db5222c85f19b6be`.
+
+Добавлен emulator regression test
+`refreshFailureDisablesPreviouslyAvailablePhotoActions`:
+после исходного успешного чтения выполняется synthetic
+`onError(0)` на refresh; все кнопки должны стать неактивными,
+без отправки файла. Коммит
+`20f7434436084515d13546e74fd28015093ab8cc`.
+Итоговый CI для этого теста на момент записи **не подтверждён**.
+
+Никаких production/STAGING/R2 действий, merge, D4 и remote migrations.
