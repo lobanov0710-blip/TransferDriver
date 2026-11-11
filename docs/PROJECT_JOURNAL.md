@@ -1305,3 +1305,16 @@ Firebase Console не объявлялось успешным.
 Текущий gate требует реальных Firebase identifiers и прав/ресурса R2;
 после них продолжается уже согласованный staging-only preflight/deploy/E2E.
 D4–D7 остаются неутверждёнными.
+
+
+### Проверка CI текущего checkpoint
+
+GitHub Actions backend run 241 — PASS:
+https://github.com/lobanov0710-blip/uber-v3/actions/runs/43037859840
+
+Проверен commit `868e940cb4ac7e6ad96c28c42c7aecc695620f1a`:
+locked install, dependency audit, 17 migrations, 12 staging preflight tests,
+61 backend test suites, local workerd/D1 и Worker dry-run — PASS.
+Настоящий Firebase project/app не выбран, R2 bucket не создан, deploy/E2E
+не выполнялись. Следующее необходимое действие владельца — сообщить Firebase
+identifiers из настроек существующего проекта и подготовить R2 права/bucket.
