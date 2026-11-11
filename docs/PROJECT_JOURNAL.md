@@ -1352,3 +1352,29 @@ CI нового коммита **не подтверждён** на момент
 UI-03 остаётся PARTIAL: проверяется callback отмены, но не
 фактический отказ внешнего camera app/permission.
 STAGING/production/R2/D4, remote migrations и merge не затронуты.
+
+## 2026-11-11 — D3 assigned photo list fail-closed
+
+CI на SHA `59c7a982fd64f922367c58ce9d74b5d28e83eb6e`:
+- Android branch tests https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137921 — PASS;
+- Android emulator https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137998 — PASS.
+
+В `PhotoChecksActivity` обнаружен риск stale UI: при повторном
+`getPhotoChecks` и ошибке backend ранее отображённые assigned
+photo checks оставались доступны для открытия. Исправлено:
+список и адаптер очищаются сразу при новом запросе и остаются
+скрытыми при ошибке. При успехе список строится заново
+только по текущему ответу сервера. Для синтетических
+инструментальных тестов экран списка использует
+`PhotoCheckGatewayFactory`, где Release всегда выбирает
+`DriverV1Repository`.
+
+Добавлен `assignedPhotoListHidesStaleItemsDuringRefreshAndFailure`
+с удержанным synthetic gateway response. Код:
+`4bc47fa04d323db9ae6bcdbf9796f33c37948ebc`,
+`d5d0e2569bd2d1943b084a872ac0fd4ecd3560ef`.
+CI нового коммита на момент записи **не подтверждён**.
+
+UI-01 остаётся PARTIAL до проверки авторизации и own-only
+списка на controlled STAGING backend. Никаких production,
+STAGING, R2, D4, merge или migrations.
