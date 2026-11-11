@@ -15,6 +15,7 @@ import java.util.List;
 import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.DriverPhotoCheckDto;
 import ru.transferservis.driver.data.repository.DriverV1Repository;
+import ru.transferservis.driver.data.repository.PhotoCheckGateway;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.security.SecureActivity;
 import ru.transferservis.driver.ui.login.LoginActivity;
@@ -22,8 +23,7 @@ import ru.transferservis.driver.ui.login.LoginActivity;
 public final class PhotoChecksActivity
         extends SecureActivity {
 
-    private final DriverV1Repository repository =
-            new DriverV1Repository();
+    private PhotoCheckGateway repository;
 
     private PhotoCheckAdapter adapter;
 
@@ -44,6 +44,8 @@ public final class PhotoChecksActivity
         setContentView(
                 R.layout.activity_photo_checks
         );
+
+        repository = PhotoCheckGatewayFactory.create();
 
         status =
                 findViewById(
@@ -107,6 +109,11 @@ public final class PhotoChecksActivity
     }
 
     private void loadChecks() {
+
+        // Hide stale assigned checks until the server revalidates access.
+        recycler.setVisibility(View.GONE);
+        adapter.submit(null);
+        empty.setVisibility(View.GONE);
 
         progress.setVisibility(
                 View.VISIBLE
@@ -190,6 +197,10 @@ public final class PhotoChecksActivity
                                     retry.setVisibility(
                                             View.VISIBLE
                                     );
+
+                                    recycler.setVisibility(View.GONE);
+                                    adapter.submit(null);
+                                    empty.setVisibility(View.GONE);
 
                                     status.setText(
                                             safe(
