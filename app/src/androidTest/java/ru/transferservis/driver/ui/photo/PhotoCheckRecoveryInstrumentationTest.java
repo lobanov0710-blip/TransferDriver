@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.view.View;
+import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -92,6 +94,45 @@ public final class PhotoCheckRecoveryInstrumentationTest {
         PhotoCheckGatewayFactory.setTestGateway(gateway);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         return ActivityScenario.launch(PhotoCheckActivity.createIntent(context, CHECK_ID));
+    }
+
+    @Test
+    public void assignedPhotoListHidesStaleItemsDuringRefreshAndFailure() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        try {
+            PhotoCheckGatewayFactory.setTestGateway(gateway);
+            Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+            try (ActivityScenario<PhotoChecksActivity> scenario =
+                         ActivityScenario.launch(
+                                 new android.content.Intent(context, PhotoChecksActivity.class))) {
+                scenario.onActivity(activity -> {
+                    RecyclerView list = activity.findViewById(R.id.recyclerPhotoChecks);
+                    assertEquals(View.VISIBLE, list.getVisibility());
+                    assertEquals(1, list.getAdapter().getItemCount());
+                    gateway.holdLoad = true;
+                    // onResume refresh is normally triggered after returning from detail;
+                    // invoke the same private refresh method for deterministic UI testing.
+                    try {
+                        Method method = PhotoChecksActivity.class.getDeclaredMethod("loadChecks");
+                        method.setAccessible(true);
+                        method.invoke(activity);
+                    } catch (ReflectiveOperationException error) {
+                        throw new AssertionError(error);
+                    }
+                    assertEquals(View.GONE, list.getVisibility());
+                    assertEquals(0, list.getAdapter().getItemCount());
+                    assertNotNull(gateway.pendingLoad);
+                    gateway.pendingLoad.onError(0, "Synthetic list refresh failure");
+                    assertEquals(View.GONE, list.getVisibility());
+                    assertEquals(0, list.getAdapter().getItemCount());
+                    assertEquals(View.VISIBLE,
+                            activity.findViewById(R.id.buttonPhotoChecksRetry).getVisibility());
+                });
+            }
+        } finally {
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
     }
 
     @Test
