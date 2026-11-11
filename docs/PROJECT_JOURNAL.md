@@ -1319,3 +1319,36 @@ photo actions отключаются до успешного повторног�
 Итоговый CI для этого теста на момент записи **не подтверждён**.
 
 Никаких production/STAGING/R2 действий, merge, D4 и remote migrations.
+
+## 2026-11-11 — D3 in-flight photo refresh and cancelled camera
+
+Предыдущие regression gates на SHA `20f7434436084515d13546e74fd28015093ab8cc`:
+- Android branch tests
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42962353526 — PASS;
+- D3 UI instrumentation
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42962353733 — PASS.
+
+Следующий review выявил race: при повторном `loadCheck()`
+до прихода асинхронного ответа старые кнопки оставались доступны.
+`PhotoCheckActivity` теперь отключает photo actions **сразу**
+при начале загрузки, до ответа backend. Также обработаны
+`ActivityNotFoundException` и `SecurityException` при запуске
+камеры: временный capture удаляется, UI сообщает об ошибке.
+
+Добавлены synthetic emulator regression tests:
+- `refreshDisablesActionsWhileServerResponseIsPending`:
+  gateway удерживает ответ, кнопки заблокированы; после
+  успешного ответа возвращается разрешённое состояние.
+- `cancelledCameraResultDeletesTemporaryCaptureWithoutUpload`:
+  при отменённом результате камеры временный файл удаляется,
+  загрузка не вызывается.
+
+Изменения: `00908ad7d1b0ba7330badbdda33a0bfe5e856239`,
+`59c7a982fd64f922367c58ce9d74b5d28e83eb6e`.
+CI нового коммита **не подтверждён** на момент записи:
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137921
+- https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137998
+
+UI-03 остаётся PARTIAL: проверяется callback отмены, но не
+фактический отказ внешнего camera app/permission.
+STAGING/production/R2/D4, remote migrations и merge не затронуты.
