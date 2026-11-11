@@ -1,5 +1,6 @@
 package ru.transferservis.driver.ui.photo;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -358,6 +359,10 @@ public final class PhotoCheckActivity
         if (uploading) {
             return;
         }
+
+        // Revalidation must not leave stale capture buttons active while
+        // an asynchronous server response is pending.
+        setAllButtonsEnabled(false);
 
         progress.setVisibility(
                 View.VISIBLE
@@ -758,7 +763,11 @@ public final class PhotoCheckActivity
         catch (
                 IOException
                         |
-                        IllegalArgumentException error
+                        IllegalArgumentException
+                        |
+                        ActivityNotFoundException
+                        |
+                        SecurityException error
         ) {
 
             deleteQuietly(
