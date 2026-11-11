@@ -34,9 +34,9 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 
 | Case | Status | Evidence still required |
 |---|---|---|
-| UI-01 | NOT RUN | Own-check list/detail against controlled backend |
+| UI-01 | PARTIAL (CI PENDING) | Synthetic assigned-check list hides stale entries on refresh/error; own-only backend authorization and seven-angle E2E pending |
 | UI-02 | PARTIAL | Emulator PASS: uploadedKinds restored after Activity recreation; real server E2E still required |
-| UI-03 | PARTIAL (CI PENDING) | Synthetic cancelled camera callback cleans private capture file; external camera denial/unavailable untested |
+| UI-03 | PARTIAL | Synthetic cancelled camera callback cleans private capture file; external camera denial/unavailable untested |
 | UI-04 | PARTIAL | FileProvider scope passed; external camera URI grants untested |
 | UI-05 | PARTIAL | Emulator PASS: pending private file survives Activity recreation and explicit retry; live upload untested |
 | UI-06 | PARTIAL | Emulator PASS: synthetic timeout and uploadedKinds reconciliation; private R2 upload and real HTTP remain deferred |
@@ -103,3 +103,9 @@ Do not claim UI runtime PASS from JVM unit tests or assembleDebug alone. No merg
 - [Android emulator 42963137998](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137998): pending.
 - Tests hold the synthetic refresh response to verify buttons are disabled during network loading, then re-enabled on success; cancel callback removes the private capture file without uploading.
 - Actual camera app absence, URI grant behavior and R2 upload remain untested.
+
+## Assigned photo list fail-closed — CI pending
+
+- Code SHA `d5d0e2569bd2d1943b084a872ac0fd4ecd3560ef`.
+- Synthetic Android UI test holds a list refresh and injects an error: old list items must disappear immediately and remain unavailable until a successful server response.
+- UI-01 partial only; no real backend own-only authorization, camera, R2, or production operations.
