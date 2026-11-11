@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,13 +40,17 @@ public final class PhotoCheckRecoveryInstrumentationTest {
         int uploads;
         boolean simulateTimeout;
         boolean failLoads;
+        boolean holdLoad;
+        DriverV1Repository.PhotoChecksCallback pendingLoad;
         String lastUploadKind;
         File lastUploadFile;
 
         @Override
         public void getPhotoChecks(DriverV1Repository.PhotoChecksCallback callback) {
             loads++;
-            if (failLoads) {
+            if (holdLoad) {
+                pendingLoad = callback;
+            } else if (failLoads) {
                 callback.onError(0, "Synthetic refresh failure");
             } else {
                 callback.onSuccess(new ArrayList<>(checks));
@@ -130,6 +135,60 @@ public final class PhotoCheckRecoveryInstrumentationTest {
                 assertEquals(0, gateway.uploads);
             });
         } finally {
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    @Test
+    public void refreshDisablesActionsWhileServerResponseIsPending() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        try (ActivityScenario<PhotoCheckActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                Button left = activity.findViewById(R.id.buttonPhotoLeft);
+                assertTrue(left.isEnabled());
+                gateway.holdLoad = true;
+                activity.findViewById(R.id.buttonPhotoCheckRefresh).performClick();
+                assertFalse(left.isEnabled());
+                assertNotNull(gateway.pendingLoad);
+                gateway.pendingLoad.onSuccess(new ArrayList<>(gateway.checks));
+                assertTrue(left.isEnabled());
+                assertEquals(0, gateway.uploads);
+            });
+        } finally {
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    @Test
+    public void cancelledCameraResultDeletesTemporaryCaptureWithoutUpload() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        final File[] capture = new File[1];
+        try (ActivityScenario<PhotoCheckActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                capture[0] = createPendingFile(activity);
+                try {
+                    Field kindField = PhotoCheckActivity.class.getDeclaredField("captureKind");
+                    Field fileField = PhotoCheckActivity.class.getDeclaredField("captureFile");
+                    kindField.setAccessible(true);
+                    fileField.setAccessible(true);
+                    kindField.set(activity, "left");
+                    fileField.set(activity, capture[0]);
+                    Method result = PhotoCheckActivity.class
+                            .getDeclaredMethod("onCameraResult", boolean.class);
+                    result.setAccessible(true);
+                    result.invoke(activity, false);
+                } catch (ReflectiveOperationException error) {
+                    throw new AssertionError(error);
+                }
+                assertFalse(capture[0].exists());
+                assertEquals(0, gateway.uploads);
+                assertTrue(((Button) activity.findViewById(R.id.buttonPhotoLeft))
+                        .isEnabled());
+            });
+        } finally {
+            SupportCleanup.delete(capture[0]);
             PhotoCheckGatewayFactory.setTestGateway(null);
         }
     }
