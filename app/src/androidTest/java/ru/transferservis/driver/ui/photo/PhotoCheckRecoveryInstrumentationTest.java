@@ -38,13 +38,18 @@ public final class PhotoCheckRecoveryInstrumentationTest {
         int loads;
         int uploads;
         boolean simulateTimeout;
+        boolean failLoads;
         String lastUploadKind;
         File lastUploadFile;
 
         @Override
         public void getPhotoChecks(DriverV1Repository.PhotoChecksCallback callback) {
             loads++;
-            callback.onSuccess(new ArrayList<>(checks));
+            if (failLoads) {
+                callback.onError(0, "Synthetic refresh failure");
+            } else {
+                callback.onSuccess(new ArrayList<>(checks));
+            }
         }
 
         @Override
@@ -103,6 +108,26 @@ public final class PhotoCheckRecoveryInstrumentationTest {
                 assertTrue(((Button) activity.findViewById(R.id.buttonPhotoRear)).isEnabled());
                 assertEquals(0, gateway.uploads);
                 assertTrue(gateway.loads >= 2);
+            });
+        } finally {
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    @Test
+    public void refreshFailureDisablesPreviouslyAvailablePhotoActions() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        try (ActivityScenario<PhotoCheckActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                Button left = activity.findViewById(R.id.buttonPhotoLeft);
+                assertTrue(left.isEnabled());
+                gateway.failLoads = true;
+                activity.findViewById(R.id.buttonPhotoCheckRefresh).performClick();
+                assertFalse(left.isEnabled());
+                assertFalse(((Button) activity.findViewById(R.id.buttonPhotoFront))
+                        .isEnabled());
+                assertEquals(0, gateway.uploads);
             });
         } finally {
             PhotoCheckGatewayFactory.setTestGateway(null);
