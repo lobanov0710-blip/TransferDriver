@@ -467,6 +467,11 @@ public final class PhotoCheckActivity
                                             View.GONE
                                     );
 
+                                    // A failed server refresh cannot authorize a new
+                                    // capture or a retry against stale check state.
+                                    currentCheck = null;
+                                    setAllButtonsEnabled(false);
+
                                     status.setText(
                                             safe(
                                                     message,
