@@ -1535,3 +1535,58 @@ tests: чужой backend AAD и legacy AAD при сохранённых prefer
 положительный round-trip и очистка проверяются тем же тестом.
 Повторная сборка всех артефактов после security fix и новый CI ещё выполняются;
 результат runtime до завершения CI не объявляется PASS.
+
+
+### 2026-11-12 — Финальная локальная сборка после security fix
+
+Code/workflow опубликованы в Android feature branch commit
+5cd807568b7b84b9e151867eb930cfbadad4c086; Draft PR остаётся без merge.
+С реальным Firebase config после AAD fix прошли 87 JVM tests (29 debug + 29
+staging + 29 release), failures/errors/skips 0. Повторно собраны debug/staging/
+release APK, staging/release AAB и debug AndroidTest APK; Gradle PASS, 189 tasks.
+7 source security guards и git diff --check PASS; staging/release lintVital PASS.
+Полный дополнительный lintStaging не выполнен: запрос запуска отменён пользователем,
+лог запуска не создан. Это не включается в перечень успешных проверок.
+
+Проверены все три APK manifests: package, allowBackup=false,
+usesCleartextTraffic=false, networkSecurityConfig; staging/release non-debug.
+Firebase project ID/app ID/API key совпали с реальным config во всех APK/AAB;
+значение API key не логировалось. Debug APK v2 signature PASS; staging/release
+APK и AAB подтверждённо unsigned. Endpoint locks: debug/staging → STAGING,
+release → PRODUCTION. Скомпилированный AndroidTest APK содержит обе новые regression
+проверки. APK/AAB сохранены вне Git; SHA-256 и source file hashes — Android
+REAL_FIREBASE_BUILD_2026-11-12.json. Встроенный AGP VCS metadata сообщает
+NO_VALID_GIT_FOUND; точная ссылка на опубликованный source и хеши записаны отдельно.
+Первоначальные артефакты сохранены отдельно как first-build; актуальные имеют
+новые хеши после security fix. Инструкция подписи содержит хеш staging AAB.
+
+GitHub Actions run 43314469461 запущен; runtime результат ещё ожидается.
+Он использует synthetic config только для compile/runtime security tests;
+локальные артефакты используют настоящий SDK config. Реальный Phone/App Check
+E2E не выполнен. Owner signing/App Check/Play setup и private R2 остаются gate.
+
+
+### 2026-11-12 — CI security regressions подтверждены
+
+Android source commit 5cd807568b7b84b9e151867eb930cfbadad4c086:
+https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43314469461
+job 131518735357, conclusion SUCCESS. Логи проверены: JVM_TESTS=PASS count=29,
+STAGING_JVM_TESTS=PASS count=29, RELEASE_JVM_TESTS=PASS count=29,
+ANDROID_TESTS=PASS count=12 (API 35); 7 source guards, endpoint locks,
+Play Integrity provider policy и сборки всех вариантов PASS. CI report guard
+подтверждает выполнение новых tests sessionFromAnotherBackendRequiresLogin и
+legacySessionWithoutBackendBindingRequiresLogin, а также прежней HTTP 401/session
+race regression. Пропусков/failures/errors в test XML нет. CI использует synthetic
+Firebase config, authenticated E2E не подменяется этими результатами.
+
+Итог: non-debug STAGING APK/AAB готовы к подписи владельцем; сессия привязана
+к backend через AES-GCM AAD v2. Локальные APK/AAB собраны с настоящим Firebase
+config и имеют отдельный receipt с хешами; debug APK предназначен для проверки UI,
+staging/release unsigned не предназначены для установки/публикации до подписи.
+Пользователю передаются артефакты и безопасная инструкция создания upload key
+у себя. Private keystore/пароли не запрашиваются и не создавались в workspace.
+Следующий gate: owner signing/Play App Signing + App Check для обоих каналов,
+private R2 permissions/bucket, затем проверка STAGING deployment и реальный E2E.
+Backend source неизменён; повтор 61 backend suites только из-за docs не требуется.
+Финальная публикация этого checkpoint меняет только документацию/журналы;
+production/deploy/merge/migrations и D4–D7 не изменялись.

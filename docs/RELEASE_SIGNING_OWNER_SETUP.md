@@ -24,13 +24,20 @@ keytool -exportcert -rfc -keystore "transfer-driver-upload.p12" -storetype PKCS1
 ## 2. Подписать тестовый AAB локально
 
 После подготовки ключа скачайте staging AAB, проверьте SHA-256 по build receipt
-и скопируйте его в ту же папку. Затем:
+и скопируйте его в ту же папку. Проверенный staging AAB этого checkpoint:
+
+`SHA-256: 1e96d49a678e0ad322823b160e49dbfe59f05c384c15e7cb40a23e482876a251`
+
+Затем:
 
 ```powershell
 Get-FileHash "TransferDriver-staging-unsigned.aab" -Algorithm SHA256
 jarsigner -keystore "transfer-driver-upload.p12" -storetype PKCS12 -signedjar "TransferDriver-staging-upload-signed.aab" "TransferDriver-staging-unsigned.aab" transfer-driver-upload
 jarsigner -verify "TransferDriver-staging-upload-signed.aab"
 ```
+
+При проверке подписанного файла нужен результат `jar verified`.
+Self-signed upload certificate для Android — обычный вариант этой схемы.
 
 Staging AAB предназначен для тестового backend. Production release AAB — другой
 артефакт. Google Play требует новый versionCode для каждой последующей загрузки.
