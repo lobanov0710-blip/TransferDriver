@@ -16,6 +16,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -64,6 +65,9 @@ jobs:
             "configuration_version": "1"
           }
           JSON
+
+      - name: Check Android security configuration
+        run: python3 tools/check_security.py
 
       - name: Verify Gradle wrapper
         run: |
@@ -122,3 +126,30 @@ jobs:
 
           echo 'APP_CHECK_PROVIDER=PLAY_INTEGRITY'
           echo 'APP_CHECK_DEBUG_PROVIDER=ABSENT'
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Android security instrumentation tests
+        uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+
+      - name: Print instrumentation report on failure
+        if: failure()
+        shell: bash
+        run: |
+          report_dir=app/build/outputs/androidTest-results/connected
+          if [[ -d "$report_dir" ]]; then
+            find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,200p' {} \;
+          fi

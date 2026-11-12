@@ -9,11 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
-import java.util.List;
+import android.net.Uri;
 
 import ru.transferservis.driver.R;
-import ru.transferservis.driver.data.model.StaffOrderDto;
 import ru.transferservis.driver.ui.details.OrderDetailsActivity;
 import ru.transferservis.driver.ui.main.DriverMainActivity;
 
@@ -21,9 +19,6 @@ public final class DriverNotificationManager {
 
     public static final String CHANNEL_NEW_ORDERS =
             "driver_new_orders_v1";
-
-    private static final int NOTIFICATION_NEW_ORDERS =
-            11015;
 
     private final Context context;
 
@@ -78,7 +73,7 @@ public final class DriverNotificationManager {
         );
     }
 
-    public void notifyNewOrder(
+    public void notifyAssignment(
             String orderId
     ) {
 
@@ -103,10 +98,8 @@ public final class DriverNotificationManager {
                         normalizedOrderId
                 );
 
-        int notificationId =
-                notificationIdForOrder(
-                        normalizedOrderId
-                );
+        openOrderIntent.setData(new Uri.Builder().scheme("transfer-driver")
+                .authority("assignment").appendPath(normalizedOrderId).build());
 
         Intent openMainIntent =
                 new Intent(
@@ -121,7 +114,7 @@ public final class DriverNotificationManager {
         PendingIntent pendingIntent =
                 PendingIntent.getActivities(
                         context,
-                        notificationId,
+                        0,
                         new Intent[] {
                                 openMainIntent,
                                 openOrderIntent
@@ -141,19 +134,19 @@ public final class DriverNotificationManager {
                         )
                         .setContentTitle(
                                 context.getString(
-                                        R.string.notification_new_order_title
+                                        R.string.notification_assignment_title
                                 )
                         )
                         .setContentText(
                                 context.getString(
-                                        R.string.notification_new_orders_text
+                                        R.string.notification_assignment_text
                                 )
                         )
                         .setStyle(
                                 new Notification.BigTextStyle()
                                         .bigText(
                                                 context.getString(
-                                                        R.string.notification_new_orders_text
+                                                        R.string.notification_assignment_text
                                                 )
                                         )
                         )
@@ -172,126 +165,14 @@ public final class DriverNotificationManager {
                         .build();
 
         notificationManager.notify(
-                notificationId,
+                normalizedOrderId,
+                0,
                 notification
         );
     }
 
-    public void notifyNewOrders(
-            List<StaffOrderDto> orders
-    ) {
-
-        if (
-                orders == null
-                        ||
-                        orders.isEmpty()
-        ) {
-
-            return;
-        }
-
-        if (!canPostNotifications()) {
-
-            return;
-        }
-
-        ensureNotificationChannel();
-
-        Intent openAppIntent =
-                new Intent(
-                        context,
-                        DriverMainActivity.class
-                );
-
-        openAppIntent.addFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        |
-                        Intent.FLAG_ACTIVITY_SINGLE_TOP
-        );
-
-        PendingIntent pendingIntent =
-                PendingIntent.getActivity(
-                        context,
-                        NOTIFICATION_NEW_ORDERS,
-                        openAppIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                                |
-                                PendingIntent.FLAG_IMMUTABLE
-                );
-
-        String title;
-        String text;
-
-        if (
-                orders.size()
-                        == 1
-        ) {
-
-            title =
-                    context.getString(
-                            R.string.notification_new_order_title
-                    );
-
-            text =
-                    context.getString(
-                            R.string.notification_new_orders_text
-                    );
-
-        }
-        else {
-
-            title =
-                    context.getString(
-                            R.string.notification_new_orders_title,
-                            orders.size()
-                    );
-
-            text =
-                    context.getString(
-                            R.string.notification_new_orders_text
-                    );
-        }
-
-        Notification.Builder builder =
-                new Notification.Builder(
-                        context,
-                        CHANNEL_NEW_ORDERS
-                )
-                        .setSmallIcon(
-                                R.drawable.ic_notification_driver
-                        )
-                        .setContentTitle(
-                                title
-                        )
-                        .setContentText(
-                                text
-                        )
-                        .setStyle(
-                                new Notification.BigTextStyle()
-                                        .bigText(
-                                                text
-                                        )
-                        )
-                        .setContentIntent(
-                                pendingIntent
-                        )
-                        .setAutoCancel(
-                                true
-                        )
-                        .setCategory(
-                                Notification.CATEGORY_TRANSPORT
-                        )
-                        .setVisibility(
-                                Notification.VISIBILITY_PRIVATE
-                        )
-                        .setNumber(
-                                orders.size()
-                        );
-
-        notificationManager.notify(
-                NOTIFICATION_NEW_ORDERS,
-                builder.build()
-        );
+    public void cancelOrder(String orderId) {
+        notificationManager.cancel(clean(orderId), 0);
     }
 
     private boolean canPostNotifications() {
@@ -307,24 +188,6 @@ public final class DriverNotificationManager {
         return context.checkSelfPermission(
                 Manifest.permission.POST_NOTIFICATIONS
         ) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private int notificationIdForOrder(
-            String orderId
-    ) {
-
-        int hash =
-                orderId.hashCode();
-
-        if (hash == Integer.MIN_VALUE) {
-            hash = 0;
-        }
-
-        return 12000
-                +
-                Math.abs(
-                        hash
-                ) % 1000000;
     }
 
     private String clean(

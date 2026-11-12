@@ -58,12 +58,13 @@ class SecurityConfigurationTests(unittest.TestCase):
         self.assertIn('PendingIntent.FLAG_IMMUTABLE', code)
         receiver = (JAVA / 'notifications/TransferFirebaseMessagingService.java').read_text()
         self.assertIn('hasRefreshableDriverSession()', receiver)
-        self.assertIn('UuidValidator.isCanonical(', receiver)
+        self.assertIn('AssignmentPushEvent.parse(', receiver)
 
-    def test_password_is_not_saved_in_view_state(self):
+    def test_phone_and_sms_are_not_saved_in_view_state(self):
         view = ET.parse(MAIN / 'res/layout/activity_login.xml').getroot()
-        password = next(x for x in view.iter() if x.get(A + 'id') == '@+id/editPassword')
-        self.assertEqual('false', password.get(A + 'saveEnabled'))
+        for name in ('editPhone', 'editSmsCode'):
+            field = next(x for x in view.iter() if x.get(A + 'id') == '@+id/' + name)
+            self.assertEqual('false', field.get(A + 'saveEnabled'), name)
 
     def test_no_secret_literals_or_application_logging_in_sources(self):
         patterns = [r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',

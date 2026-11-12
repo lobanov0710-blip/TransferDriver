@@ -154,7 +154,7 @@ public final class StaffSessionRefresher {
                     )
             ) {
 
-                sessionStore.clear();
+                sessionStore.clearIfCurrent(current);
 
                 return Result
                         .authenticationRequired();
@@ -182,7 +182,8 @@ public final class StaffSessionRefresher {
     }
 
     public Result refreshAfterUnauthorizedBlocking(
-            String accessTokenUsed
+            String accessTokenUsed,
+            String staffIdUsed
     ) {
 
         synchronized (
@@ -192,13 +193,18 @@ public final class StaffSessionRefresher {
             DriverSession current =
                     sessionStore.load();
 
+            // Do not replay an old account's request with a subsequent login's credentials.
+            if (current != null && !current.getStaffId().equals(staffIdUsed)) {
+                return Result.authenticationRequired();
+            }
+
             if (
                     !hasRefreshableSession(
                             current
                     )
             ) {
 
-                sessionStore.clear();
+                sessionStore.clearIfCurrent(current);
 
                 return Result
                         .authenticationRequired();
@@ -256,7 +262,7 @@ public final class StaffSessionRefresher {
 
             case AUTHENTICATION_REQUIRED:
 
-                sessionStore.clear();
+                sessionStore.clearIfCurrent(current);
 
                 return Result
                         .authenticationRequired();
@@ -275,51 +281,15 @@ public final class StaffSessionRefresher {
                 )
         ) {
 
-            sessionStore.clear();
+            sessionStore.clearIfCurrent(current);
 
             return Result
                     .authenticationRequired();
         }
 
-        if (
-                !sessionStore.save(
-                        response
-                )
-        ) {
-
-            /*
-             * Сервер уже мог ротировать
-             * refresh token.
-             *
-             * Если новый token локально
-             * сохранить не удалось,
-             * старый повторять нельзя.
-             */
-            sessionStore.clear();
-
-            return Result
-                    .authenticationRequired();
-        }
-
-        DriverSession refreshed =
-                sessionStore.load();
-
-        if (
-                refreshed == null
-                        ||
-                        !refreshed.isDriver()
-                        ||
-                        !refreshed
-                                .hasUsableAccessToken()
-                        ||
-                        !refreshed
-                                .hasUsableRefreshToken()
-        ) {
-
-            sessionStore.clear();
-
-            return Result
-                    .authenticationRequired();
+        DriverSession refreshed = sessionStore.rotateIfCurrent(current, response);
+        if (refreshed == null) {
+            return Result.authenticationRequired();
         }
 
         return Result.ready(

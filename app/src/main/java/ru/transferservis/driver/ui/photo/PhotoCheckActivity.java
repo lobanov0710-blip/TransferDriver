@@ -747,7 +747,9 @@ public final class PhotoCheckActivity
 
         }
         catch (
-                IOException
+                android.content.ActivityNotFoundException
+                        |
+                        IOException
                         |
                         IllegalArgumentException error
         ) {

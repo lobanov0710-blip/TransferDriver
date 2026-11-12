@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.ExifInterface;
 import android.net.Uri;
 
@@ -30,6 +31,56 @@ import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public final class DriverUiSecurityInstrumentationTest {
+
+    @Test
+    public void photoSanitizerPreservesAllEightExifOrientations() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        File source = File.createTempFile("orientation-source", ".jpg", context.getCacheDir());
+        File output = File.createTempFile("orientation-output", ".jpg", context.getCacheDir());
+        int r = Color.RED, g = Color.GREEN, b = Color.BLUE, y = Color.YELLOW;
+        // Expected visible corners TL, TR, BL, BR from the EXIF orientation specification.
+        int[][] expected = {{r,g,b,y}, {g,r,y,b}, {y,b,g,r}, {b,y,r,g},
+                {r,b,g,y}, {b,r,y,g}, {y,g,b,r}, {g,y,r,b}};
+        Bitmap bitmap = Bitmap.createBitmap(96, 64, Bitmap.Config.ARGB_8888);
+        for (int row = 0; row < 64; row++) {
+            for (int col = 0; col < 96; col++) {
+                bitmap.setPixel(col, row, row < 32 ? (col < 48 ? r : g) : (col < 48 ? b : y));
+            }
+        }
+        try {
+            for (int orientation = 1; orientation <= 8; orientation++) {
+                try (FileOutputStream stream = new FileOutputStream(source, false)) {
+                    assertTrue(bitmap.compress(Bitmap.CompressFormat.JPEG, 95, stream));
+                }
+                ExifInterface exif = new ExifInterface(source.getAbsolutePath());
+                exif.setAttribute(ExifInterface.TAG_ORIENTATION, Integer.toString(orientation));
+                exif.saveAttributes();
+                PhotoSanitizer.sanitizeJpeg(source, output);
+                Bitmap decoded = BitmapFactory.decodeFile(output.getAbsolutePath());
+                assertNotNull(decoded);
+                try {
+                    assertEquals(orientation >= 5 ? 64 : 96, decoded.getWidth());
+                    assertEquals(orientation >= 5 ? 96 : 64, decoded.getHeight());
+                    int[] actual = {decoded.getPixel(10, 10), decoded.getPixel(decoded.getWidth()-11, 10),
+                            decoded.getPixel(10, decoded.getHeight()-11),
+                            decoded.getPixel(decoded.getWidth()-11, decoded.getHeight()-11)};
+                    for (int corner = 0; corner < 4; corner++) {
+                        int want = expected[orientation-1][corner], got = actual[corner];
+                        assertTrue("Orientation " + orientation + " corner " + corner,
+                                Math.abs(Color.red(want)-Color.red(got)) < 40
+                                && Math.abs(Color.green(want)-Color.green(got)) < 40
+                                && Math.abs(Color.blue(want)-Color.blue(got)) < 40);
+                    }
+                } finally {
+                    decoded.recycle();
+                }
+            }
+        } finally {
+            bitmap.recycle();
+            source.delete();
+            output.delete();
+        }
+    }
 
     @Test
     public void photoSanitizerRemovesGpsExifMetadata()

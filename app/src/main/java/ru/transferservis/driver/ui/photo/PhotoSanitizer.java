@@ -112,19 +112,8 @@ public final class PhotoSanitizer {
                             ExifInterface.ORIENTATION_NORMAL
                     );
 
-            int rotation =
-                    rotationDegrees(
-                            orientation
-                    );
-
-            if (rotation != 0) {
-
-                Matrix matrix =
-                        new Matrix();
-
-                matrix.postRotate(
-                        rotation
-                );
+            Matrix matrix = orientationMatrix(orientation);
+            if (!matrix.isIdentity()) {
 
                 output =
                         Bitmap.createBitmap(
@@ -193,23 +182,33 @@ public final class PhotoSanitizer {
         }
     }
 
-    private static int rotationDegrees(
-            int orientation
-    ) {
-
+    private static Matrix orientationMatrix(int orientation) {
+        Matrix matrix = new Matrix();
         switch (orientation) {
-
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.setScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.setScale(1, -1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.setRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.setRotate(270);
+                matrix.postScale(-1, 1);
+                break;
             case ExifInterface.ORIENTATION_ROTATE_90:
-                return 90;
-
+                matrix.setRotate(90);
+                break;
             case ExifInterface.ORIENTATION_ROTATE_180:
-                return 180;
-
+                matrix.setRotate(180);
+                break;
             case ExifInterface.ORIENTATION_ROTATE_270:
-                return 270;
-
-            default:
-                return 0;
+                matrix.setRotate(270);
+                break;
         }
+        return matrix;
     }
 }
