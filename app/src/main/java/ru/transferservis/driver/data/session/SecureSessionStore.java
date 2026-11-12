@@ -17,6 +17,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
+import ru.transferservis.driver.security.ApiEndpointPolicy;
 import ru.transferservis.driver.data.model.StaffDto;
 import ru.transferservis.driver.data.model.StaffLoginResponse;
 
@@ -43,7 +44,8 @@ public final class SecureSessionStore {
             "session_ciphertext";
 
     private static final byte[] AAD =
-            "ru.transferservis.driver|driver-session|v1"
+            // Changing backend must require login, including updates signed with the same key.
+            ("ru.transferservis.driver|driver-session|v2|" + ApiEndpointPolicy.BASE_URL)
                     .getBytes(StandardCharsets.UTF_8);
 
     private final SharedPreferences preferences;

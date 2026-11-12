@@ -10,11 +10,25 @@ import static org.junit.Assert.*;
 
 public class ApiEndpointPolicyTest {
 
+    private static boolean usesStagingBackend() {
+        switch (BuildConfig.BUILD_TYPE) {
+            case "debug":
+            case "staging":
+                return true;
+            case "release":
+                return false;
+            default:
+                throw new AssertionError("Unverified build type: " + BuildConfig.BUILD_TYPE);
+        }
+    }
+
     @Test
     public void buildVariantUsesLockedEnvironmentEndpoint() {
 
+        assertEquals("debug".equals(BuildConfig.BUILD_TYPE), BuildConfig.DEBUG);
+
         assertEquals(
-                BuildConfig.DEBUG
+                usesStagingBackend()
                         ? ApiEndpointPolicy.STAGING_BASE_URL
                         : ApiEndpointPolicy.PRODUCTION_BASE_URL,
                 ApiEndpointPolicy.BASE_URL
@@ -29,7 +43,7 @@ public class ApiEndpointPolicyTest {
         );
 
         String configuredHostUrl =
-                BuildConfig.DEBUG
+                usesStagingBackend()
                         ? "https://UBER-V3-STAGING.LOBANOV0710.WORKERS.DEV:443/v1/driver/me"
                         : "https://UBER-V3.LOBANOV0710.WORKERS.DEV:443/v1/driver/me";
 
@@ -49,7 +63,7 @@ public class ApiEndpointPolicyTest {
         assertFalse(
                 ApiEndpointPolicy.isAllowed(
                         URI.create(
-                                BuildConfig.DEBUG
+                                usesStagingBackend()
                                         ? ApiEndpointPolicy.PRODUCTION_BASE_URL
                                         : ApiEndpointPolicy.STAGING_BASE_URL
                         )

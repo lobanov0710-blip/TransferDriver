@@ -74,12 +74,16 @@ jobs:
           chmod +x ./gradlew
           ./gradlew --version
 
-      - name: Run JVM tests and assemble debug
+      - name: Test and build debug, staging and release
         run: |
           ./gradlew clean \
             :app:testDebugUnitTest \
+            :app:testStagingUnitTest \
+            :app:testReleaseUnitTest \
             :app:assembleDebug \
+            :app:assembleStaging \
             :app:assembleRelease \
+            :app:bundleStaging \
             :app:assembleDebugAndroidTest \
             --no-daemon \
             --stacktrace
@@ -90,12 +94,16 @@ jobs:
           set -euo pipefail
 
           DEBUG_FILE="$(find app/build/generated -type f -path '*/debug/*' -name BuildConfig.java -print -quit)"
+          STAGING_FILE="$(find app/build/generated -type f -path '*/staging/*' -name BuildConfig.java -print -quit)"
           RELEASE_FILE="$(find app/build/generated -type f -path '*/release/*' -name BuildConfig.java -print -quit)"
 
           test -n "$DEBUG_FILE"
+          test -n "$STAGING_FILE"
           test -n "$RELEASE_FILE"
 
           grep -F 'https://uber-v3-staging.lobanov0710.workers.dev/' "$DEBUG_FILE"
+          grep -F 'https://uber-v3-staging.lobanov0710.workers.dev/' "$STAGING_FILE"
+          grep -F 'public static final boolean DEBUG = false;' "$STAGING_FILE"
           grep -F 'https://uber-v3.lobanov0710.workers.dev/' "$RELEASE_FILE"
 
           if grep -Fq 'https://uber-v3.lobanov0710.workers.dev/' "$DEBUG_FILE"; then
@@ -108,8 +116,15 @@ jobs:
             exit 11
           fi
 
+          if grep -Fq 'https://uber-v3.lobanov0710.workers.dev/' "$STAGING_FILE"; then
+            echo 'STAGING_ENDPOINT_IS_PRODUCTION=FAIL'
+            exit 14
+          fi
+
           echo 'DEBUG_ENDPOINT=STAGING'
           echo 'RELEASE_ENDPOINT=PRODUCTION'
+          echo 'STAGING_ENDPOINT=STAGING'
+          echo 'STAGING_DEBUGGABLE=false'
           echo 'API_ENDPOINT_VARIANT_LOCK=PASS'
 
       - name: Verify App Check provider policy
@@ -153,6 +168,8 @@ jobs:
           import xml.etree.ElementTree as ET
           for name, directory in [
               ('JVM', 'app/build/test-results/testDebugUnitTest'),
+              ('STAGING_JVM', 'app/build/test-results/testStagingUnitTest'),
+              ('RELEASE_JVM', 'app/build/test-results/testReleaseUnitTest'),
               ('ANDROID', 'app/build/outputs/androidTest-results/connected'),
           ]:
               files = list(Path(directory).rglob('TEST-*.xml'))
@@ -161,8 +178,12 @@ jobs:
               for case in cases:
                   assert all(case.find(tag) is None for tag in ('failure', 'error', 'skipped')), case.attrib
               if name == 'ANDROID':
-                  assert any('delayedHttpUnauthorizedPreservesTheSubsequentLogin' in case.get('name', '')
-                             for case in cases), 'Session race regression was not executed'
+                  for required in (
+                      'delayedHttpUnauthorizedPreservesTheSubsequentLogin',
+                      'sessionFromAnotherBackendRequiresLogin',
+                      'legacySessionWithoutBackendBindingRequiresLogin',
+                  ):
+                      assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               print(name + '_TESTS=PASS count=' + str(len(cases)))
           PY
 

@@ -1,5 +1,9 @@
 package ru.transferservis.driver.security;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Base64;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -9,6 +13,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
@@ -50,6 +61,46 @@ public final class SessionRotationInstrumentationTest {
                 + "\"accessToken\":\"access-" + token + "\",\"accessExpiresAt\":" + expiry
                 + ",\"refreshToken\":\"refresh-" + token + "\",\"refreshExpiresAt\":" + expiry + "}",
                 StaffLoginResponse.class);
+    }
+
+    @Test public void sessionFromAnotherBackendRequiresLogin() throws Exception {
+        String foreignBackend = ApiEndpointPolicy.BASE_URL.equals(ApiEndpointPolicy.STAGING_BASE_URL)
+                ? ApiEndpointPolicy.PRODUCTION_BASE_URL : ApiEndpointPolicy.STAGING_BASE_URL;
+        rejectSessionBoundTo("ru.transferservis.driver|driver-session|v2|" + foreignBackend);
+    }
+
+    @Test public void legacySessionWithoutBackendBindingRequiresLogin() throws Exception {
+        rejectSessionBoundTo("ru.transferservis.driver|driver-session|v1");
+    }
+
+    // Model an app update retaining preferences and AndroidKeyStore across environments.
+    private void rejectSessionBoundTo(String foreignAad) throws Exception {
+        assertTrue(store.save(response("driver-test", "original")));
+        assertEquals("refresh-original", otherStore.load().getRefreshToken());
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        SharedPreferences prefs = context.getSharedPreferences("driver_secure_session_v1", Context.MODE_PRIVATE);
+        KeyStore keys = KeyStore.getInstance("AndroidKeyStore");
+        keys.load(null);
+        SecretKey key = ((KeyStore.SecretKeyEntry) keys.getEntry("transfer_driver_session_key_v1", null))
+                .getSecretKey();
+        Cipher decrypt = Cipher.getInstance("AES/GCM/NoPadding");
+        decrypt.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(128,
+                Base64.decode(prefs.getString("session_iv", null), Base64.NO_WRAP)));
+        decrypt.updateAAD(("ru.transferservis.driver|driver-session|v2|" + ApiEndpointPolicy.BASE_URL)
+                .getBytes(StandardCharsets.UTF_8));
+        byte[] plaintext = decrypt.doFinal(Base64.decode(
+                prefs.getString("session_ciphertext", null), Base64.NO_WRAP));
+        Cipher encrypt = Cipher.getInstance("AES/GCM/NoPadding");
+        encrypt.init(Cipher.ENCRYPT_MODE, key);
+        encrypt.updateAAD(foreignAad.getBytes(StandardCharsets.UTF_8));
+        byte[] ciphertext = encrypt.doFinal(plaintext);
+        assertTrue(prefs.edit()
+                .putString("session_iv", Base64.encodeToString(encrypt.getIV(), Base64.NO_WRAP))
+                .putString("session_ciphertext", Base64.encodeToString(ciphertext, Base64.NO_WRAP))
+                .commit());
+        assertNull(otherStore.load());
+        assertNull(store.load());
+        assertTrue(prefs.getAll().isEmpty());
     }
 
     @Test public void delayedRotationCannotRestoreSessionAfterLogout() throws Exception {

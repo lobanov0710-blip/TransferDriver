@@ -53,6 +53,18 @@ android {
                 )
             }
         }
+
+        create("staging") {
+            initWith(getByName("release"))
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
+            versionNameSuffix = "-staging"
+            buildConfigField(
+                "String",
+                "DRIVER_API_BASE_URL",
+                "\"https://uber-v3-staging.lobanov0710.workers.dev/\""
+            )
+        }
     }
 
     compileOptions {
@@ -61,6 +73,12 @@ android {
 
         targetCompatibility =
             JavaVersion.VERSION_11
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().all()) {
+        it.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
     }
 }
 
