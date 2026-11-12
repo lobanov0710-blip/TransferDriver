@@ -25,7 +25,6 @@ import java.util.Locale;
 
 import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.StaffOrderDto;
-import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.ui.login.LoginActivity;
 import ru.transferservis.driver.ui.main.OrderActionResult;
 
@@ -393,7 +392,6 @@ public final class OrderDetailsActivity
 
                                 case AUTHENTICATION_REQUIRED:
 
-                                    clearLocalSession();
 
                                     openLogin();
 
@@ -989,7 +987,6 @@ public final class OrderDetailsActivity
 
             case AUTHENTICATION_REQUIRED:
 
-                clearLocalSession();
 
                 openLogin();
 
@@ -1640,13 +1637,6 @@ public final class OrderDetailsActivity
         );
     }
 
-    private void clearLocalSession() {
-
-        new SecureSessionStore(
-                this
-        )
-                .clear();
-    }
 
     private void openLogin() {
 

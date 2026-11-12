@@ -66,6 +66,14 @@ class SecurityConfigurationTests(unittest.TestCase):
             field = next(x for x in view.iter() if x.get(A + 'id') == '@+id/' + name)
             self.assertEqual('false', field.get(A + 'saveEnabled'), name)
 
+    def test_screens_cannot_invalidate_a_later_login(self):
+        # Authorization recovery and explicit logout own conditional invalidation.
+        # A stale UI callback must only navigate; it cannot clear a newer login.
+        for path in (JAVA / 'ui').rglob('*Activity.java'):
+            self.assertIsNone(re.search(
+                r'(?:new\s+SecureSessionStore\s*\([^;]+|sessionStore)\s*\.\s*clear\s*\(',
+                path.read_text()), str(path))
+
     def test_no_secret_literals_or_application_logging_in_sources(self):
         patterns = [r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
                     r'AIza[0-9A-Za-z_-]{35}', r'gh[pousr]_[A-Za-z0-9]{30,}',

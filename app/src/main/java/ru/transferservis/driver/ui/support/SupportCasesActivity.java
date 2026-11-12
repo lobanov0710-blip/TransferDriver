@@ -17,7 +17,6 @@ import java.util.List;
 import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.SupportCaseDto;
 import ru.transferservis.driver.data.repository.DriverV1Repository;
-import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.security.SecureActivity;
 import ru.transferservis.driver.ui.login.LoginActivity;
 
@@ -539,10 +538,6 @@ public final class SupportCasesActivity
 
     private void openLogin() {
 
-        new SecureSessionStore(
-                getApplicationContext()
-        )
-                .clear();
 
         Intent intent =
                 new Intent(

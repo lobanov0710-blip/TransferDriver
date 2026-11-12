@@ -145,6 +145,27 @@ jobs:
           disable-animations: true
           script: ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
 
+      - name: Verify executed JVM and Android test reports
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for name, directory in [
+              ('JVM', 'app/build/test-results/testDebugUnitTest'),
+              ('ANDROID', 'app/build/outputs/androidTest-results/connected'),
+          ]:
+              files = list(Path(directory).rglob('TEST-*.xml'))
+              cases = [case for file in files for case in ET.parse(file).iter('testcase')]
+              assert cases, name + ': no executed tests'
+              for case in cases:
+                  assert all(case.find(tag) is None for tag in ('failure', 'error', 'skipped')), case.attrib
+              if name == 'ANDROID':
+                  assert any('delayedHttpUnauthorizedPreservesTheSubsequentLogin' in case.get('name', '')
+                             for case in cases), 'Session race regression was not executed'
+              print(name + '_TESTS=PASS count=' + str(len(cases)))
+          PY
+
       - name: Print instrumentation report on failure
         if: failure()
         shell: bash

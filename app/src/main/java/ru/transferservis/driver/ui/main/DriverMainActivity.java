@@ -26,7 +26,6 @@ import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.StaffOrderDto;
 import ru.transferservis.driver.data.session.DriverSession;
 import ru.transferservis.driver.data.session.DriverSessionManager;
-import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.ui.login.LoginActivity;
 import ru.transferservis.driver.ui.photo.PhotoChecksActivity;
 import ru.transferservis.driver.ui.support.SupportCasesActivity;
@@ -452,7 +451,6 @@ public class DriverMainActivity
 
                                 case AUTHENTICATION_REQUIRED:
 
-                                    clearLocalSession();
 
                                     openLogin();
 
@@ -714,7 +712,6 @@ public class DriverMainActivity
                                                     false
                                             );
 
-                                    clearLocalSession();
 
                                     openLogin();
                                 }
@@ -1137,13 +1134,6 @@ public class DriverMainActivity
         );
     }
 
-    private void clearLocalSession() {
-
-        new SecureSessionStore(
-                this
-        )
-                .clear();
-    }
 
     private void ensureNotificationPermission() {
 

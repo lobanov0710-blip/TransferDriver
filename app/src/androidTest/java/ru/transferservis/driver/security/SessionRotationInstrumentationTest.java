@@ -13,11 +13,20 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.reflect.Proxy;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Protocol;
+import okhttp3.ResponseBody;
 
 import ru.transferservis.driver.data.model.StaffLoginResponse;
 import ru.transferservis.driver.data.session.DriverSession;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.data.session.StaffSessionRefresher;
+import ru.transferservis.driver.data.api.StaffAuthInterceptor;
 
 import static org.junit.Assert.*;
 
@@ -90,6 +99,31 @@ public final class SessionRotationInstrumentationTest {
         StaffSessionRefresher.Result result = new StaffSessionRefresher(otherStore)
                 .refreshAfterUnauthorizedBlocking("access-old", "driver-test");
         assertEquals(StaffSessionRefresher.ResultType.AUTHENTICATION_REQUIRED, result.getType());
+        assertEquals("other-driver", store.load().getStaffId());
+        assertEquals("refresh-new-login", store.load().getRefreshToken());
+    }
+
+    @Test public void delayedHttpUnauthorizedPreservesTheSubsequentLogin() throws Exception {
+        assertTrue(store.save(response("driver-test", "old")));
+        Request request = new Request.Builder().url(ApiEndpointPolicy.BASE_URL + "v1/driver/me")
+                .header(StaffAuthInterceptor.AUTH_MARKER_HEADER, "true").build();
+        AtomicInteger sends = new AtomicInteger();
+        Interceptor.Chain chain = (Interceptor.Chain) Proxy.newProxyInstance(
+                Interceptor.Chain.class.getClassLoader(), new Class<?>[]{Interceptor.Chain.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("request")) return request;
+                    if (!method.getName().equals("proceed")) throw new UnsupportedOperationException();
+                    sends.incrementAndGet();
+                    Request sent = (Request) args[0];
+                    assertEquals("Bearer access-old", sent.header("Authorization"));
+                    assertTrue(otherStore.save(response("other-driver", "new-login")));
+                    return new Response.Builder().request(sent).protocol(Protocol.HTTP_1_1)
+                            .code(401).message("Unauthorized").body(ResponseBody.create(null, "")).build();
+                });
+        try (Response result = new StaffAuthInterceptor(store).intercept(chain)) {
+            assertEquals(401, result.code());
+        }
+        assertEquals(1, sends.get());
         assertEquals("other-driver", store.load().getStaffId());
         assertEquals("refresh-new-login", store.load().getRefreshToken());
     }
