@@ -25,3 +25,7 @@ local.properties
 *.p12
 *.pfx
 *.key
+
+# Firebase CLI local cache and authentication/debug artifacts.
+.firebase/
+firebase-debug*.log
