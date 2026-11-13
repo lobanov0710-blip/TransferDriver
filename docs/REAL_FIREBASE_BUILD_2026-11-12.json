@@ -1,0 +1,142 @@
+{
+  "date": "2026-11-12",
+  "firebase": {
+    "projectId": "transfer-driver-1590d",
+    "projectNumber": "502279442547",
+    "appId": "1:502279442547:android:0cfc722af33b476bc41a06",
+    "package": "ru.transferservis.driver"
+  },
+  "debugSigningCertificate": {
+    "sha256": "1f55ef98b307d61e2dd46518bcbf581b4bd5fbd81f642f79437136ac837d2fae",
+    "sha1": "a3c4a035d3e6d5c452c932238f2190d7978905d5",
+    "productionSigningKey": false
+  },
+  "verification": {
+    "realFirebaseResourcesInDebugReleaseBundle": true,
+    "debugApkSignatureVerified": true,
+    "debugManifestSecurityVerified": true,
+    "jvmTests": 87,
+    "jvmFailuresErrorsSkips": 0,
+    "sourceSecurityChecks": 7,
+    "androidTestApkAssembled": true,
+    "instrumentationExecutedForThisConfig": false,
+    "authenticatedE2E": false,
+    "jvmTestsByVariant": {
+      "debug": 29,
+      "staging": 29,
+      "release": 29
+    },
+    "realFirebaseResourcesInAllVariants": true,
+    "allApkManifestSecurityVerified": true,
+    "stagingDebuggable": false,
+    "stagingBundleUnsigned": true,
+    "sessionBackendBinding": "AES-GCM AAD v2 with configured backend URL",
+    "embeddedVcsMetadata": "NO_VALID_GIT_FOUND; source commit and file hashes recorded externally"
+  },
+  "ownerConfirmed": {
+    "phoneEnabled": true,
+    "appCheckConfigured": false,
+    "googlePlayConsoleAvailable": null,
+    "distribution": [
+      "google-play",
+      "direct-apk"
+    ],
+    "releaseSigningKeyExists": false,
+    "releaseSigningSetupInstructionsRequested": true
+  },
+  "artifacts": [
+    {
+      "name": "TransferDriver-debug-real-firebase.apk",
+      "bytes": 10581028,
+      "sha256": "28ef83546493c696bb3331b55c550f137fb8eb1dd9f619bb746e87af32d0b1e4",
+      "signed": true,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferDriver-staging-unsigned.apk",
+      "bytes": 5124607,
+      "sha256": "c6459bbb615a846205a438262bf057759416a2e061f6881e54cb9371352af679",
+      "signed": false,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferDriver-release-unsigned.apk",
+      "bytes": 5124603,
+      "sha256": "40a4c4e81be3c87bc17f9f99ad3fac95d05bc277ec8c07f163ae485b45c5427c",
+      "signed": false,
+      "backend": "production"
+    },
+    {
+      "name": "TransferDriver-staging-unsigned.aab",
+      "bytes": 5512655,
+      "sha256": "1e96d49a678e0ad322823b160e49dbfe59f05c384c15e7cb40a23e482876a251",
+      "signed": false,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferDriver-release-unsigned.aab",
+      "bytes": 5512524,
+      "sha256": "18b504ef8edb5d970cfae000130b5b521bf7bf82788cf0f753a63e302e08bc2b",
+      "signed": false,
+      "backend": "production"
+    },
+    {
+      "name": "TransferDriver-debug-androidTest.apk",
+      "bytes": 612415,
+      "sha256": "3ac3c0ae1c7c23be2fdf058af14280a2506a6a82125c993d444572815feadc87",
+      "signed": true,
+      "backend": "staging"
+    }
+  ],
+  "blockers": [
+    "App Check Play Integrity registration and distribution setup",
+    "Release/upload signing identity",
+    "Private staging R2 permissions/bucket and staging deployment"
+  ],
+  "firstBuildArtifacts": [
+    {
+      "name": "TransferDriver-debug-real-firebase.apk",
+      "bytes": 10570637,
+      "sha256": "13c11310b6932c1ca573f222b4024415550b49e302740acacf6f65a093eaf9a7",
+      "signed": true
+    },
+    {
+      "name": "TransferDriver-release-unsigned.apk",
+      "bytes": 5124603,
+      "sha256": "d0bc2173ad8a435becef1bec6f3a9344cc0bf6c64bbb9bf86f075a7156f02596",
+      "signed": false
+    },
+    {
+      "name": "TransferDriver-release-unsigned.aab",
+      "bytes": 5512435,
+      "sha256": "9c6cd2948a36810b4bc450ff9e766a10179ea620f91940fc4f9488f5d23329d0",
+      "signed": false
+    },
+    {
+      "name": "TransferDriver-debug-androidTest.apk",
+      "bytes": 602065,
+      "sha256": "e3a6bab71fea4793a04d2dbc9e374852a2da25a70791c9796bedc3aa0049cbb4",
+      "signed": true
+    }
+  ],
+  "sourceCommit": "5cd807568b7b84b9e151867eb930cfbadad4c086",
+  "sourceFileSha256": {
+    "app/build.gradle.kts": "2d8add69be37c12fcf7f721b93ff086aa9b801dd3601f3a020cc227c795a93a3",
+    "app/src/main/java/ru/transferservis/driver/data/session/SecureSessionStore.java": "168c92842abbaf54269d0e6e74acdc1074a77c71c5a254e45a5af4bb6379cacd",
+    "app/src/test/java/ru/transferservis/driver/security/ApiEndpointPolicyTest.java": "cd2361ddd3c7ea479538d14ea39595895662cdf2869bb3305b94c96b6fcd866f",
+    "app/src/androidTest/java/ru/transferservis/driver/security/SessionRotationInstrumentationTest.java": "b4aed26c3853bc59fbecd724a3282c736c076fac9c947efb7c3fb35d695cef33",
+    ".github/workflows/android-branch-tests.yml": "60056d4fc3fd7ae36e2853d5a127401d5a057e27e596400138155c5d553013d1"
+  },
+  "ciVerification": {
+    "runId": 43314469461,
+    "sourceCommit": "5cd807568b7b84b9e151867eb930cfbadad4c086",
+    "conclusion": "success",
+    "config": "synthetic compile/runtime fixture; not authenticated Firebase E2E",
+    "jvmTests": 87,
+    "androidRuntimeTests": 12,
+    "androidApi": 35,
+    "sourceSecurityChecks": 7,
+    "testFailuresErrorsSkips": 0,
+    "backendBindingRegressionsExecuted": true
+  }
+}

@@ -2,6 +2,8 @@ package ru.transferservis.driver.data.repository;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
@@ -9,11 +11,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import ru.transferservis.driver.data.api.ApiClient;
+import ru.transferservis.driver.data.api.IdempotencyKeyFactory;
 import ru.transferservis.driver.data.api.OrderApi;
 import ru.transferservis.driver.data.api.StaffAuthInterceptor;
+import ru.transferservis.driver.data.model.DriverAssignmentDto;
+import ru.transferservis.driver.data.model.DriverAssignmentsResponse;
 import ru.transferservis.driver.data.model.OrderStatusRequest;
 import ru.transferservis.driver.data.model.OrderTransitionResponse;
 import ru.transferservis.driver.data.model.OrdersResponse;
+import ru.transferservis.driver.data.model.StaffOrderDto;
 
 public final class OrderRepository {
 
@@ -98,17 +104,16 @@ public final class OrderRepository {
                 );
 
         orderApi
-                .getOrders(
-                        normalizedStatus,
+                .getAssignments(
                         safeLimit
                 )
                 .enqueue(
-                        new Callback<OrdersResponse>() {
+                        new Callback<DriverAssignmentsResponse>() {
 
                             @Override
                             public void onResponse(
-                                    @NonNull Call<OrdersResponse> call,
-                                    @NonNull Response<OrdersResponse> response
+                                    @NonNull Call<DriverAssignmentsResponse> call,
+                                    @NonNull Response<DriverAssignmentsResponse> response
                             ) {
 
                                 if (
@@ -151,14 +156,17 @@ public final class OrderRepository {
                                     return;
                                 }
 
-                                OrdersResponse body =
+                                DriverAssignmentsResponse body =
                                         response.body();
 
-                                if (
-                                        body == null
-                                                ||
-                                                !body.isOk()
-                                ) {
+                                OrdersResponse adapted =
+                                        adaptAssignments(
+                                                body,
+                                                normalizedStatus,
+                                                safeLimit
+                                        );
+
+                                if (adapted == null) {
 
                                     callback.onError(
                                             response.code(),
@@ -169,13 +177,13 @@ public final class OrderRepository {
                                 }
 
                                 callback.onSuccess(
-                                        body
+                                        adapted
                                 );
                             }
 
                             @Override
                             public void onFailure(
-                                    @NonNull Call<OrdersResponse> call,
+                                    @NonNull Call<DriverAssignmentsResponse> call,
                                     @NonNull Throwable throwable
                             ) {
 
@@ -198,6 +206,7 @@ public final class OrderRepository {
     public void changeOrderStatus(
             String orderId,
             String targetStatus,
+            long expectedRevision,
             TransitionCallback callback
     ) {
 
@@ -228,7 +237,7 @@ public final class OrderRepository {
         if (
                 normalizedStatus == null
                         ||
-                        !isDriverTransitionTarget(
+                        !"done".equals(
                                 normalizedStatus
                         )
         ) {
@@ -241,14 +250,33 @@ public final class OrderRepository {
             return;
         }
 
+        if (expectedRevision < 1) {
+
+            callback.onError(
+                    0,
+                    "Некорректная версия заявки"
+            );
+
+            return;
+        }
+
         OrderStatusRequest request =
                 new OrderStatusRequest(
-                        normalizedStatus
+                        normalizedStatus,
+                        expectedRevision
                 );
+
+        String idempotencyKey =
+                IdempotencyKeyFactory
+                        .forTerminalDone(
+                                safeOrderId,
+                                expectedRevision
+                        );
 
         orderApi
                 .changeOrderStatus(
                         safeOrderId,
+                        idempotencyKey,
                         request
                 )
                 .enqueue(
@@ -440,21 +468,111 @@ public final class OrderRepository {
         }
     }
 
-    private boolean isDriverTransitionTarget(
-            String status
+    private OrdersResponse adaptAssignments(
+            DriverAssignmentsResponse response,
+            String status,
+            int limit
     ) {
 
-        return "taken".equals(
-                status
-        )
-                ||
-                "in_progress".equals(
-                        status
-                )
-                ||
-                "done".equals(
-                        status
+        if (
+                response == null
+                        ||
+                        !response.isOk()
+                        ||
+                        response.getAssignments()
+                                == null
+        ) {
+
+            return null;
+        }
+
+        List<StaffOrderDto> orders =
+                new ArrayList<>();
+
+        for (
+                DriverAssignmentDto assignment
+                :
+                response.getAssignments()
+        ) {
+
+            if (
+                    assignment == null
+                            ||
+                            assignment.getOrder()
+                                    == null
+                            ||
+                            isBlank(
+                                    assignment
+                                            .getAssignmentId()
+                            )
+                            ||
+                            assignment.getAssignmentRevision()
+                                    == null
+                            ||
+                            assignment.getAssignmentRevision()
+                                    < 1
+                            ||
+                            isBlank(
+                                    assignment
+                                            .getVehicleId()
+                            )
+            ) {
+
+                return null;
+            }
+
+            StaffOrderDto order =
+                    assignment.getOrder();
+
+            if (
+                    isBlank(
+                            order.getId()
+                    )
+                            ||
+                            order.getRevision()
+                                    == null
+                            ||
+                            order.getRevision()
+                                    < 1
+                            ||
+                            isBlank(
+                                    order.getStatus()
+                            )
+            ) {
+
+                return null;
+            }
+
+            order.bindAssignmentContext(
+                    assignment.getAssignmentId(),
+                    assignment.getAssignmentRevision(),
+                    assignment.getPhase(),
+                    assignment.getPhaseUpdatedAt(),
+                    assignment.getAssignedAt(),
+                    assignment.getVehicleId()
+            );
+
+            if (
+                    status == null
+                            ||
+                            status.equals(
+                                    order
+                                            .getStatus()
+                                            .trim()
+                            )
+            ) {
+
+                orders.add(
+                        order
                 );
+            }
+        }
+
+        return OrdersResponse.assignedOnly(
+                orders,
+                limit,
+                status
+        );
     }
 
     private boolean isBlank(

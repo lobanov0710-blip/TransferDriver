@@ -1,0 +1,197 @@
+name: Android branch tests
+
+on:
+  push:
+    branches:
+      - 'arch/**'
+      - 'fix/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-branch-tests-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Create synthetic Firebase config for CI
+        shell: bash
+        run: |
+          cat > app/google-services.json <<'JSON'
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "transfer-driver-ci",
+              "storage_bucket": "transfer-driver-ci.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789012:android:0123456789abcdef012345",
+                  "android_client_info": {
+                    "package_name": "ru.transferservis.driver"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [
+                  {
+                    "current_key": "AIzaSyDUMMYKEYFORCIVALIDATIONONLY"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          JSON
+
+      - name: Check Android security configuration
+        run: python3 tools/check_security.py
+
+      - name: Verify Gradle wrapper
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --version
+
+      - name: Test and build debug, staging and release
+        run: |
+          ./gradlew clean \
+            :app:testDebugUnitTest \
+            :app:testStagingUnitTest \
+            :app:testReleaseUnitTest \
+            :app:assembleDebug \
+            :app:assembleStaging \
+            :app:assembleRelease \
+            :app:bundleStaging \
+            :app:assembleDebugAndroidTest \
+            --no-daemon \
+            --stacktrace
+
+      - name: Verify build-variant API endpoint locks
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DEBUG_FILE="$(find app/build/generated -type f -path '*/debug/*' -name BuildConfig.java -print -quit)"
+          STAGING_FILE="$(find app/build/generated -type f -path '*/staging/*' -name BuildConfig.java -print -quit)"
+          RELEASE_FILE="$(find app/build/generated -type f -path '*/release/*' -name BuildConfig.java -print -quit)"
+
+          test -n "$DEBUG_FILE"
+          test -n "$STAGING_FILE"
+          test -n "$RELEASE_FILE"
+
+          grep -F 'https://uber-v3-staging.lobanov0710.workers.dev/' "$DEBUG_FILE"
+          grep -F 'https://uber-v3-staging.lobanov0710.workers.dev/' "$STAGING_FILE"
+          grep -F 'public static final boolean DEBUG = false;' "$STAGING_FILE"
+          grep -F 'https://uber-v3.lobanov0710.workers.dev/' "$RELEASE_FILE"
+
+          if grep -Fq 'https://uber-v3.lobanov0710.workers.dev/' "$DEBUG_FILE"; then
+            echo 'DEBUG_ENDPOINT_IS_PRODUCTION=FAIL'
+            exit 10
+          fi
+
+          if grep -Fq 'https://uber-v3-staging.lobanov0710.workers.dev/' "$RELEASE_FILE"; then
+            echo 'RELEASE_ENDPOINT_IS_STAGING=FAIL'
+            exit 11
+          fi
+
+          if grep -Fq 'https://uber-v3.lobanov0710.workers.dev/' "$STAGING_FILE"; then
+            echo 'STAGING_ENDPOINT_IS_PRODUCTION=FAIL'
+            exit 14
+          fi
+
+          echo 'DEBUG_ENDPOINT=STAGING'
+          echo 'RELEASE_ENDPOINT=PRODUCTION'
+          echo 'STAGING_ENDPOINT=STAGING'
+          echo 'STAGING_DEBUGGABLE=false'
+          echo 'API_ENDPOINT_VARIANT_LOCK=PASS'
+
+      - name: Verify App Check provider policy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          grep -F 'firebase-appcheck-playintegrity' app/build.gradle.kts
+
+          if grep -Fq 'firebase-appcheck-debug' app/build.gradle.kts; then
+            echo 'APP_CHECK_DEBUG_PROVIDER=FORBIDDEN'
+            exit 12
+          fi
+
+          echo 'APP_CHECK_PROVIDER=PLAY_INTEGRITY'
+          echo 'APP_CHECK_DEBUG_PROVIDER=ABSENT'
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run Android security instrumentation tests
+        uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+
+      - name: Verify executed JVM and Android test reports
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for name, directory in [
+              ('JVM', 'app/build/test-results/testDebugUnitTest'),
+              ('STAGING_JVM', 'app/build/test-results/testStagingUnitTest'),
+              ('RELEASE_JVM', 'app/build/test-results/testReleaseUnitTest'),
+              ('ANDROID', 'app/build/outputs/androidTest-results/connected'),
+          ]:
+              files = list(Path(directory).rglob('TEST-*.xml'))
+              cases = [case for file in files for case in ET.parse(file).iter('testcase')]
+              assert cases, name + ': no executed tests'
+              for case in cases:
+                  assert all(case.find(tag) is None for tag in ('failure', 'error', 'skipped')), case.attrib
+              if name == 'ANDROID':
+                  for required in (
+                      'delayedHttpUnauthorizedPreservesTheSubsequentLogin',
+                      'sessionFromAnotherBackendRequiresLogin',
+                      'legacySessionWithoutBackendBindingRequiresLogin',
+                  ):
+                      assert any(required in case.get('name', '') for case in cases), required + ': not executed'
+              print(name + '_TESTS=PASS count=' + str(len(cases)))
+          PY
+
+      - name: Print instrumentation report on failure
+        if: failure()
+        shell: bash
+        run: |
+          report_dir=app/build/outputs/androidTest-results/connected
+          if [[ -d "$report_dir" ]]; then
+            find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,200p' {} \;
+          fi

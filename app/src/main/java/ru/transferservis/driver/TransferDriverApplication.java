@@ -2,6 +2,9 @@ package ru.transferservis.driver;
 
 import android.app.Application;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.appcheck.FirebaseAppCheck;
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import ru.transferservis.driver.data.api.ApiClient;
@@ -16,6 +19,17 @@ public final class TransferDriverApplication
     public void onCreate() {
 
         super.onCreate();
+
+        FirebaseApp.initializeApp(
+                this
+        );
+
+        FirebaseAppCheck
+                .getInstance()
+                .installAppCheckProviderFactory(
+                        PlayIntegrityAppCheckProviderFactory
+                                .getInstance()
+                );
 
         ApiClient.initialize(
                 this

@@ -13,3 +13,19 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local service configuration and signing credentials must never enter Git.
+**/google-services.json
+**/service-account*.json
+**/.env
+**/.env.*
+!**/.env.example
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+
+# Firebase CLI local cache and authentication/debug artifacts.
+.firebase/
+firebase-debug*.log

@@ -10,6 +10,8 @@ public final class OrderTransitionDto {
 
     private Long updatedAt;
 
+    private Long revision;
+
     public String getId() {
 
         return id;
@@ -28,5 +30,10 @@ public final class OrderTransitionDto {
     public Long getUpdatedAt() {
 
         return updatedAt;
+    }
+
+    public Long getRevision() {
+
+        return revision;
     }
 }

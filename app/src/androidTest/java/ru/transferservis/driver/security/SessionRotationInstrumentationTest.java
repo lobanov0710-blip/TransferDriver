@@ -1,0 +1,181 @@
+package ru.transferservis.driver.security;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Base64;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import com.google.gson.Gson;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.lang.reflect.Proxy;
+
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.Protocol;
+import okhttp3.ResponseBody;
+
+import ru.transferservis.driver.data.model.StaffLoginResponse;
+import ru.transferservis.driver.data.session.DriverSession;
+import ru.transferservis.driver.data.session.SecureSessionStore;
+import ru.transferservis.driver.data.session.StaffSessionRefresher;
+import ru.transferservis.driver.data.api.StaffAuthInterceptor;
+
+import static org.junit.Assert.*;
+
+@RunWith(AndroidJUnit4.class)
+public final class SessionRotationInstrumentationTest {
+    private SecureSessionStore store;
+    private SecureSessionStore otherStore;
+
+    @Before public void setup() {
+        store = new SecureSessionStore(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        otherStore = new SecureSessionStore(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        store.clear();
+    }
+
+    @After public void cleanup() { store.clear(); }
+
+    private StaffLoginResponse response(String driverId, String token) {
+        long expiry = System.currentTimeMillis() + 3_600_000L;
+        return new Gson().fromJson("{\"ok\":true,\"staff\":{\"id\":\"" + driverId
+                + "\",\"displayName\":\"Test Driver\",\"role\":\"driver\"},"
+                + "\"accessToken\":\"access-" + token + "\",\"accessExpiresAt\":" + expiry
+                + ",\"refreshToken\":\"refresh-" + token + "\",\"refreshExpiresAt\":" + expiry + "}",
+                StaffLoginResponse.class);
+    }
+
+    @Test public void sessionFromAnotherBackendRequiresLogin() throws Exception {
+        String foreignBackend = ApiEndpointPolicy.BASE_URL.equals(ApiEndpointPolicy.STAGING_BASE_URL)
+                ? ApiEndpointPolicy.PRODUCTION_BASE_URL : ApiEndpointPolicy.STAGING_BASE_URL;
+        rejectSessionBoundTo("ru.transferservis.driver|driver-session|v2|" + foreignBackend);
+    }
+
+    @Test public void legacySessionWithoutBackendBindingRequiresLogin() throws Exception {
+        rejectSessionBoundTo("ru.transferservis.driver|driver-session|v1");
+    }
+
+    // Model an app update retaining preferences and AndroidKeyStore across environments.
+    private void rejectSessionBoundTo(String foreignAad) throws Exception {
+        assertTrue(store.save(response("driver-test", "original")));
+        assertEquals("refresh-original", otherStore.load().getRefreshToken());
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        SharedPreferences prefs = context.getSharedPreferences("driver_secure_session_v1", Context.MODE_PRIVATE);
+        KeyStore keys = KeyStore.getInstance("AndroidKeyStore");
+        keys.load(null);
+        SecretKey key = ((KeyStore.SecretKeyEntry) keys.getEntry("transfer_driver_session_key_v1", null))
+                .getSecretKey();
+        Cipher decrypt = Cipher.getInstance("AES/GCM/NoPadding");
+        decrypt.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(128,
+                Base64.decode(prefs.getString("session_iv", null), Base64.NO_WRAP)));
+        decrypt.updateAAD(("ru.transferservis.driver|driver-session|v2|" + ApiEndpointPolicy.BASE_URL)
+                .getBytes(StandardCharsets.UTF_8));
+        byte[] plaintext = decrypt.doFinal(Base64.decode(
+                prefs.getString("session_ciphertext", null), Base64.NO_WRAP));
+        Cipher encrypt = Cipher.getInstance("AES/GCM/NoPadding");
+        encrypt.init(Cipher.ENCRYPT_MODE, key);
+        encrypt.updateAAD(foreignAad.getBytes(StandardCharsets.UTF_8));
+        byte[] ciphertext = encrypt.doFinal(plaintext);
+        assertTrue(prefs.edit()
+                .putString("session_iv", Base64.encodeToString(encrypt.getIV(), Base64.NO_WRAP))
+                .putString("session_ciphertext", Base64.encodeToString(ciphertext, Base64.NO_WRAP))
+                .commit());
+        assertNull(otherStore.load());
+        assertNull(store.load());
+        assertTrue(prefs.getAll().isEmpty());
+    }
+
+    @Test public void delayedRotationCannotRestoreSessionAfterLogout() throws Exception {
+        assertTrue(store.save(response("driver-test", "old")));
+        DriverSession original = store.load();
+        CountDownLatch responseArrives = new CountDownLatch(1);
+        FutureTask<DriverSession> rotation = new FutureTask<>(() -> {
+            assertTrue(responseArrives.await(5, TimeUnit.SECONDS));
+            return otherStore.rotateIfCurrent(original, response("driver-test", "rotated"));
+        });
+        Thread worker = new Thread(rotation);
+        worker.start();
+        try {
+            store.clear();
+            responseArrives.countDown();
+            assertNull(rotation.get(5, TimeUnit.SECONDS));
+            assertNull(store.load());
+        } finally {
+            responseArrives.countDown();
+            worker.join(5000);
+        }
+    }
+
+    @Test public void staleSuccessAndFailureCannotOverwriteANewerLogin() {
+        for (String nextId : new String[]{"driver-test", "other-driver"}) {
+            assertTrue(store.save(response("driver-test", "old")));
+            DriverSession original = store.load();
+            assertTrue(otherStore.save(response(nextId, "new-login")));
+            assertNull(store.rotateIfCurrent(original, response("driver-test", "stale")));
+            store.clearIfCurrent(original);
+            assertEquals(nextId, otherStore.load().getStaffId());
+            assertEquals("refresh-new-login", otherStore.load().getRefreshToken());
+        }
+    }
+
+    @Test public void rotationIsVisibleAcrossInstancesAndOldTokenCannotBeReused() {
+        assertTrue(store.save(response("driver-test", "old")));
+        DriverSession original = otherStore.load();
+        assertNotNull(store.rotateIfCurrent(original, response("driver-test", "rotated")));
+        assertEquals("refresh-rotated", otherStore.load().getRefreshToken());
+        assertNull(otherStore.rotateIfCurrent(original, response("driver-test", "replay")));
+        assertEquals("refresh-rotated", store.load().getRefreshToken());
+    }
+
+    @Test public void unauthorizedRequestCannotRetryAsAnotherDriver() {
+        assertTrue(store.save(response("other-driver", "new-login")));
+        StaffSessionRefresher.Result result = new StaffSessionRefresher(otherStore)
+                .refreshAfterUnauthorizedBlocking("access-old", "driver-test");
+        assertEquals(StaffSessionRefresher.ResultType.AUTHENTICATION_REQUIRED, result.getType());
+        assertEquals("other-driver", store.load().getStaffId());
+        assertEquals("refresh-new-login", store.load().getRefreshToken());
+    }
+
+    @Test public void delayedHttpUnauthorizedPreservesTheSubsequentLogin() throws Exception {
+        assertTrue(store.save(response("driver-test", "old")));
+        Request request = new Request.Builder().url(ApiEndpointPolicy.BASE_URL + "v1/driver/me")
+                .header(StaffAuthInterceptor.AUTH_MARKER_HEADER, "true").build();
+        AtomicInteger sends = new AtomicInteger();
+        Interceptor.Chain chain = (Interceptor.Chain) Proxy.newProxyInstance(
+                Interceptor.Chain.class.getClassLoader(), new Class<?>[]{Interceptor.Chain.class},
+                (proxy, method, args) -> {
+                    if (method.getName().equals("request")) return request;
+                    if (!method.getName().equals("proceed")) throw new UnsupportedOperationException();
+                    sends.incrementAndGet();
+                    Request sent = (Request) args[0];
+                    assertEquals("Bearer access-old", sent.header("Authorization"));
+                    assertTrue(otherStore.save(response("other-driver", "new-login")));
+                    return new Response.Builder().request(sent).protocol(Protocol.HTTP_1_1)
+                            .code(401).message("Unauthorized").body(ResponseBody.create(null, "")).build();
+                });
+        try (Response result = new StaffAuthInterceptor(store).intercept(chain)) {
+            assertEquals(401, result.code());
+        }
+        assertEquals(1, sends.get());
+        assertEquals("other-driver", store.load().getStaffId());
+        assertEquals("refresh-new-login", store.load().getRefreshToken());
+    }
+}

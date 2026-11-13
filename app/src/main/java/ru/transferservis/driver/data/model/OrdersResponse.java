@@ -37,4 +37,36 @@ public final class OrdersResponse {
     public List<StaffOrderDto> getOrders() {
         return orders;
     }
+
+    public static OrdersResponse assignedOnly(
+            List<StaffOrderDto> orders,
+            int limit,
+            String status
+    ) {
+
+        OrdersResponse response =
+                new OrdersResponse();
+
+        response.ok =
+                true;
+
+        response.orders =
+                orders;
+
+        response.count =
+                orders == null
+                        ? 0
+                        : orders.size();
+
+        response.total =
+                response.count;
+
+        response.limit =
+                limit;
+
+        response.status =
+                status;
+
+        return response;
+    }
 }

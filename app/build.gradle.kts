@@ -10,6 +10,10 @@ android {
         version = release(37)
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "ru.transferservis.driver"
 
@@ -19,11 +23,25 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField(
+            "String",
+            "DRIVER_API_BASE_URL",
+            "\"https://uber-v3.lobanov0710.workers.dev/\""
+        )
+
         testInstrumentationRunner =
             "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "DRIVER_API_BASE_URL",
+                "\"https://uber-v3-staging.lobanov0710.workers.dev/\""
+            )
+        }
+
         release {
             optimization {
                 enable = true
@@ -34,6 +52,18 @@ android {
                     "kotlinx.**"
                 )
             }
+        }
+
+        create("staging") {
+            initWith(getByName("release"))
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
+            versionNameSuffix = "-staging"
+            buildConfigField(
+                "String",
+                "DRIVER_API_BASE_URL",
+                "\"https://uber-v3-staging.lobanov0710.workers.dev/\""
+            )
         }
     }
 
@@ -46,6 +76,12 @@ android {
     }
 }
 
+androidComponents {
+    beforeVariants(selector().all()) {
+        it.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
+    }
+}
+
 dependencies {
 
     implementation(libs.activity.ktx)
@@ -55,6 +91,9 @@ dependencies {
 
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    // Override Retrofit's vulnerable legacy HTTP dependencies.
+    implementation(libs.okhttp)
+    implementation(libs.okio)
 
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
@@ -70,6 +109,14 @@ dependencies {
 
     implementation(
         "com.google.firebase:firebase-messaging"
+    )
+
+    implementation(
+        "com.google.firebase:firebase-auth"
+    )
+
+    implementation(
+        "com.google.firebase:firebase-appcheck-playintegrity"
     )
 
     testImplementation(libs.junit)

@@ -17,10 +17,13 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
+import ru.transferservis.driver.security.ApiEndpointPolicy;
 import ru.transferservis.driver.data.model.StaffDto;
 import ru.transferservis.driver.data.model.StaffLoginResponse;
 
 public final class SecureSessionStore {
+
+    private static final Object STORE_LOCK = new Object();
 
     private static final String ANDROID_KEYSTORE =
             "AndroidKeyStore";
@@ -41,7 +44,8 @@ public final class SecureSessionStore {
             "session_ciphertext";
 
     private static final byte[] AAD =
-            "ru.transferservis.driver|driver-session|v1"
+            // Changing backend must require login, including updates signed with the same key.
+            ("ru.transferservis.driver|driver-session|v2|" + ApiEndpointPolicy.BASE_URL)
                     .getBytes(StandardCharsets.UTF_8);
 
     private final SharedPreferences preferences;
@@ -90,9 +94,11 @@ public final class SecureSessionStore {
         );
     }
 
-    public boolean save(
-            DriverSession session
-    ) {
+    public boolean save(DriverSession session) {
+        synchronized (STORE_LOCK) { return saveLocked(session); }
+    }
+
+    private boolean saveLocked(DriverSession session) {
 
         if (!isValidSession(
                 session
@@ -215,6 +221,10 @@ public final class SecureSessionStore {
     }
 
     public DriverSession load() {
+        synchronized (STORE_LOCK) { return loadLocked(); }
+    }
+
+    private DriverSession loadLocked() {
 
         String encodedIv =
                 preferences.getString(
@@ -356,11 +366,47 @@ public final class SecureSessionStore {
     }
 
     public void clear() {
+        synchronized (STORE_LOCK) { clearLocked(); }
+    }
+
+    private void clearLocked() {
 
         preferences
                 .edit()
                 .clear()
                 .apply();
+    }
+
+    /** A delayed refresh must never recreate a logged-out or replaced session. */
+    public DriverSession rotateIfCurrent(DriverSession expected, StaffLoginResponse response) {
+        synchronized (STORE_LOCK) {
+            if (expected == null || !sameSession(expected, load())) return null;
+            if (response == null || !response.isOk() || response.getStaff() == null
+                    || !expected.getStaffId().equals(response.getStaff().getId())
+                    || !save(response)) {
+                clear();
+                return null;
+            }
+            DriverSession rotated = load();
+            if (rotated == null || !rotated.hasUsableAccessToken()
+                    || !rotated.hasUsableRefreshToken()) {
+                clear();
+                return null;
+            }
+            return rotated;
+        }
+    }
+
+    public void clearIfCurrent(DriverSession expected) {
+        synchronized (STORE_LOCK) {
+            if (sameSession(expected, load())) clear();
+        }
+    }
+
+    private static boolean sameSession(DriverSession expected, DriverSession actual) {
+        if (expected == null || actual == null) return expected == actual;
+        return expected.getStaffId().equals(actual.getStaffId())
+                && expected.getRefreshToken().equals(actual.getRefreshToken());
     }
 
     private boolean isValidSession(
