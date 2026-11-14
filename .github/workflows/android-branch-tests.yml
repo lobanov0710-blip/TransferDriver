@@ -161,7 +161,9 @@ jobs:
               assert metadata['applicationId'] == package
               apk = Path(module+'/build/outputs/apk/debug') / metadata['elements'][0]['outputFile']
               output = subprocess.check_output([os.environ['ANDROID_HOME']+'/build-tools/37.0.0/apksigner', 'verify', '--print-certs', str(apk)], text=True)
-              certificates.append(re.search(r'Signer #1 certificate SHA-256 digest: ([0-9a-f]+)', output).group(1))
+              found = set(re.findall(r'certificate SHA-256 digest: ([0-9a-f]{64})', output))
+              assert len(found) == 1, 'Expected exactly one verified debug certificate'
+              certificates.append(found.pop())
           assert certificates[0] != certificates[1], 'Admin and Driver signing keys must be different'
           print('ADMIN_PACKAGE_AND_SIGNING_ISOLATION=PASS')
           PYCODE
