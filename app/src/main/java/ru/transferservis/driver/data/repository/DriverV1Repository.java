@@ -31,7 +31,7 @@ import ru.transferservis.driver.data.model.SupportCasesResponse;
 import ru.transferservis.driver.data.model.SupportMessageMutationResponse;
 import ru.transferservis.driver.data.model.SupportMessageRequest;
 
-public final class DriverV1Repository implements SupportCaseGateway, PhotoCheckGateway {
+public final class DriverV1Repository implements SupportCaseGateway, SupportCasesGateway, PhotoCheckGateway {
 
     public interface PhotoChecksCallback {
 
