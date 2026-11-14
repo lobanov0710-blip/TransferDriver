@@ -3,12 +3,15 @@ package ru.transferservis.driver.ui.support;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -17,6 +20,7 @@ import java.util.List;
 import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.SupportCaseDto;
 import ru.transferservis.driver.data.repository.DriverV1Repository;
+import ru.transferservis.driver.data.repository.SupportCasesGateway;
 import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.security.SecureActivity;
 import ru.transferservis.driver.ui.login.LoginActivity;
@@ -41,7 +45,8 @@ public final class SupportCasesActivity
             "other"
     };
 
-    private DriverV1Repository repository;
+    private SupportCasesGateway repository;
+    private int loadGeneration;
     private SupportCaseAdapter adapter;
 
     private TextView status;
@@ -66,8 +71,7 @@ public final class SupportCasesActivity
                 R.layout.activity_support_cases
         );
 
-        repository =
-                new DriverV1Repository();
+        repository = SupportCasesGatewayFactory.create();
 
         status =
                 findViewById(
@@ -196,6 +200,13 @@ public final class SupportCasesActivity
 
     private void loadCases() {
 
+        final int generation = ++loadGeneration;
+
+        // Do not expose cached support cases while ownership is revalidated.
+        adapter.submit(null);
+        recycler.setVisibility(View.GONE);
+        empty.setVisibility(View.GONE);
+
         progress.setVisibility(
                 View.VISIBLE
         );
@@ -219,6 +230,10 @@ public final class SupportCasesActivity
 
                         runOnUiThread(
                                 () -> {
+
+                                    if (generation != loadGeneration || isFinishing()) {
+                                        return;
+                                    }
 
                                     progress.setVisibility(
                                             View.GONE
@@ -258,8 +273,11 @@ public final class SupportCasesActivity
                     public void onAuthenticationRequired() {
 
                         runOnUiThread(
-                                () ->
-                                        openLogin()
+                                () -> {
+                                    if (generation == loadGeneration && !isFinishing()) {
+                                        openLogin();
+                                    }
+                                }
                         );
                     }
 
@@ -271,6 +289,14 @@ public final class SupportCasesActivity
 
                         runOnUiThread(
                                 () -> {
+
+                                    if (generation != loadGeneration || isFinishing()) {
+                                        return;
+                                    }
+
+                                    adapter.submit(null);
+                                    recycler.setVisibility(View.GONE);
+                                    empty.setVisibility(View.GONE);
 
                                     progress.setVisibility(
                                             View.GONE
@@ -324,7 +350,7 @@ public final class SupportCasesActivity
                 )
         };
 
-        new MaterialAlertDialogBuilder(
+        AlertDialog dialog = new MaterialAlertDialogBuilder(
                 this
         )
                 .setTitle(
@@ -364,7 +390,15 @@ public final class SupportCasesActivity
                         android.R.string.cancel,
                         null
                 )
-                .show();
+                .create();
+
+        // A dialog has its own Window; set FLAG_SECURE before showing it.
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
+        dialog.show();
     }
 
     private void createCase(
