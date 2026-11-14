@@ -80,14 +80,14 @@ public final class AdminIsolationInstrumentationTest {
             String path=chain.request().url().encodedPath();String body;
             if(path.equals("/staff/login"))body=owner.toResponse().toString();
             else if(path.equals("/v1/admin/me"))body="{\"ok\":true,\"admin\":{\"accountId\":\"admin-1\",\"role\":\"owner\",\"permissions\":[\"*\"]}}";
-            else {queueRequests.incrementAndGet();body="{\"ok\":true}";}
+            else {if(path.equals("/v1/admin/registrations"))queueRequests.incrementAndGet();body="{\"ok\":true}";}
             return new Response.Builder().request(chain.request()).protocol(Protocol.HTTP_1_1).code(200).message("fixture")
                     .body(ResponseBody.create(MediaType.get("application/json"),body)).build();
         });
         AdminRepository repo=new AdminRepository(context,api);
         try {
-            assertTrue(repo.login("fixture","fixture-password",repo.generation()).isOwner());
-            try {repo.registrations();fail();}catch(java.io.IOException expected){assertEquals(0,queueRequests.get());}
+            try {repo.login("fixture","fixture-password",repo.generation());fail("Bare OWNER session must be rejected");}
+            catch(java.io.IOException expected){assertNull(store.load());assertEquals(0,queueRequests.get());}
         }finally{repo.executor.shutdownNow();}
     }
     @Test public void staleRefreshCannotBecomeAnotherAdminRequest() throws Exception {

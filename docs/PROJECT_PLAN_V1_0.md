@@ -18,7 +18,7 @@ D1–D3 утверждены; D4–D7 остаются неутверждённ�
 G1 приостановлен. Владелец явно поручил начать G2. Рабочая ветка Admin —
 [arch/g2-transfer-admin](https://github.com/lobanov0710-blip/TransferDriver/tree/arch/g2-transfer-admin). Активная работа — отдельный
 Transfer Admin по D1–D3. Для OWNER выбран TOTP как направление подготовки
-отдельного предложения; окончательные MFA API/параметры ещё не утверждены.
+отдельного предложения; параметры и API TOTP явно утверждены 2026-11-14; реализация начата.
 G1 не возобновляется без решения владельца; D4–D7 не утверждены.
 
 ## Как читать статусы
@@ -64,7 +64,7 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 26 | Отсутствует; D5 | Нет полноценного VoIP/signaling/TURN/записи/архива. Таблица calls не закрывает требование; сроки и правовые условия требуют решения. |
 | 27 | Частично | Driver support cases/messages и backend admin lifecycle/retention есть; Admin-приложение, все каналы связи и реальный E2E не завершены. |
 | 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login, собственный server profile и read-only очередь dispatcher; полный набор разделов Admin не завершён. |
-| 29 | Частично; MFA не утверждена | Server OWNER binding есть. Новый Admin показывает только собственный OWNER profile, operational UI закрыт до MFA. TOTP предложение подготовлено отдельно; серверная MFA ещё не внедрена. |
+| 29 | Код MFA; CI/E2E не завершены | Параметры/API TOTP MFA утверждены. В отдельных ветках реализованы server challenge/enrollment/TOTP/recovery/evidence и Admin flow; локальные тесты PASS, новые CI/runtime ожидаются. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
 | 30 | Частично | Серверные granular permissions и Admin read-only очередь dispatcher с drivers.read реализованы. Управление сотрудниками, остальные разделы и приёмка полного набора прав впереди. |
 | 31 | Частично | Backend queue/review/item moderation и Admin read-only очередь submitted/under_review/changes_required есть. Модерация/возврат элементов, остальные статусы и исправления Driver UI не завершены. |
 | 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver/Admin UX и E2E не приняты. |
@@ -102,9 +102,9 @@ G2 не требует ожидания выбора liveness SDK для неч�
 ## Решение владельца для следующего шага G2
 
 Подготовлено [предложение TOTP MFA OWNER](ADMIN_MFA_TOTP_PROPOSAL.md).
-Требуется явное утверждение параметров/контрактов либо замечания. Направление
-TOTP уже выбрано; повторного выбора метода не требуется. До отдельного решения
-server MFA не реализуется, OWNER operational UI остаётся закрыт.
+Параметры и API явно утверждены владельцем 2026-11-14. Server MFA реализуется
+в arch/g2-owner-totp-mfa; OWNER operational UI открывается только после серверной
+проверки MFA, не по одному имени роли.
 Первый срез Admin проверен: CI 43587414797, 51 JVM + 13 runtime и полный lint
 без issues; это не полная приёмка G2.
 

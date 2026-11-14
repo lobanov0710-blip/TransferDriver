@@ -39,6 +39,19 @@ public final class AdminApiClient {
     public JsonObject registrations(String accessToken) throws IOException {
         return request("GET", "v1/admin/registrations?limit=50", null, accessToken);
     }
+    public JsonObject verifyMfa(String challengeId, String code, boolean recovery) throws IOException {
+        JsonObject body = new JsonObject(); body.addProperty("challengeId", challengeId);
+        body.addProperty(recovery ? "recoveryCode" : "code", code);
+        return request("POST", recovery ? "v1/admin/mfa/recovery/verify" : "v1/admin/mfa/totp/verify", body, null);
+    }
+    public JsonObject startEnrollment(String challengeId, String bootstrapCode) throws IOException {
+        JsonObject body = new JsonObject(); body.addProperty("challengeId", challengeId); body.addProperty("bootstrapCode", bootstrapCode);
+        return request("POST", "v1/admin/mfa/enrollment/start", body, null);
+    }
+    public JsonObject confirmEnrollment(String enrollmentId, String code) throws IOException {
+        JsonObject body = new JsonObject(); body.addProperty("enrollmentId", enrollmentId); body.addProperty("code", code);
+        return request("POST", "v1/admin/mfa/enrollment/confirm", body, null);
+    }
     private static JsonObject tokenBody(String token) {
         JsonObject body = new JsonObject(); body.addProperty("refreshToken", token); return body;
     }

@@ -30,6 +30,43 @@
             <TextView android:id="@+id/registrations" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:saveEnabled="false" />
         </LinearLayout>
+        <LinearLayout android:id="@+id/mfaForm" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/mfa_prompt" />
+            <EditText android:id="@+id/totpCode" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/totp_hint" android:inputType="numberPassword" android:maxLength="6" android:minHeight="48dp"
+                android:saveEnabled="false" android:importantForAutofill="no" />
+            <Button android:id="@+id/verifyTotp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/verify_totp" />
+            <EditText android:id="@+id/recoveryCode" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/recovery_hint" android:inputType="textPassword" android:maxLength="39" android:minHeight="48dp"
+                android:saveEnabled="false" android:importantForAutofill="no" />
+            <Button android:id="@+id/verifyRecovery" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/verify_recovery" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/bootstrapForm" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/bootstrap_prompt" />
+            <EditText android:id="@+id/bootstrapCode" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/bootstrap_hint" android:inputType="textPassword" android:maxLength="100" android:minHeight="48dp"
+                android:saveEnabled="false" android:importantForAutofill="no" />
+            <Button android:id="@+id/startEnrollment" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/start_enrollment" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/enrollmentForm" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/enrollment_prompt" />
+            <TextView android:id="@+id/enrollmentSecret" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:saveEnabled="false" android:textIsSelectable="false" android:importantForAutofill="no" />
+            <EditText android:id="@+id/enrollmentCode" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:hint="@string/totp_hint" android:inputType="numberPassword" android:maxLength="6" android:minHeight="48dp"
+                android:saveEnabled="false" android:importantForAutofill="no" />
+            <Button android:id="@+id/confirmEnrollment" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/confirm_enrollment" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/recoveryForm" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/recovery_prompt" />
+            <TextView android:id="@+id/backupCodes" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:saveEnabled="false" android:textIsSelectable="false" android:importantForAutofill="no" />
+            <Button android:id="@+id/recoverySaved" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/recovery_saved" />
+        </LinearLayout>
         <Button android:id="@+id/logout" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="@string/logout" android:visibility="gone" />
     </LinearLayout>

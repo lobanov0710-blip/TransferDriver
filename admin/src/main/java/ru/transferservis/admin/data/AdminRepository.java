@@ -18,14 +18,42 @@ public final class AdminRepository {
     public long generation() { synchronized (stateLock) { return generation; } }
     public AdminAccess login(String login, String password, long expectedGeneration) throws IOException {
         JsonObject response = api.login(login, password);
+        if (response.has("mfaRequired")) {
+            final OwnerMfa.Challenge challenge;
+            try { challenge = OwnerMfa.Challenge.parse(response); }
+            catch (IOException invalid) { revokeToken(AdminSession.string(response, "refreshToken")); throw invalid; }
+            final AdminSession previous;
+            synchronized (stateLock) {
+                if (generation != expectedGeneration) throw new IOException("Session replaced");
+                previous = store.load(); store.clear();
+            }
+            if (previous != null) revoke(previous);
+            throw new OwnerMfa.Required(challenge);
+        }
+        return finishLogin(response, expectedGeneration);
+    }
+    public AdminAccess verifyMfa(OwnerMfa.Challenge challenge, String code, boolean recovery, long expectedGeneration) throws IOException {
+        if (challenge == null || !challenge.active() || challenge.enrollmentRequired) throw new IOException("MFA challenge expired");
+        return finishLogin(api.verifyMfa(challenge.id, code, recovery), expectedGeneration);
+    }
+    public OwnerMfa.Enrollment startEnrollment(OwnerMfa.Challenge challenge, String bootstrap) throws IOException {
+        if (challenge == null || !challenge.active() || !challenge.enrollmentRequired) throw new IOException("MFA challenge expired");
+        return OwnerMfa.Enrollment.parse(api.startEnrollment(challenge.id, bootstrap));
+    }
+    public java.util.List<String> confirmEnrollment(OwnerMfa.Enrollment enrollment, String code) throws IOException {
+        if (enrollment == null || !enrollment.active()) throw new IOException("MFA enrollment expired");
+        return OwnerMfa.recoveryCodes(api.confirmEnrollment(enrollment.id, code));
+    }
+    private AdminAccess finishLogin(JsonObject response, long expectedGeneration) throws IOException {
         AdminSession candidate = AdminSession.fromResponse(response);
         if (candidate == null || !candidate.accessUsable() || !candidate.refreshUsable()) {
             revokeToken(AdminSession.string(response, "refreshToken"));
             throw new IOException("Invalid session");
         }
         try {
+            if (generation() != expectedGeneration) throw new IOException("Session replaced");
             AdminAccess access = AdminAccess.fromResponse(api.me(candidate.accessToken), candidate.accountId);
-            if (access == null) throw new IOException("Admin access required");
+            if (access == null || (access.isOwner() && !access.hasVerifiedMfa())) throw new IOException("Admin access required");
             synchronized (stateLock) {
                 if (generation != expectedGeneration || !store.save(candidate)) throw new IOException("Session replaced");
             }
@@ -54,7 +82,7 @@ public final class AdminRepository {
             throw failure;
         }
         AdminAccess access = AdminAccess.fromResponse(response, session.accountId);
-        if (access == null) { store.clearIfCurrent(session); throw new IOException("Admin access required"); }
+        if (access == null || (access.isOwner() && !access.hasVerifiedMfa())) { store.clearIfCurrent(session); throw new IOException("Admin access required"); }
         return access;
     }
     public static final class QueueResult {

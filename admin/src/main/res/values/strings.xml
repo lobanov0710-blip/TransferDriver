@@ -19,4 +19,19 @@
     <string name="under_review">На проверке</string>
     <string name="changes_required">Требует исправления</string>
     <string name="registration_row">%1$s\n%2$s · %3$s\n\n</string>
+    <string name="owner_mfa_verified">Дополнительная защита подтверждена. Доступ определяется сервером.</string>
+    <string name="mfa_prompt">Подтвердите вход кодом из приложения-аутентификатора или резервным кодом.</string>
+    <string name="totp_hint">Код аутентификатора</string>
+    <string name="verify_totp">Подтвердить код</string>
+    <string name="recovery_hint">Резервный код</string>
+    <string name="verify_recovery">Использовать резервный код</string>
+    <string name="bootstrap_prompt">Для подключения дополнительной защиты нужен одноразовый код, полученный владельцем в защищённой консоли.</string>
+    <string name="bootstrap_hint">Код подключения</string>
+    <string name="start_enrollment">Подключить аутентификатор</string>
+    <string name="enrollment_prompt">Введите этот ключ в приложении-аутентификаторе, затем подтвердите текущий код. Если настройка прервана, понадобится новый код подключения.</string>
+    <string name="confirm_enrollment">Подтвердить подключение</string>
+    <string name="recovery_prompt">Сохраните резервные коды в защищённом месте. Каждый используется один раз; повторно они не показываются. После этого войдите заново с паролем и новым кодом аутентификатора.</string>
+    <string name="recovery_saved">Коды сохранены — перейти ко входу</string>
+    <string name="mfa_failed">Код не принят. Проверьте его и время устройства. Если срок истёк, выполните вход заново.</string>
+    <string name="mfa_expired">Срок подтверждения истёк. Выполните вход заново.</string>
 </resources>

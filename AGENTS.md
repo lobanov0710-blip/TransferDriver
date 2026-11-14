@@ -29,3 +29,5 @@
 - [Технические решения](docs/TECHNICAL_DECISIONS_V1_0_PROPOSED.md)
 - [Журнал проекта](docs/PROJECT_JOURNAL.md)
 - [Сводный план, не заменяющий утверждение](docs/PROJECT_PLAN_V1_0.md)
+
+- [Утверждённые параметры и API OWNER TOTP MFA](docs/ADMIN_MFA_TOTP_PROPOSAL.md)

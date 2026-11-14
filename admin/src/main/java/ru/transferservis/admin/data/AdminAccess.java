@@ -9,8 +9,10 @@ import java.util.Set;
 public final class AdminAccess {
     public final String accountId, role;
     private final Set<String> permissions;
-    private AdminAccess(String id, String role, Set<String> permissions) {
-        accountId = id; this.role = role; this.permissions = Collections.unmodifiableSet(permissions);
+    private final boolean mfaVerified;
+    public final long mfaExpiresAt;
+    private AdminAccess(String id, String role, Set<String> permissions, boolean verified, long expiry) {
+        accountId = id; this.role = role; this.permissions = Collections.unmodifiableSet(permissions); mfaVerified = verified; mfaExpiresAt = expiry;
     }
     public static AdminAccess fromResponse(JsonObject response, String expectedAccount) {
         try {
@@ -26,12 +28,18 @@ public final class AdminAccess {
                 if (!item.isJsonPrimitive() || !item.getAsJsonPrimitive().isString()) return null;
                 permissions.add(item.getAsString());
             }
-            return new AdminAccess(id, role, permissions);
+            JsonObject mfa = admin.has("mfa") && admin.get("mfa").isJsonObject() ? admin.getAsJsonObject("mfa") : null;
+            String method = AdminSession.string(mfa, "method");
+            boolean verified = OwnerMfa.trueField(mfa, "required") && OwnerMfa.trueField(mfa, "verified")
+                    && ("totp".equals(method) || "recovery".equals(method));
+            return new AdminAccess(id, role, permissions, verified, OwnerMfa.timestamp(mfa, "expiresAt"));
         } catch (RuntimeException invalid) { return null; }
     }
     public boolean isOwner() { return "owner".equals(role); }
-    // Owner operations remain closed until the separately approved MFA contract is implemented.
+    public boolean hasVerifiedMfa() { return mfaVerified && mfaExpiresAt > System.currentTimeMillis(); }
+    // Server evidence, not the legacy admin role or client flag, authorizes OWNER UI.
     public boolean canReadRegistrations() {
-        return "dispatcher".equals(role) && permissions.contains("drivers.read");
+        return ("dispatcher".equals(role) && permissions.contains("drivers.read"))
+                || (isOwner() && hasVerifiedMfa() && permissions.contains("*"));
     }
 }
