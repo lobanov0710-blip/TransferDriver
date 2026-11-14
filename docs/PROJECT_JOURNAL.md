@@ -1378,3 +1378,35 @@ CI нового коммита на момент записи **не подтв�
 UI-01 остаётся PARTIAL до проверки авторизации и own-only
 списка на controlled STAGING backend. Никаких production,
 STAGING, R2, D4, merge или migrations.
+
+## 2026-11-14 — D3 support list fail-closed and UI-07 synthetic coverage
+
+Сверены последние подтверждённые CI:
+- Android branch tests 43020402371 — PASS, Android emulator 43020402391 — PASS
+  на SHA `d5d0e2569bd2d1943b084a872ac0fd4ecd3560ef`;
+- Backend `uber-v3` run 43032988844 — PASS
+  на SHA `1f9a263d40f06122ea301951c397c2c53c077b05`.
+
+Ревизия `SupportCasesActivity` выявила stale UI при повторном
+`getSupportCases`: после ошибки или ожидания ответа ранее загруженные
+обращения оставались доступны. Исправлено: список очищается и скрывается
+с начала каждого запроса; поздние ответы устаревших запросов игнорируются
+по `loadGeneration`. Диалог выбора категории получил `FLAG_SECURE`
+до `show()`, как требует утверждённое P2.
+
+Добавлен `SupportCasesGateway` с отдельными debug/release factories:
+debug позволяет подставлять синтетический gateway в instrumented tests,
+release использует только `DriverV1Repository`.
+Добавлены тесты:
+- `failedRefreshClearsPreviouslyVisibleSupportCases`;
+- `lateResponseCannotRestoreSupersededSupportList`;
+- `supportCreateTimeoutRetriesSameCategoryAndKeyAfterRecreation`.
+
+Код SHA `b676dd94df036a66008fcd94ed79bf4284b4e975`.
+CI на момент записи **не подтверждён**:
+https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663155
+https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663103
+
+UI-07 — PARTIAL (synthetic). Серверная own-only HTTP авторизация,
+реальный сетевой replay и R2 upload не проверены.
+Production/STAGING/R2/D4, merge и remote migrations не затронуты.
