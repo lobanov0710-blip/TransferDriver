@@ -34,13 +34,13 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 
 | Case | Status | Evidence still required |
 |---|---|---|
-| UI-01 | PARTIAL (CI PENDING) | Synthetic assigned-check list hides stale entries on refresh/error; own-only backend authorization and seven-angle E2E pending |
+| UI-01 | PARTIAL | Synthetic assigned-check list hides stale entries on refresh/error; own-only backend authorization and seven-angle E2E pending |
 | UI-02 | PARTIAL | Emulator PASS: uploadedKinds restored after Activity recreation; real server E2E still required |
 | UI-03 | PARTIAL | Synthetic cancelled camera callback cleans private capture file; external camera denial/unavailable untested |
 | UI-04 | PARTIAL | FileProvider scope passed; external camera URI grants untested |
 | UI-05 | PARTIAL | Emulator PASS: pending private file survives Activity recreation and explicit retry; live upload untested |
 | UI-06 | PARTIAL | Emulator PASS: synthetic timeout and uploadedKinds reconciliation; private R2 upload and real HTTP remain deferred |
-| UI-07 | NOT RUN | Own support case create/list interaction |
+| UI-07 | PARTIAL (CI PENDING) | Synthetic support list and create/retry after Activity recreation; backend own-only HTTP E2E pending |
 | UI-08 | PARTIAL | Emulator: offline retry after Activity recreation reuses key/body/revision; server replay acceptance untested |
 | UI-09 | PARTIAL | Emulator: HTTP 409 refreshes case and next send uses new key/revision; server response contract not E2E |
 | UI-10 | PARTIAL | Emulator PASS: closed case and server-side closure discovered after 409 disable composer; real backend E2E pending |
@@ -96,16 +96,39 @@ Do not claim UI runtime PASS from JVM unit tests or assembleDebug alone. No merg
 - UI-06: simulated server acknowledgement in `uploadedKinds` removes pending file and disables duplicate capture/upload; live network/R2 E2E remains deferred.
 - These are synthetic UI tests, not evidence of camera URI grants, real upload or backend authorization.
 
-## Camera cancel and pending refresh regression — CI pending
+## Camera cancel and pending refresh regression — CI verified
 
 - SHA `59c7a982fd64f922367c58ce9d74b5d28e83eb6e`.
-- [Android branch tests 42963137921](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137921): pending.
-- [Android emulator 42963137998](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137998): pending.
+- [Android branch tests 42963137921](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137921): **PASS**, verified 2026-11-14.
+- [Android emulator 42963137998](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/42963137998): **PASS**, verified 2026-11-14.
 - Tests hold the synthetic refresh response to verify buttons are disabled during network loading, then re-enabled on success; cancel callback removes the private capture file without uploading.
 - Actual camera app absence, URI grant behavior and R2 upload remain untested.
 
-## Assigned photo list fail-closed — CI pending
+## Assigned photo list fail-closed — CI verified
 
 - Code SHA `d5d0e2569bd2d1943b084a872ac0fd4ecd3560ef`.
 - Synthetic Android UI test holds a list refresh and injects an error: old list items must disappear immediately and remain unavailable until a successful server response.
 - UI-01 partial only; no real backend own-only authorization, camera, R2, or production operations.
+
+## 2026-11-14 — latest verified D3 gates and support list hardening
+
+- Previous Android code SHA `d5d0e2569bd2d1943b084a872ac0fd4ecd3560ef`:
+  [Android branch tests 43020402371](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43020402371) **PASS**,
+  [Android emulator 43020402391](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43020402391) **PASS**.
+- Backend `uber-v3` on SHA `1f9a263d40f06122ea301951c397c2c53c077b05`:
+  [Backend tests 43032988844](https://github.com/lobanov0710-blip/uber-v3/actions/runs/43032988844) **PASS**.
+  This verifies SQLite terminal-mutation authorization, idempotency and audit tests, **not** an Android-to-HTTP end-to-end journey.
+- New Android support list hardening on SHA `b676dd94df036a66008fcd94ed79bf4284b4e975`:
+  `SupportCasesActivity` clears stale entries during refresh and errors; ignores responses from superseded requests;
+  support category dialog applies `FLAG_SECURE` before show.
+  Debug-only `SupportCasesGatewayFactory` enables synthetic list/create tests;
+  release always uses `DriverV1Repository`.
+- New synthetic emulator tests: `failedRefreshClearsPreviouslyVisibleSupportCases`,
+  `lateResponseCannotRestoreSupersededSupportList`,
+  `supportCreateTimeoutRetriesSameCategoryAndKeyAfterRecreation`.
+- New CI [Android branch tests 43584663155](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663155) and
+  [D3 UI instrumentation 43584663103](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663103)
+  **PENDING at time of writing**. Do not mark new tests PASS until results verified.
+- UI-07 remains PARTIAL even if synthetic tests pass: real driver identity, backend ownership and HTTP retry must be independently verified.
+- UI-11, UI-12 remain NOT RUN at the Android UI layer; UI-02/04/05/06 and photo R2 upload remain PARTIAL/deferred.
+- No production deploy, R2 provisioning, D4 liveness, merge or remote migrations.
