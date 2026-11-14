@@ -14,8 +14,10 @@ lifecycle = "2.10.0"
 recyclerview = "1.4.0"
 swiperefreshlayout = "1.2.0"
 googleServices = "4.5.0"
+gson = "2.13.1"
 
 [libraries]
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

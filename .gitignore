@@ -29,3 +29,6 @@ local.properties
 # Firebase CLI local cache and authentication/debug artifacts.
 .firebase/
 firebase-debug*.log
+
+# Independent local debug identity for Transfer Admin.
+.local-signing/

@@ -24,3 +24,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "TransferDriver"
 include(":app")
+
+include(":admin")

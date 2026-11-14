@@ -66,8 +66,19 @@ jobs:
           }
           JSON
 
+      - name: Create independent Admin debug signing identity
+        shell: bash
+        run: |
+          umask 077
+          mkdir -p .local-signing
+          keytool -genkeypair -keystore .local-signing/admin-debug.keystore \
+            -storepass android -keypass android -alias androiddebugkey \
+            -keyalg RSA -keysize 3072 -validity 10000 -dname 'CN=Transfer Admin Debug'
+
       - name: Check Android security configuration
-        run: python3 tools/check_security.py
+        run: |
+          python3 tools/check_security.py
+          python3 tools/check_admin_security.py
 
       - name: Verify Gradle wrapper
         run: |
@@ -85,6 +96,17 @@ jobs:
             :app:assembleRelease \
             :app:bundleStaging \
             :app:assembleDebugAndroidTest \
+            :admin:testDebugUnitTest \
+            :admin:testStagingUnitTest \
+            :admin:testReleaseUnitTest \
+            :admin:assembleDebug \
+            :admin:assembleStaging \
+            :admin:assembleRelease \
+            :admin:bundleStaging \
+            :admin:assembleDebugAndroidTest \
+            :admin:lintDebug \
+            :admin:lintStaging \
+            :admin:lintRelease \
             --no-daemon \
             --stacktrace
 
@@ -127,6 +149,23 @@ jobs:
           echo 'STAGING_DEBUGGABLE=false'
           echo 'API_ENDPOINT_VARIANT_LOCK=PASS'
 
+      - name: Verify isolated Admin package and signing identity
+        shell: bash
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          import json, os, re, subprocess
+          certificates = []
+          for module, package in [('app','ru.transferservis.driver'), ('admin','ru.transferservis.admin')]:
+              metadata = json.loads(Path(module+'/build/outputs/apk/debug/output-metadata.json').read_text())
+              assert metadata['applicationId'] == package
+              apk = Path(module+'/build/outputs/apk/debug') / metadata['elements'][0]['outputFile']
+              output = subprocess.check_output([os.environ['ANDROID_HOME']+'/build-tools/37.0.0/apksigner', 'verify', '--print-certs', str(apk)], text=True)
+              certificates.append(re.search(r'Signer #1 certificate SHA-256 digest: ([0-9a-f]+)', output).group(1))
+          assert certificates[0] != certificates[1], 'Admin and Driver signing keys must be different'
+          print('ADMIN_PACKAGE_AND_SIGNING_ISOLATION=PASS')
+          PYCODE
+
       - name: Verify App Check provider policy
         shell: bash
         run: |
@@ -158,7 +197,10 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+          script: |
+            ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+            ./gradlew :app:installDebug --no-daemon --stacktrace
+            ./gradlew :admin:connectedDebugAndroidTest --no-daemon --stacktrace
 
       - name: Verify executed JVM and Android test reports
         shell: bash
@@ -171,6 +213,10 @@ jobs:
               ('STAGING_JVM', 'app/build/test-results/testStagingUnitTest'),
               ('RELEASE_JVM', 'app/build/test-results/testReleaseUnitTest'),
               ('ANDROID', 'app/build/outputs/androidTest-results/connected'),
+              ('ADMIN_DEBUG_JVM', 'admin/build/test-results/testDebugUnitTest'),
+              ('ADMIN_STAGING_JVM', 'admin/build/test-results/testStagingUnitTest'),
+              ('ADMIN_RELEASE_JVM', 'admin/build/test-results/testReleaseUnitTest'),
+              ('ADMIN_ANDROID', 'admin/build/outputs/androidTest-results/connected'),
           ]:
               files = list(Path(directory).rglob('TEST-*.xml'))
               cases = [case for file in files for case in ET.parse(file).iter('testcase')]
@@ -182,6 +228,18 @@ jobs:
                       'delayedHttpUnauthorizedPreservesTheSubsequentLogin',
                       'sessionFromAnotherBackendRequiresLogin',
                       'legacySessionWithoutBackendBindingRequiresLogin',
+                  ):
+                      assert any(required in case.get('name', '') for case in cases), required + ': not executed'
+              if name == 'ADMIN_ANDROID':
+                  for required in (
+                      'driverAndForeignBackendCiphertextRequireNewLogin',
+                      'ownerProfileDoesNotOpenOperationalQueueWithoutMfa',
+                      'staleRefreshCannotBecomeAnotherAdminRequest',
+                      'installedAdminAndDriverHaveDifferentUids',
+                      'dispatcherReadsQueueWithRotatedSessionAndLogoutRevokesIt',
+                      'revokedDispatcherPermissionStopsQueueBeforeTransport',
+                      'wrongLegacyRoleIsNotStoredAndIssuedSessionIsRevoked',
+                      'delayedUnauthorizedDoesNotRetryAsNewAdmin',
                   ):
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               print(name + '_TESTS=PASS count=' + str(len(cases)))
