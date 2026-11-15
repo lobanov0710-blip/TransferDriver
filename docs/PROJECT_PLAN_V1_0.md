@@ -4,7 +4,7 @@
 > отклонения запрещены. Неутверждённые варианты предлагаются владельцу без выбора за него.
 > [Обязательное правило работы](../AGENTS.md).
 
-Актуализация: 2026-11-14. Основание — [утверждённое ТЗ](TRANSFER_DRIVER_TECHNICAL_SPEC_V1_0.md),
+Актуализация: 2026-11-15. Основание — [утверждённое ТЗ](TRANSFER_DRIVER_TECHNICAL_SPEC_V1_0.md),
 [решения D1–D7](TECHNICAL_DECISIONS_V1_0_PROPOSED.md), журналы и фактический код.
 Это сводный рабочий план существующего объёма, а не изменение ТЗ или новое утверждение.
 D1–D3 утверждены; D4–D7 остаются неутверждёнными.
@@ -15,9 +15,10 @@ D1–D3 утверждены; D4–D7 остаются неутверждённ�
 
 ## Решение владельца 2026-11-14
 
-G1 приостановлен. Владелец явно поручил начать G2. Активная работа — отдельный
+G1 приостановлен. Владелец явно поручил начать G2. Рабочая ветка Admin —
+[arch/g2-transfer-admin](https://github.com/lobanov0710-blip/TransferDriver/tree/arch/g2-transfer-admin). Активная работа — отдельный
 Transfer Admin по D1–D3. Для OWNER выбран TOTP как направление подготовки
-отдельного предложения; окончательные MFA API/параметры ещё не утверждены.
+отдельного предложения; параметры и API TOTP явно утверждены 2026-11-14; реализация начата.
 G1 не возобновляется без решения владельца; D4–D7 не утверждены.
 
 ## Как читать статусы
@@ -62,16 +63,16 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 25 | Отсутствует; D5 | Passenger ↔ Driver order-chat, его архив и 30 календарных дней не реализованы как полный сценарий. Support chat — другой контур. |
 | 26 | Отсутствует; D5 | Нет полноценного VoIP/signaling/TURN/записи/архива. Таблица calls не закрывает требование; сроки и правовые условия требуют решения. |
 | 27 | Частично | Driver support cases/messages и backend admin lifecycle/retention есть; Admin-приложение, все каналы связи и реальный E2E не завершены. |
-| 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login, собственный server profile и read-only очередь dispatcher; полный набор разделов Admin не завершён. |
-| 29 | Частично; MFA не утверждена | Server OWNER binding есть. Новый Admin показывает только собственный OWNER profile, operational UI закрыт до MFA. TOTP предложение подготовлено отдельно; серверная MFA ещё не внедрена. |
+| 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login/MFA, server profile и Admin moderation UI с пятью фильтрами, карточкой, поэлементными решениями и историей; финальный CI/runtime этого среза PASS. Полный набор разделов Admin не завершён. |
+| 29 | Код MFA проверен; E2E не выполнен | Параметры/API TOTP MFA утверждены. Server challenge/enrollment/TOTP/recovery/evidence и Admin flow проверены локально и в CI/runtime. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
 | 30 | Частично | Серверные granular permissions и Admin read-only очередь dispatcher с drivers.read реализованы. Управление сотрудниками, остальные разделы и приёмка полного набора прав впереди. |
-| 31 | Частично | Backend queue/review/item moderation и Admin read-only очередь submitted/under_review/changes_required есть. Модерация/возврат элементов, остальные статусы и исправления Driver UI не завершены. |
+| 31 | Частично | Добавлены пять фильтров очереди, карточка/история, review/возврат элементов и итоговое решение. Локальные проверки и CI/runtime PASS (Admin 93 JVM + 27 API 35 tests). Driver исправления и live E2E не завершены; реальная identity verification зависит от D4/D5. |
 | 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver/Admin UX и E2E не приняты. |
 | 33 | Частично | Assignment revision, reassign, audit и отзыв серверного доступа есть. GPS/order-chat/новая trip-selfie цепочка ещё не завершены. |
 | 34 | Частично | Реализованные mutations/доступ к private resources аудируются. Нет полного Admin audit/архивного UX и всех будущих событий GPS/VoIP/identity. |
 | 35 | Частично | HTTPS/origin locks, Keystore AES-GCM AAD v2, private uploads, PII-free push/log guards есть. Полный будущий data lifecycle и E2E не проверены. |
 | 36 | Код; E2E блокирован | Firebase identity обменивается на access JWT + rotating refresh; token types разделены. Подтвердить живой вход/refresh/logout. |
-| 37 | Соблюдается в проверенных PR | Feature branches, Draft PR #6/#28, merge отсутствует. Production release/deploy не выполняются без отдельного решения владельца. |
+| 37 | Соблюдается в проверенных PR | Feature branches, Draft PR #6/#28 и G2 #7/#29; merge отсутствует. Production release/deploy не выполняются без отдельного решения владельца. |
 | 38 | Частично | Продуктовые решения не отменены. Полное выполнение зависит от незавершённых разделов выше; сводный список не означает их приёмку. |
 | 39 | Частично утверждено | D1–D3 утверждены 2026-11-07; D4/D5/D6/D7 ожидают отдельных решений. Конкретизация не должна изменять ТЗ. |
 | 40 | Подтверждено | ТЗ утверждено 2026-11-06. Git blob 7434dc0b1548b4f2c5382f12d6cc5399f93d0a84 совпал; исходный текст не менялся. |
@@ -98,7 +99,27 @@ G2 не требует ожидания выбора liveness SDK для неч�
 считать Admin готовым после создания пустого модуля. Дополнительный staging buildType
 используется для конкретного изолированного теста D3, а не отдельной продуктовой ветки.
 
-## Участие владельца сейчас
+## Решение владельца для следующего шага G2
+
+Подготовлено [предложение TOTP MFA OWNER](ADMIN_MFA_TOTP_PROPOSAL.md).
+Параметры и API явно утверждены владельцем 2026-11-14. Server MFA реализована
+в arch/g2-owner-totp-mfa; OWNER operational UI открывается только после серверной
+проверки MFA, не по одному имени роли.
+MFA source проверен: Android c6badd3a / CI 43608123183 — 69 Admin JVM + 20 runtime,
+Driver 87 JVM + 12 runtime. Backend 1598dff3 / CI 43608125351 — 65 test scripts,
+18 migrations, 12 preflight, native workerd HTTP/D1 и dry-run PASS.
+Admin full lint трёх variants — 0 issues. OSV scan 6 runtime configurations,
+152 Maven components — 0 опубликованных advisories на момент проверки.
+Сводный отчёт: [OWNER_MFA_VERIFICATION_2026-11-15.json](OWNER_MFA_VERIFICATION_2026-11-15.json).
+Среда выполнения восстановлена 2026-11-15; полный build receipt и runtime inventory опубликованы отдельными документами.
+Это не полная приёмка G2: server changes не развёрнуты, live E2E не выполнен.
+Далее по G2 — оставшийся Driver registration/vehicle/availability UX и
+Admin moderation/assignment UX в рамках D1–D3. Ограничение execution environment снято после проверки команд, workspace и сохранности артефактов.
+
+## Отложенные настройки G1 и решения будущих этапов
+
+G1 приостановлен; следующий перечень не является поручением сейчас возобновить его.
+
 
 1. Создать upload key у себя по [инструкции подписи](RELEASE_SIGNING_OWNER_SETUP.md).
    Ключ .p12 и пароли остаются у владельца; публичный сертификат можно передать отдельно.
@@ -113,3 +134,23 @@ SDK config и Firebase identifiers уже получены — повторно 
 не подтверждено. В этом аудите удалённая инфраструктура не перепроверялась.
 Миграции 0005–0017 уже применялись к STAGING 2026-11-07: перед возможным новым apply
 проверяется фактический pending set; повторный apply не запускается по старым заметкам.
+
+## Завершённый срез G2 от 2026-11-15
+
+Admin moderation source d469b42c / CI 43704273792 и backend 51d21da7 /
+CI 43702881770 — SUCCESS; результаты и ограничения в журнале, provenance в
+[ADMIN_MODERATION_BUILD_2026-11-15.json](ADMIN_MODERATION_BUILD_2026-11-15.json).
+Следующий шаг принятой рекомендации: Driver анкета/черновик/автомобили/VIN и
+исправления по замечаниям Admin; затем availability/manual assignment.
+Только разрешённые D1–D3 части и синтетические материалы до D4/D5/G1.
+
+
+## Уточнённый текущий шаг от 2026-11-15
+
+По поручению владельца перед следующим Driver UI срезом подготовить проверку
+Admin/OWNER на STAGING. Приватный control plane — Windows PowerShell владельца;
+G1 остаётся на паузе. Сначала проверенный пакет и read-only deployment plan,
+затем разбор фактического состояния и отдельное утверждение remote изменений.
+TOTP на том же телефоне: RAM-only IDs/исходный TTL, без seed/кодов в фоне,
+отмена незавершённых запросов — явно утверждено владельцем.
+[Процедура](OWNER_PHONE_STAGING_WINDOWS.md). Это не завершение G1/G2.

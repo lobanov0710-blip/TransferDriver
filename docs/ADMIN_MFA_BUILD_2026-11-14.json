@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-14",
+  "sourceCommit": "c6badd3a13bdad89140e43df09b181bfd85ec069",
+  "backendSourceCommit": "1598dff3e17799947c4eedc79f3c22ae68a8a256",
+  "package": "ru.transferservis.admin",
+  "g1Suspended": true,
+  "ownerOperationalUiRequiresServerMfa": true,
+  "serverMfaCodeImplemented": true,
+  "serverMfaDeployed": false,
+  "totpProposalApproved": true,
+  "realServerE2E": false,
+  "localVerification": {
+    "jvmTests": 69,
+    "jvmTestsPerVariant": 23,
+    "fullLintIssuesPerVariant": 0,
+    "adminSecurityGuards": 5,
+    "driverSecurityGuards": 7,
+    "apkManifestsChecked": 3,
+    "adminAndDriverDebugCertificatesDiffer": true,
+    "noFirebaseOrDriverClassesInAdminApks": true
+  },
+  "debugCertificateSha256": "ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b",
+  "driverDebugCertificateSha256": "1f55ef98b307d61e2dd46518bcbf581b4bd5fbd81f642f79437136ac837d2fae",
+  "artifacts": [
+    {
+      "name": "TransferAdmin-debug.apk",
+      "bytes": 9018498,
+      "sha256": "01a6198216124b122271685cc2a7f084249d6c96989089ca6b152033962529d7",
+      "signed": true,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferAdmin-staging-unsigned.apk",
+      "bytes": 1476539,
+      "sha256": "a9d435cef5bf154a2d9121025276228357cca284910b8d91d7a5dee520eee61d",
+      "signed": false,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferAdmin-release-unsigned.apk",
+      "bytes": 1476539,
+      "sha256": "12557bbfa67155ec079efd542eb7c5827cc1549576d147f0bfe0631dedcf084e",
+      "signed": false,
+      "backend": "production"
+    },
+    {
+      "name": "TransferAdmin-staging-unsigned.aab",
+      "bytes": 1830652,
+      "sha256": "e92b949a460ba073b6625b4265aaf315e2cdc083c1e643aa3e945cb2efd1776f",
+      "signed": false,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferAdmin-release-unsigned.aab",
+      "bytes": 1830652,
+      "sha256": "79173c61ec6d11f71939cae1f259ffa2816dbef137d3045c292c10edd36ff1d1",
+      "signed": false,
+      "backend": "production"
+    },
+    {
+      "name": "TransferAdmin-debug-androidTest.apk",
+      "bytes": 616926,
+      "sha256": "1102aed5902151d5ce8cffce9fbddf42bf5e72a5e07725d47400028cd405e800",
+      "signed": true,
+      "backend": "offline fixtures"
+    }
+  ],
+  "sourceFileSha256": {
+    "admin/.gitignore": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf",
+    "admin/README.md": "20118db7013b2cc35adb0809065861e1dcf33d37f0c8c65ad9357d4d13fc76b3",
+    "admin/build.gradle.kts": "cdbdef9922c03429a93c5db2b7e4708545ac1c1944eae017b7400592476a3cd0",
+    "admin/src/androidTest/java/ru/transferservis/admin/data/AdminIsolationInstrumentationTest.java": "d3926a79aea6aaef0450165cafcb2810762b0dcf37fe0826c94ee001eabbf159",
+    "admin/src/androidTest/java/ru/transferservis/admin/data/OwnerMfaInstrumentationTest.java": "f5beaf6ab0270b6792e7ac4b33f22dd9d3fed4015ca98d06336b3a6539baa53f",
+    "admin/src/androidTest/java/ru/transferservis/admin/ui/OwnerMfaUiInstrumentationTest.java": "24edd48a2e37e9dab6e733509fe6d90df211f7783fb79d14faa56bead596e176",
+    "admin/src/main/AndroidManifest.xml": "f33c6e709cb8b50bad30899a5fbf00c04b6823197923c1e7e7668e6403dc1390",
+    "admin/src/main/java/ru/transferservis/admin/AdminApplication.java": "d251ac9da4f6dadd07bc95d196b6ca5f961277a78db769086b900838367b7ae3",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminAccess.java": "15247aa2813b1ea317a5cbd39ef44c7059153d2dbffad6dcb808215ef29f7fd9",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminApiClient.java": "9ac6acc5537cd0f513f8919d65d4b76617fe24512023d9a48d8c2b359ff2df55",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminRepository.java": "afeec0b0f97285c359989a4dadb3e6b8dc2911568d7f3e1aa82614e7da442e5a",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminSession.java": "b16b0c5fadc6764d58302292cfc4e509b9981daeb8ec955287eb18ed87526d76",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminSessionStore.java": "a644bef5183c9cd9006c3358c5c9f9df69d09add680c8b9cf97a84927867a97f",
+    "admin/src/main/java/ru/transferservis/admin/data/OwnerMfa.java": "370956b8d3a1adab790a3bcc34ca0b2fa6338cb13f1bb2f08fdeea567e4ee5b4",
+    "admin/src/main/java/ru/transferservis/admin/data/RegistrationRow.java": "d813b39d237c084f724ddc883657989ce6494a2709f74d3e2f3ce28e4a9780f4",
+    "admin/src/main/java/ru/transferservis/admin/security/AdminEndpointPolicy.java": "9bc547a23247a5c173229b13ac6c673efa10e1f15224f4926399c72f5a9ca063",
+    "admin/src/main/java/ru/transferservis/admin/ui/AdminActivity.java": "ea39a71fb1a85b246dfe1978aff8401f4a5674fff73ba8cb68fb913a2042d6f9",
+    "admin/src/main/java/ru/transferservis/admin/ui/AdminViewModel.java": "d25cf37330eddcede89b5d75de8650aa6fbc228966de8133a642cc07b97f645e",
+    "admin/src/main/res/layout/activity_admin.xml": "ac9969497be330e05fc95f7c4f831bf6895ca587a773b30a1c68b62358ca9bb9",
+    "admin/src/main/res/values/strings.xml": "be27ca71583cc41c5f89ac44d947a1369e7d60d1c8d99d750e1b850f36154069",
+    "admin/src/main/res/values/themes.xml": "bdf57df25bc585790fef4dab1a6650d0bb9c7ec199f07c1ef3ba15df16f3c216",
+    "admin/src/main/res/xml/backup_rules.xml": "865cae97840e81b9950d70457a05c5c1125a68364b0a83f44cd3daa030bc7e96",
+    "admin/src/main/res/xml/data_extraction_rules.xml": "cb029b35db0e976c087100424e16e14a6256b46962398887520e51508c3b5842",
+    "admin/src/main/res/xml/network_security_config.xml": "dbc726438a7e99c69fdfc39146cd51ef8300dacb236843bbce3ecd2a1712a80f",
+    "admin/src/test/java/ru/transferservis/admin/data/AdminAccessTest.java": "1ea8319620d120b5852a5f5be4f4dc5545378df5ca2aa6f90ec0d2b2ce5a764f",
+    "admin/src/test/java/ru/transferservis/admin/data/AdminApiClientTest.java": "58c6b8c625330b951ca7a8fe20d4e61ecb5aac10dbee86cb2fca6a721501deca",
+    "admin/src/test/java/ru/transferservis/admin/data/AdminSessionTest.java": "0f034dde37be1d4819a72e3ac8a9401b36578b519924ea85f192f54768e9ac16",
+    "admin/src/test/java/ru/transferservis/admin/data/OwnerMfaApiTest.java": "bf0dba2143658afcaf38f35b2adfc8ad9b00d35751f4b10ca65d11bf1f1ed475",
+    "admin/src/test/java/ru/transferservis/admin/data/OwnerMfaTest.java": "201c9d7ca37f786f0358e7c5eb9c49253c243fdd98ad81acc225a091730c79cc",
+    "admin/src/test/java/ru/transferservis/admin/data/RegistrationRowTest.java": "540cf32b88fcb52ecc99f018eac62a00ccf3a6e5aa98f70f5539e5504ae55008",
+    "admin/src/test/java/ru/transferservis/admin/security/AdminEndpointPolicyTest.java": "207d32bc71141f358e576193055c151b9c05efb68d61b5cdf1460a0c17a3f5b5",
+    "settings.gradle.kts": "c8b2ba69ad5b91ea7143a0e5010f8ef0cde70471e9477893a1c9e199fb0693e3",
+    "gradle/libs.versions.toml": "e2db9b795dff84694d4092942224b6247d04e858c7f645aae5daf4b9b13ad144",
+    ".github/workflows/android-branch-tests.yml": "b2bee51de6d20ccac9472c0315d8809f6680a13317124cc2fcc4715e33082caf",
+    "tools/check_admin_security.py": "a369e44d92773a80b6038974d9e1fbb92f9c9bda2f4d926c75ddafc7acf94560"
+  },
+  "ci": {
+    "runId": 43608123183,
+    "backendRunId": 43608125351,
+    "status": "success",
+    "sourceCommit": "c6badd3a13bdad89140e43df09b181bfd85ec069",
+    "backendSourceCommit": "1598dff3e17799947c4eedc79f3c22ae68a8a256",
+    "adminJvmTests": 69,
+    "adminRuntimeTests": 20,
+    "driverJvmTests": 87,
+    "driverRuntimeTests": 12,
+    "backendTestScripts": 65,
+    "migrationCount": 18,
+    "preflightTests": 12,
+    "backendNpmAdvisories": 0,
+    "localWorkerdD1": "PASS",
+    "workerDryRun": "PASS"
+  },
+  "resultsRecordedDate": "2026-11-15",
+  "runtimeDependencyAudit": {
+    "report": "docs/ADMIN_DRIVER_RUNTIME_AUDIT_2026-11-15.json",
+    "configurations": 6,
+    "distinctComponents": 152,
+    "advisoryMatches": 0
+  },
+  "limitations": "No live backend/device E2E; G1 remains suspended. No real OWNER encryption key generated, remote migration applied, deployment or merge.",
+  "environmentRecoveryVerification": {
+    "date": "2026-11-15",
+    "artifactHashes": "PASS",
+    "artifactCount": 6,
+    "sourceHashes": "PASS",
+    "sourceFileCount": 35
+  }
+}

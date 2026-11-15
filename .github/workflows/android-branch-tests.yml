@@ -242,6 +242,22 @@ jobs:
                       'revokedDispatcherPermissionStopsQueueBeforeTransport',
                       'wrongLegacyRoleIsNotStoredAndIssuedSessionIsRevoked',
                       'delayedUnauthorizedDoesNotRetryAsNewAdmin',
+                      'passwordChallengeNeverPersistsSessionAndClearsPreviousAccount',
+                      'verifiedOwnerSessionIsStoredOnlyAfterAuthoritativeMfaProfile',
+                      'missingMfaProfileAfterVerifyCannotCreateOwnerSession',
+                      'cancelledMfaCannotRestoreSessionOrReadOwnerProfile',
+                      'enrollmentSeedAndRecoveryCodesNeverEnterPersistentStorage',
+                      'enrollmentBackgroundKeepsOnlyOpaqueIdsAndNeverSeed',
+                      'recoveryCodesAreNotSavedOrRetainedWhenScreenLeavesForeground',
+                      'samePhoneSwitchPreservesChallengeWithoutCodesOrExtendedExpiry',
+                      'retainedChallengeExpiresWithoutAnotherNetworkRequest',
+                      'partialReviewUsesFreshPermissionsAndPreservesOtherVerifiedItems',
+                      'lostAcknowledgementRequiresExplicitRetryWithSameBodyAndKey',
+                      'revokedGrantStopsPendingMutationBeforePostAndSensitiveReadBeforeTransport',
+                      'delayedMutationUnauthorizedDoesNotRefreshOrUseAnotherAccount',
+                      'resourceIsBoundToSnapshotAndNeverStoredInPreferences',
+                      'moderationUiExplicitlyRetriesUncertainStartAndReturnsOneElementWithReason',
+                      'reviewMaterialReasonAndProfileAreNotSavedAndBackgroundClearsThem',
                   ):
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               print(name + '_TESTS=PASS count=' + str(len(cases)))
@@ -251,7 +267,8 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          report_dir=app/build/outputs/androidTest-results/connected
-          if [[ -d "$report_dir" ]]; then
-            find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,200p' {} \;
-          fi
+          for report_dir in app/build/outputs/androidTest-results/connected admin/build/outputs/androidTest-results/connected; do
+            if [[ -d "$report_dir" ]]; then
+              find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,260p' {} \;
+            fi
+          done

@@ -1,0 +1,116 @@
+{
+  "date": "2026-11-14",
+  "sourceCommit": "c33baab21acb6f57700a14bcda4d0fffff8de5c9",
+  "package": "ru.transferservis.admin",
+  "g1Suspended": true,
+  "ownerOperationalUiEnabled": false,
+  "serverMfaImplemented": false,
+  "totpProposalApproved": false,
+  "realServerE2E": false,
+  "localVerification": {
+    "jvmTests": 51,
+    "jvmTestsPerVariant": 17,
+    "fullLintIssuesPerVariant": 0,
+    "adminSecurityGuards": 5,
+    "driverSecurityGuards": 7,
+    "apkManifestsChecked": 3,
+    "adminAndDriverDebugCertificatesDiffer": true,
+    "noFirebaseOrDriverClassesInAdminApks": true
+  },
+  "debugCertificateSha256": "ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b",
+  "driverDebugCertificateSha256": "1f55ef98b307d61e2dd46518bcbf581b4bd5fbd81f642f79437136ac837d2fae",
+  "artifacts": [
+    {
+      "name": "TransferAdmin-debug.apk",
+      "bytes": 7696780,
+      "sha256": "94bb56a4bd9680cb00bbb96e19bd03b92c14113554cef8959cb14b51ca3deda1",
+      "signed": true,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferAdmin-staging-unsigned.apk",
+      "bytes": 1465315,
+      "sha256": "8146114f2fd3c261a9fc23fe431076085a55e3265b65eb6ca958eec90853c962",
+      "signed": false,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferAdmin-release-unsigned.apk",
+      "bytes": 1465311,
+      "sha256": "d70ac83f46647d03f6dc8206deba6760f6fde9150da994c998067627c1c23fbb",
+      "signed": false,
+      "backend": "production"
+    },
+    {
+      "name": "TransferAdmin-staging-unsigned.aab",
+      "bytes": 1825869,
+      "sha256": "e69b04895f85a1f82edca32d617a884350b4c7dfaac30c4e1e6c29886445f761",
+      "signed": false,
+      "backend": "staging"
+    },
+    {
+      "name": "TransferAdmin-release-unsigned.aab",
+      "bytes": 1825870,
+      "sha256": "836fe467c737d15df6209ec88a3cb1751e7871f6a768169f9bbf9f4e12e9fd0c",
+      "signed": false,
+      "backend": "production"
+    },
+    {
+      "name": "TransferAdmin-debug-androidTest.apk",
+      "bytes": 603201,
+      "sha256": "90c0ae913ddff74b90fd7c9ec4235e26320b4a0635b8c7550a9f8be4f6c3d4d7",
+      "signed": true,
+      "backend": "offline fixtures"
+    }
+  ],
+  "sourceFileSha256": {
+    "admin/.gitignore": "020c2606e8ed484089c2083e0be438b9d0736bee1558a6b76af0d58bd23f69cf",
+    "admin/README.md": "ae4a0ee2cbdad427c76ae62f865348aedf5ed1ec6f891bb293303b92f31967bf",
+    "admin/build.gradle.kts": "cdbdef9922c03429a93c5db2b7e4708545ac1c1944eae017b7400592476a3cd0",
+    "admin/src/androidTest/java/ru/transferservis/admin/data/AdminIsolationInstrumentationTest.java": "feb8057263f253e0d1f2bd02ed7ff5c1d46d0f218e371c8b163f01716acc5145",
+    "admin/src/main/AndroidManifest.xml": "f33c6e709cb8b50bad30899a5fbf00c04b6823197923c1e7e7668e6403dc1390",
+    "admin/src/main/java/ru/transferservis/admin/AdminApplication.java": "d251ac9da4f6dadd07bc95d196b6ca5f961277a78db769086b900838367b7ae3",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminAccess.java": "25bd3728650f38872ad91e163e99b6df521018262bc0549c22292f9055021346",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminApiClient.java": "9eff4fbb8c31e2c621c32c4791607375dc1c0611cae703c85b207a13f166554f",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminRepository.java": "8219c82cf8c31d5211a9847b6eab073c0302bafa17103bbf0c25b59852f1fc14",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminSession.java": "b16b0c5fadc6764d58302292cfc4e509b9981daeb8ec955287eb18ed87526d76",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminSessionStore.java": "a644bef5183c9cd9006c3358c5c9f9df69d09add680c8b9cf97a84927867a97f",
+    "admin/src/main/java/ru/transferservis/admin/data/RegistrationRow.java": "d813b39d237c084f724ddc883657989ce6494a2709f74d3e2f3ce28e4a9780f4",
+    "admin/src/main/java/ru/transferservis/admin/security/AdminEndpointPolicy.java": "9bc547a23247a5c173229b13ac6c673efa10e1f15224f4926399c72f5a9ca063",
+    "admin/src/main/java/ru/transferservis/admin/ui/AdminActivity.java": "acb33f71b93a72712d9eabe1bc97d3eb9d37c5c471f33761c00fe6249a96ca7a",
+    "admin/src/main/java/ru/transferservis/admin/ui/AdminViewModel.java": "9f0b79fe2a755b1860f2efe520665fc4ddbc8085965a0afbc19b4754b9a3e196",
+    "admin/src/main/res/layout/activity_admin.xml": "6317a07d9d907fd72cdd4124752966da2f421cc41e61efd81f4cc637c38a7f29",
+    "admin/src/main/res/values/strings.xml": "3b461e66b29b86244a0cd48313d4cd131401536f21a46cc1b238bc1faeb1eff7",
+    "admin/src/main/res/values/themes.xml": "bdf57df25bc585790fef4dab1a6650d0bb9c7ec199f07c1ef3ba15df16f3c216",
+    "admin/src/main/res/xml/backup_rules.xml": "865cae97840e81b9950d70457a05c5c1125a68364b0a83f44cd3daa030bc7e96",
+    "admin/src/main/res/xml/data_extraction_rules.xml": "cb029b35db0e976c087100424e16e14a6256b46962398887520e51508c3b5842",
+    "admin/src/main/res/xml/network_security_config.xml": "dbc726438a7e99c69fdfc39146cd51ef8300dacb236843bbce3ecd2a1712a80f",
+    "admin/src/test/java/ru/transferservis/admin/data/AdminAccessTest.java": "1ea8319620d120b5852a5f5be4f4dc5545378df5ca2aa6f90ec0d2b2ce5a764f",
+    "admin/src/test/java/ru/transferservis/admin/data/AdminApiClientTest.java": "58c6b8c625330b951ca7a8fe20d4e61ecb5aac10dbee86cb2fca6a721501deca",
+    "admin/src/test/java/ru/transferservis/admin/data/AdminSessionTest.java": "0f034dde37be1d4819a72e3ac8a9401b36578b519924ea85f192f54768e9ac16",
+    "admin/src/test/java/ru/transferservis/admin/data/RegistrationRowTest.java": "540cf32b88fcb52ecc99f018eac62a00ccf3a6e5aa98f70f5539e5504ae55008",
+    "admin/src/test/java/ru/transferservis/admin/security/AdminEndpointPolicyTest.java": "207d32bc71141f358e576193055c151b9c05efb68d61b5cdf1460a0c17a3f5b5",
+    "settings.gradle.kts": "c8b2ba69ad5b91ea7143a0e5010f8ef0cde70471e9477893a1c9e199fb0693e3",
+    "gradle/libs.versions.toml": "e2db9b795dff84694d4092942224b6247d04e858c7f645aae5daf4b9b13ad144",
+    ".github/workflows/android-branch-tests.yml": "b1419cbe9a80b574c75de9a5f1371c0e230dfe2aafe57d97291972f566fca444",
+    "tools/check_admin_security.py": "f8b5b2b7c15f02790f7ba1bd484dce83980ca987789d4b7746bec124835b91c7"
+  },
+  "ci": {
+    "runId": 43587414797,
+    "status": "success",
+    "executedOnBranch": "arch/spec-v1-security-baseline",
+    "sourceCommit": "c33baab21acb6f57700a14bcda4d0fffff8de5c9",
+    "note": "Dedicated Admin branch starts at this exact tested commit; no app code changed when branching.",
+    "adminJvmTests": 51,
+    "adminRuntimeTests": 13,
+    "driverJvmTests": 87,
+    "driverRuntimeTests": 12,
+    "androidApi": 35,
+    "adminSecurityGuards": 5,
+    "driverSecurityGuards": 7,
+    "failuresErrorsSkips": 0,
+    "adminFullLintExecuted": true
+  },
+  "compiledApplicationSourceCommit": "c9b144f3d332b55151e1bceb2e263c55190118b9",
+  "workingBranch": "arch/g2-transfer-admin"
+}

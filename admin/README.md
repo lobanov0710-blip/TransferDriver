@@ -2,13 +2,32 @@
 
 Отдельное Android Java + XML приложение ru.transferservis.admin. Firebase Driver
 конфиг не используется; shared UID/session storage/Keystore aliases отсутствуют.
-Текущий срез: staff login → server /v1/admin/me, безопасная сессия/refresh/logout,
-read-only очередь регистраций dispatcher с drivers.read. Изменение статусов,
-просмотр документов и другие разделы ещё не реализованы.
+Текущий срез: staff login → MFA OWNER → server profile/session/refresh/logout;
+пять фильтров очереди регистраций, карточка с историей, начало проверки,
+поэлементные решения и завершение регистрации. Максимум 50 записей одного
+запроса очереди; cursor pagination ещё не добавлена.
 
-OWNER operational UI закрыт до отдельного утверждения/реализации MFA. TOTP выбран
-как направление предложения: ../docs/ADMIN_MFA_TOTP_PROPOSAL.md. Это не серверная
-MFA и не готовность к production. G1 приостановлен владельцем.
+Просмотр/изменение определяется текущими серверными permissions. Для private
+документа нужны documents.read_sensitive и соответствующее documents/identity
+разрешение; фотографии требуют vehicles.verify. Клиент загружает только JPEG,
+PNG или WebP с фиксированного backend endpoint, до 10 MiB, декодирует ограниченный
+preview в памяти. Дискового cache, внешнего viewer, public URL или экспорта нет.
+Перед подтверждением документа/фото UI требует просмотра материала. Identity
+verified вручную не выставляется; окончательное одобрение дополнительно проверяет
+backend readiness. Возврат/отклонение требует причины до 1000 символов.
+
+Mutation использует исходную revision и уникальный Idempotency-Key; timeout/
+неподтверждённый результат удерживает один action в volatile state. Только явный
+повтор того же body/key либо новое чтение карточки. После 401 POST не переигрывается
+через refresh или другую учётную запись. Данные карточки, image, причина и pending
+action очищаются при уходе в фон и не входят в saved view state. Тесты — только
+синтетические fixtures; реальные документы и настоящий E2E требуют D5/G1.
+
+Параметры/API TOTP утверждены 2026-11-14: ../docs/ADMIN_MFA_TOTP_PROPOSAL.md.
+Добавлены challenge/TOTP/recovery/enrollment UI. OWNER разделы требуют действующего
+server MFA evidence из /v1/admin/me; роль сама по себе не открывает их.
+Backend реализация находится в arch/g2-owner-totp-mfa; это не deployment или
+готовность к production. G1 приостановлен владельцем.
 
 ## Независимая debug-подпись
 
@@ -34,3 +53,13 @@ MFA и не готовность к production. G1 приостановлен в
 Runtime tests: :admin:connectedDebugAndroidTest. Для проверки изоляции signatures/UID
 перед запуском должны быть установлены debug Driver и Admin (Android CI делает это).
 Не используйте реальные документы/production OWNER credentials для тестирования.
+
+MFA setup/key/recovery доступны в защищённом foreground UI. По утверждению
+владельца от 2026-11-15 переключение в аутентификатор на том же телефоне сохраняет
+только challenge/enrollment IDs и исходный срок (до 5 минут) в RAM. Seed, коды
+ввода и recovery-коды очищаются, saved state/диск не используются. Незавершённый
+auth запрос отменяется, поздняя сессия не сохраняется. Повторное переключение
+не продлевает срок. Перезапуск процесса/истечение TTL требуют нового входа.
+
+Подготовка OWNER-only STAGING для Windows и телефона:
+[инструкция](../docs/OWNER_PHONE_STAGING_WINDOWS.md). G1 остаётся на паузе.

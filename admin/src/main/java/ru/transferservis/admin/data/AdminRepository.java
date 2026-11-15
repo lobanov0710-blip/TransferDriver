@@ -15,36 +15,67 @@ public final class AdminRepository {
     public AdminRepository(Context context) { this(context, new AdminApiClient()); }
     AdminRepository(Context context, AdminApiClient api) { store = new AdminSessionStore(context); this.api = api; }
     public boolean hasSession() { return store.load() != null; }
+    public boolean currentAccount(String id){AdminSession current=store.load();return current!=null&&current.accountId.equals(id);}
     public long generation() { synchronized (stateLock) { return generation; } }
     public AdminAccess login(String login, String password, long expectedGeneration) throws IOException {
         JsonObject response = api.login(login, password);
+        if (response.has("mfaRequired")) {
+            final OwnerMfa.Challenge challenge;
+            try { challenge = OwnerMfa.Challenge.parse(response); }
+            catch (IOException invalid) { revokeToken(AdminSession.string(response, "refreshToken")); throw invalid; }
+            final AdminSession previous;
+            synchronized (stateLock) {
+                if (generation != expectedGeneration) throw new IOException("Session replaced");
+                previous = store.load(); store.clear();
+            }
+            if (previous != null) revoke(previous);
+            throw new OwnerMfa.Required(challenge);
+        }
+        return finishLogin(response, expectedGeneration);
+    }
+    public AdminAccess verifyMfa(OwnerMfa.Challenge challenge, String code, boolean recovery, long expectedGeneration) throws IOException {
+        if (challenge == null || !challenge.active() || challenge.enrollmentRequired) throw new IOException("MFA challenge expired");
+        return finishLogin(api.verifyMfa(challenge.id, code, recovery), expectedGeneration);
+    }
+    public OwnerMfa.Enrollment startEnrollment(OwnerMfa.Challenge challenge, String bootstrap) throws IOException {
+        if (challenge == null || !challenge.active() || !challenge.enrollmentRequired) throw new IOException("MFA challenge expired");
+        return OwnerMfa.Enrollment.parse(api.startEnrollment(challenge.id, bootstrap));
+    }
+    public java.util.List<String> confirmEnrollment(OwnerMfa.Enrollment enrollment, String code) throws IOException {
+        if (enrollment == null || !enrollment.active()) throw new IOException("MFA enrollment expired");
+        return OwnerMfa.recoveryCodes(api.confirmEnrollment(enrollment.id, code));
+    }
+    private AdminAccess finishLogin(JsonObject response, long expectedGeneration) throws IOException {
         AdminSession candidate = AdminSession.fromResponse(response);
         if (candidate == null || !candidate.accessUsable() || !candidate.refreshUsable()) {
             revokeToken(AdminSession.string(response, "refreshToken"));
             throw new IOException("Invalid session");
         }
         try {
+            if (generation() != expectedGeneration) throw new IOException("Session replaced");
             AdminAccess access = AdminAccess.fromResponse(api.me(candidate.accessToken), candidate.accountId);
-            if (access == null) throw new IOException("Admin access required");
+            if (access == null || (access.isOwner() && !access.hasVerifiedMfa())) throw new IOException("Admin access required");
             synchronized (stateLock) {
                 if (generation != expectedGeneration || !store.save(candidate)) throw new IOException("Session replaced");
             }
             return access;
         } catch (IOException failure) { revoke(candidate); throw failure; }
     }
-    public AdminAccess me() throws IOException {
-        AdminSession current = requireSession();
-        try {
-            return readAccess(current);
-        } catch (AdminApiClient.Failure failure) {
-            if (failure.status != 401) throw failure;
-            AdminSession rotated = refresh(current);
-            try { return readAccess(rotated); }
-            catch (AdminApiClient.Failure denied) {
-                if (denied.status == 401) store.clearIfCurrent(rotated);
-                throw denied;
-            }
+    private static final class Authorized {
+        final AdminSession session;final AdminAccess access;
+        Authorized(AdminSession session,AdminAccess access){this.session=session;this.access=access;}
+    }
+    public AdminAccess me() throws IOException { return authorize().access; }
+    private Authorized authorize() throws IOException {
+        AdminSession current=requireSession();AdminAccess access;
+        try { access=readAccess(current); }
+        catch(AdminApiClient.Failure failure){
+            if(failure.status!=401)throw failure;
+            current=refresh(current);
+            try {access=readAccess(current);}
+            catch(AdminApiClient.Failure denied){if(denied.status==401)store.clearIfCurrent(current);throw denied;}
         }
+        ensureCurrent(current);return new Authorized(current,access);
     }
     private AdminAccess readAccess(AdminSession session) throws IOException {
         JsonObject response;
@@ -54,7 +85,7 @@ public final class AdminRepository {
             throw failure;
         }
         AdminAccess access = AdminAccess.fromResponse(response, session.accountId);
-        if (access == null) { store.clearIfCurrent(session); throw new IOException("Admin access required"); }
+        if (access == null || (access.isOwner() && !access.hasVerifiedMfa())) { store.clearIfCurrent(session); throw new IOException("Admin access required"); }
         return access;
     }
     public static final class QueueResult {
@@ -63,20 +94,53 @@ public final class AdminRepository {
         QueueResult(AdminAccess access, JsonObject response) { this.access = access; this.response = response; }
     }
     public QueueResult registrations() throws IOException {
+        return registrations("");
+    }
+    public QueueResult registrations(String status) throws IOException {
         // Resolve current permissions on the server for every queue read; no persisted grants.
-        AdminAccess access = me();
+        Authorized authorized=authorize();AdminAccess access=authorized.access;
         if (!access.canReadRegistrations()) throw new IOException("Permission required");
-        AdminSession current = requireSession();
+        AdminSession current = authorized.session;
         if (!current.accountId.equals(access.accountId)) throw new IOException("Session replaced");
-        try { return new QueueResult(access, api.registrations(current.accessToken)); }
+        try { JsonObject result=api.registrations(current.accessToken,status);ensureCurrent(current);return new QueueResult(access,result); }
         catch (AdminApiClient.Failure failure) {
             if (failure.status != 401) throw failure;
             // A rotated session can lose permission; re-resolve before retrying this read-only GET.
             AdminSession rotated = refresh(current);
             AdminAccess updated = readAccess(rotated);
             if (!updated.canReadRegistrations()) throw new IOException("Permission required");
-            return new QueueResult(updated, api.registrations(rotated.accessToken));
+            JsonObject result=api.registrations(rotated.accessToken,status);ensureCurrent(rotated);return new QueueResult(updated,result);
         }
+    }
+    public static final class ReviewResult {
+        public final AdminAccess access;
+        public final RegistrationReview registration;
+        ReviewResult(AdminAccess access,RegistrationReview registration){this.access=access;this.registration=registration;}
+    }
+    private void ensureCurrent(AdminSession session) throws IOException {
+        if(!session.same(store.load()))throw new IOException("Session replaced");
+    }
+    public ReviewResult review(String driverId,String expectedAccount) throws IOException {
+        Authorized auth=authorize();AdminAccess access=auth.access;
+        if(!access.accountId.equals(expectedAccount)||!access.canReadReview())throw new AdminApiClient.Failure(403);
+        RegistrationReview review=RegistrationReview.parse(api.review(auth.session.accessToken,driverId),driverId);
+        ensureCurrent(auth.session);return new ReviewResult(access,review);
+    }
+    public byte[] preview(RegistrationReview review,RegistrationReview.Item item,String expectedAccount) throws IOException {
+        if(review.item(item.id)!=item)throw new IOException("Resource replaced");
+        Authorized auth=authorize();
+        if(!auth.access.accountId.equals(expectedAccount)||!auth.access.canReadResource(item))throw new AdminApiClient.Failure(403);
+        byte[] bytes=api.resource(auth.session.accessToken,review.driverId,item);
+        ensureCurrent(auth.session);return bytes;
+    }
+    public AdminAccess applyReview(ReviewAction action) throws IOException {
+        Authorized auth=authorize();AdminAccess access=auth.access;
+        if(!access.accountId.equals(action.accountId))throw new IOException("Session replaced");
+        boolean allowed="start".equals(action.type)?access.canStartReview():"complete".equals(action.type)?access.canFinalizeReview():
+                access.can("document".equals(action.type)?"drivers.verify_documents":"vehicles.verify");
+        if(!allowed)throw new AdminApiClient.Failure(403);
+        // POST is never automatically retried/refreshed. Explicit retry reuses the same action/key.
+        api.reviewAction(auth.session.accessToken,action);ensureCurrent(auth.session);return access;
     }
     private AdminSession requireSession() throws IOException {
         AdminSession current = store.load();
@@ -95,9 +159,10 @@ public final class AdminRepository {
             throw failure;
         }
     }
+    public void cancelPending() { api.cancelPending(); }
     public void logout() {
         final AdminSession previous;
-        synchronized (stateLock) { generation++; previous = store.load(); store.clear(); }
+        synchronized (stateLock) { generation++; api.cancelPending(); previous = store.load(); store.clear(); }
         if (previous != null) executor.execute(() -> revoke(previous));
     }
     private void revoke(AdminSession session) { revokeToken(session.refreshToken); }

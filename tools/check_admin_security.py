@@ -40,7 +40,8 @@ class AdminSecurityConfigurationTests(unittest.TestCase):
 
     def test_sensitive_views_and_system_trust_only(self):
         views = ET.parse(MAIN / 'res/layout/activity_admin.xml').getroot()
-        for name in ('login','password','role','registrations'):
+        for name in ('login','password','role','registrations','totpCode','recoveryCode','bootstrapCode','enrollmentCode','enrollmentSecret','backupCodes',
+                     'reviewProfile','reviewIdentity','reviewItems','reviewItemDetails','reviewImage','reviewNote','reviewHistory'):
             view = next(e for e in views.iter() if e.get(A+'id') == '@+id/'+name)
             self.assertEqual('false', view.get(A+'saveEnabled'))
         self.assertIn('FLAG_SECURE', (JAVA / 'ui/AdminActivity.java').read_text())
