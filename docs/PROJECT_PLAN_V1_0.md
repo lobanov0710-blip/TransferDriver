@@ -174,3 +174,14 @@ ADMIN_PHONE_TEST_ONLY не снимается для тестирования Dr
 E2E не выполняется обходом паузы G1; локальные/CI проверки используют синтетику.
 Результаты нового source/CI и остающиеся предупреждения фиксируются в журнале
 и отдельном verification receipt после фактического выполнения проверок.
+
+
+Проверенный code checkpoint первого среза: source16cdc03e6e7b2830c88a9bda19ee370540d1dfb5,
+CI43742661189 SUCCESS:231 JVM +56 API35 runtime, full lint6 suites PASS
+(Driver0errors/54 прежних warnings; новые формы0issues, Admin0issues).
+После native review исправлены контраст system bars и helper количества мест;
+scoring verdict ship относится только к перечисленным исправлениям.
+[Verification receipt](DRIVER_REGISTRATION_VERIFICATION_2026-11-15.json) и
+[UI review](DRIVER_REGISTRATION_UI_REVIEW_2026-11-15.md) сохраняют ограничения.
+Это завершение проверенного первого среза, не всего G2/мастера и не live E2E.
+Следующая утверждённая часть — availability/manual assignment, G1 на паузе.

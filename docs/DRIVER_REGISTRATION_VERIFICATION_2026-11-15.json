@@ -1,0 +1,194 @@
+{
+  "date": "2026-11-15",
+  "scope": "G2 Driver profile drafts and vehicles; shared HTTP503 mutation replay fix",
+  "remoteSourceCommit": "16cdc03e6e7b2830c88a9bda19ee370540d1dfb5",
+  "localSourceTree": "078a54b798d1911e6f15ac91891bc08afed84321",
+  "draftPr": "https://github.com/lobanov0710-blip/TransferDriver/pull/8",
+  "specBlob": "7434dc0b1548b4f2c5382f12d6cc5399f93d0a84",
+  "ownerPhoneAcceptance": {
+    "source": "owner-reported",
+    "newTotpConnected": true,
+    "loginSucceeded": true,
+    "independentLiveVerification": false
+  },
+  "localChecks": {
+    "driverJvmPerVariant": 43,
+    "adminJvmPerVariant": 34,
+    "variants": [
+      "debug",
+      "staging",
+      "release"
+    ],
+    "jvmTotal": 231,
+    "driverLintErrorsPerVariant": 0,
+    "driverLintWarningsPerVariant": 54,
+    "newRegistrationLintIssues": 0,
+    "adminLintIssuesPerVariant": 0,
+    "driverSecurityGuards": 7,
+    "adminSecurityGuards": 5,
+    "backendRegistrationContractScripts": 4,
+    "actualHttp503ReplayControlRequests": 2,
+    "actualHttp503ReplayProtectedRequests": 1,
+    "fullSixSuiteSourceCommit": "5cb6d60060c491e4d0768c90d1446beeacfd1e00",
+    "currentUiFixChecks": [
+      "Driver debug build",
+      "instrumentation compile",
+      "43 Driver JVM cases",
+      "Driver debug lint, 0 errors/54 existing warnings/0 new registration issues",
+      "7 Driver + 5 Admin source security guards"
+    ]
+  },
+  "ci": {
+    "runId": 43742661189,
+    "jobId": 132899016826,
+    "url": "https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43742661189",
+    "sourceCommit": "16cdc03e6e7b2830c88a9bda19ee370540d1dfb5",
+    "status": "completed",
+    "conclusion": "success",
+    "driverJvmPerVariant": 43,
+    "adminJvmPerVariant": 34,
+    "jvmTotal": 231,
+    "driverRuntimeApi35": 27,
+    "adminRuntimeApi35": 29,
+    "runtimeTotal": 56,
+    "failedOrSkipped": 0,
+    "fullLintSuites": 6
+  },
+  "rejectedInitialScreenshotEvidence": {
+    "runId": 43735703470,
+    "artifactId": 14170790867,
+    "reason": "adb diagnostic text instead of PNG; no visual acceptance",
+    "nativeTestsPassed": {
+      "driver": 27,
+      "admin": 29
+    }
+  },
+  "artifacts": [
+    {
+      "file": "round1/TransferDriver-debug.apk",
+      "sha256": "2940d9f67f47a27e8a8609f77a3835e16026f20f19688931beb0c2d3c11d4461",
+      "size": 12186050,
+      "certificateSha256": "1f55ef98b307d61e2dd46518bcbf581b4bd5fbd81f642f79437136ac837d2fae",
+      "remoteSourceCommit": "5448f31c755843b1a98a2f0ae3b35aa5d6e12339"
+    },
+    {
+      "file": "TransferAdmin-debug.apk",
+      "sha256": "43bfbb4daad747a53d231a2ffb3518ad3a5fd8e125d3a3712a519cbef85348d5",
+      "size": 7768040,
+      "certificateSha256": "ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b",
+      "remoteSourceCommit": "5cb6d60060c491e4d0768c90d1446beeacfd1e00",
+      "adminProductionSourcesUnchanged": true
+    }
+  ],
+  "limitations": [
+    "G1 paused; Driver live STAGING routes remain isolated by ADMIN_PHONE_TEST_ONLY",
+    "Synthetic CI Firebase config is never a working live Driver configuration",
+    "D4-D7 unapproved; no real documents, identity integration or final wizard submission",
+    "GET me does not expose correction reasons",
+    "No merge or production deploy; no release signing key",
+    "Physical-device regression of these new forms not performed",
+    "Runtime evidence covers API35 phone emulator only",
+    "UI verdict is a scoring pass for listed fixes, not a full security or whole-product clearance",
+    "54 pre-existing Driver lint warnings remain; no errors and no new registration warnings"
+  ],
+  "priorVerifiedCi": {
+    "remoteSourceCommit": "5cb6d60060c491e4d0768c90d1446beeacfd1e00",
+    "runId": 43736924677,
+    "jobId": 132881464115,
+    "conclusion": "success",
+    "jvmTotal": 231,
+    "driverRuntime": 27,
+    "adminRuntime": 29
+  },
+  "uiReview": {
+    "workflow": "Impeccable ordinary native extension",
+    "reviewer": "fresh generic agent using fallback role contract; no forked conversation",
+    "initialServiceQuotaFailure": true,
+    "initialDisposition": "fix",
+    "findings": [
+      "system bar contrast in light/dark",
+      "capacity hint hides range at font1.3",
+      "persist approved context in PRODUCT.md"
+    ],
+    "fixRound": 1,
+    "postFixVerdict": "ship",
+    "verdictScope": "All four scored fixes resolved; no regressions observed from fix batch. Not full G2 or live/physical-device acceptance.",
+    "resolved": [
+      "system-bar contrast",
+      "capacity hint and persistent range at font1.3",
+      "approved factual PRODUCT.md",
+      "valid recapture confirmation with production FLAG_SECURE intact"
+    ]
+  },
+  "intermediateFailures": [
+    {
+      "runId": 43738660853,
+      "source": "5448f31c755843b1a98a2f0ae3b35aa5d6e12339",
+      "failure": "dark native fixture did not reach loaded state before8s; lifecycle/font configuration synchronization corrected"
+    },
+    {
+      "runId": 43739771085,
+      "source": "505454a52a257a986391e8999dd416f5afb31eab",
+      "driverRuntime": 27,
+      "failure": "Admin moderation confirmation root had no focus; explicit parent-focus await/focused dialog matcher added"
+    }
+  ],
+  "productionSourceTrees": {
+    "app": "db18bda9ba0426f873f92dec5542633842ae0bcc",
+    "admin": "5e612dfc4e515aaf46ecdd99814548d8a44dd817"
+  },
+  "nativeEvidence": {
+    "artifactId": 14173720607,
+    "size": 525678,
+    "archiveSha256": "72c114fe0aadf374745b7acbc8d65cd5d6bf08bb13dea36cf7e3b8dc04399077",
+    "sourceCommit": "16cdc03e6e7b2830c88a9bda19ee370540d1dfb5",
+    "validation": [
+      "PNG signature",
+      "IHDR native viewport",
+      "chunk CRC",
+      "IEND",
+      "archive digest",
+      "reviewed actual recaptures"
+    ],
+    "screenshots": [
+      {
+        "file": "profile-light.png",
+        "sha256": "e5b4fa71ed44cfdfd5543656146f5f65843ac77fc1983c55c533ca0a72d46329",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.0,
+        "theme": "light"
+      },
+      {
+        "file": "profile-dark-large.png",
+        "sha256": "f4574e6da0d6d6f81a43f8fd95d5b64de5d327977290cb7884f8cf9359fb5f83",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.3,
+        "theme": "dark"
+      },
+      {
+        "file": "vehicle-light.png",
+        "sha256": "428b64d99b5efbf7c4d261b6abd179f59f06953aca658fc941a009787f12f044",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.0,
+        "theme": "light"
+      },
+      {
+        "file": "vehicle-dark-large.png",
+        "sha256": "c10c37ba73d24adaacbbba8786a32f0eef680bae11394832f7332c9f2380bbfd",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.3,
+        "theme": "dark"
+      }
+    ]
+  },
+  "documentationOnlyFinalCommit": "Final journals/review/receipt updates do not change tested app or test/workflow code; code CI pinned above, docs-only commits marked [skip ci].",
+  "technicalResponseBounds": {
+    "successBytes": 1048576,
+    "errorBytes": 4096,
+    "parsedVehicles": 200
+  }
+}
