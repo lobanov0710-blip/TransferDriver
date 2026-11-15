@@ -54,7 +54,7 @@ public final class OwnerMfaInstrumentationTest {
         AtomicReference<AdminRepository> reference=new AtomicReference<>();AtomicInteger profiles=new AtomicInteger();
         AdminRepository repo=new AdminRepository(context,new AdminApiClient(chain->{
             String path=chain.request().url().encodedPath();
-            if(path.equals("/v1/admin/mfa/totp/verify")){reference.get().logout();return response(chain.request(),session("owner-1").toResponse());}
+            if(path.equals("/v1/admin/mfa/totp/verify")){reference.get().logout();assertTrue(chain.call().isCanceled());return response(chain.request(),session("owner-1").toResponse());}
             if(path.equals("/v1/admin/me"))profiles.incrementAndGet();JsonObject ok=new JsonObject();ok.addProperty("ok",true);return response(chain.request(),ok);
         }));reference.set(repo);
         try{long epoch=repo.generation();try{repo.verifyMfa(OwnerMfa.Challenge.parse(challengeBody(false)),"123456",false,epoch);fail();}catch(java.io.IOException expected){assertNull(store.load());assertEquals(0,profiles.get());}}

@@ -159,9 +159,10 @@ public final class AdminRepository {
             throw failure;
         }
     }
+    public void cancelPending() { api.cancelPending(); }
     public void logout() {
         final AdminSession previous;
-        synchronized (stateLock) { generation++; previous = store.load(); store.clear(); }
+        synchronized (stateLock) { generation++; api.cancelPending(); previous = store.load(); store.clear(); }
         if (previous != null) executor.execute(() -> revoke(previous));
     }
     private void revoke(AdminSession session) { revokeToken(session.refreshToken); }

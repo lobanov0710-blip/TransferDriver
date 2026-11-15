@@ -62,6 +62,7 @@ public final class AdminActivity extends AppCompatActivity {
         findViewById(R.id.enrollmentForm).setVisibility(!state.loading && state.enrollment != null ? View.VISIBLE : View.GONE);
         findViewById(R.id.recoveryForm).setVisibility(!state.loading && !state.recoveryCodes.isEmpty() ? View.VISIBLE : View.GONE);
         ((TextView)findViewById(R.id.enrollmentSecret)).setText(state.enrollment == null ? "" : state.enrollment.secret);
+        ((TextView)findViewById(R.id.enrollmentPrompt)).setText(state.enrollment!=null&&state.enrollment.secret.isEmpty()?R.string.enrollment_confirm_after_switch:R.string.enrollment_prompt);
         ((TextView)findViewById(R.id.backupCodes)).setText(android.text.TextUtils.join("\n\n", state.recoveryCodes));
         findViewById(R.id.profile).setVisibility(authenticated ? View.VISIBLE : View.GONE);
         findViewById(R.id.logout).setVisibility(authenticated || state.loading || securityFlow ? View.VISIBLE : View.GONE);
@@ -70,7 +71,7 @@ public final class AdminActivity extends AppCompatActivity {
         message.setVisibility(state.error == 0 ? View.GONE : View.VISIBLE);
         TextView role = findViewById(R.id.role), security = findViewById(R.id.security);
         role.setText(authenticated ? getString(state.access.isOwner() ? R.string.owner : R.string.dispatcher) : "");
-        security.setText(!authenticated ? "" : getString(state.access.isOwner() ? (state.access.hasVerifiedMfa() ? R.string.owner_mfa_verified : R.string.owner_security_pending) : R.string.server_permissions));
+        security.setText(!authenticated ? "" : getString(state.access.ownerPhoneTest?R.string.owner_phone_test_notice:state.access.isOwner() ? (state.access.hasVerifiedMfa() ? R.string.owner_mfa_verified : R.string.owner_security_pending) : R.string.server_permissions));
         Button queue = findViewById(R.id.queue);
         queue.setEnabled(authenticated && state.access.canReadRegistrations() && !state.loading);
         TextView registrations = findViewById(R.id.registrations);
@@ -87,6 +88,7 @@ public final class AdminActivity extends AppCompatActivity {
     private String take(int id) {
         EditText field = findViewById(id); String value = field.getText().toString(); field.setText(""); return value;
     }
+    @Override protected void onStart(){super.onStart();if(model!=null)model.expireSecurityFlow();}
     @Override protected void onStop() {
         if(reviews!=null)reviews.clear();
         ((LinearLayout)findViewById(R.id.queueItems)).removeAllViews();

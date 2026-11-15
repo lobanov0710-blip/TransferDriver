@@ -10,9 +10,11 @@ public final class AdminAccess {
     public final String accountId, role;
     private final Set<String> permissions;
     private final boolean mfaVerified;
+    public final boolean ownerPhoneTest;
     public final long mfaExpiresAt;
-    private AdminAccess(String id, String role, Set<String> permissions, boolean verified, long expiry) {
+    private AdminAccess(String id, String role, Set<String> permissions, boolean verified, long expiry,boolean phoneTest) {
         accountId = id; this.role = role; this.permissions = Collections.unmodifiableSet(permissions); mfaVerified = verified; mfaExpiresAt = expiry;
+        ownerPhoneTest=phoneTest;
     }
     public static AdminAccess fromResponse(JsonObject response, String expectedAccount) {
         try {
@@ -32,7 +34,9 @@ public final class AdminAccess {
             String method = AdminSession.string(mfa, "method");
             boolean verified = OwnerMfa.trueField(mfa, "required") && OwnerMfa.trueField(mfa, "verified")
                     && ("totp".equals(method) || "recovery".equals(method));
-            return new AdminAccess(id, role, permissions, verified, OwnerMfa.timestamp(mfa, "expiresAt"));
+            String scope=AdminSession.string(admin,"testScope");
+            if(admin.has("testScope")&&!"owner_phone".equals(scope))return null;
+            return new AdminAccess(id, role, permissions, verified, OwnerMfa.timestamp(mfa, "expiresAt"),"owner_phone".equals(scope));
         } catch (RuntimeException invalid) { return null; }
     }
     public boolean isOwner() { return "owner".equals(role); }
@@ -50,6 +54,7 @@ public final class AdminAccess {
     public boolean canFinalizeReview(){return can("drivers.verify_documents")&&can("drivers.verify_identity")&&can("vehicles.verify");}
     public boolean canReviewItem(RegistrationReview.Item item){return can(item.isVehicle()||"vehicle_photo".equals(item.type)?"vehicles.verify":"drivers.verify_documents");}
     public boolean canReadResource(RegistrationReview.Item item){
+        if(ownerPhoneTest)return false;
         if("vehicle_photo".equals(item.type))return can("vehicles.verify");
         boolean identity="passport_selfie".equals(item.kind)||"identity_reference_selfie".equals(item.kind);
         return "document".equals(item.type)&&can("documents.read_sensitive")&&can(identity?"drivers.verify_identity":"drivers.verify_documents");

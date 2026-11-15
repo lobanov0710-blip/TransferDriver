@@ -54,7 +54,12 @@ Runtime tests: :admin:connectedDebugAndroidTest. Для проверки изо�
 перед запуском должны быть установлены debug Driver и Admin (Android CI делает это).
 Не используйте реальные документы/production OWNER credentials для тестирования.
 
-MFA setup/key/recovery доступны только в защищённом foreground UI. Уход в фон очищает
-временные данные и отменяет pending login; seed/коды не сериализуются в SavedState.
-Ключ из authenticator нельзя получить повторно из приложения; при прерывании
-неподтверждённого enrollment требуется новый protected bootstrap.
+MFA setup/key/recovery доступны в защищённом foreground UI. По утверждению
+владельца от 2026-11-15 переключение в аутентификатор на том же телефоне сохраняет
+только challenge/enrollment IDs и исходный срок (до 5 минут) в RAM. Seed, коды
+ввода и recovery-коды очищаются, saved state/диск не используются. Незавершённый
+auth запрос отменяется, поздняя сессия не сохраняется. Повторное переключение
+не продлевает срок. Перезапуск процесса/истечение TTL требуют нового входа.
+
+Подготовка OWNER-only STAGING для Windows и телефона:
+[инструкция](../docs/OWNER_PHONE_STAGING_WINDOWS.md). G1 остаётся на паузе.

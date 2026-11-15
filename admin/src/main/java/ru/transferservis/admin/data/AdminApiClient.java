@@ -23,6 +23,7 @@ public final class AdminApiClient {
         Failure(int status,String code) { super("Admin request failed"); this.status = status; this.code=code; }
     }
     public AdminApiClient() { client = AdminEndpointPolicy.clientBuilder().build(); }
+    public void cancelPending() { client.dispatcher().cancelAll(); }
     // Package-private transport seam for offline protocol tests. The origin guard always runs first.
     AdminApiClient(Interceptor transport) { client = AdminEndpointPolicy.clientBuilder().addInterceptor(transport).build(); }
     public JsonObject login(String login, String password) throws IOException {

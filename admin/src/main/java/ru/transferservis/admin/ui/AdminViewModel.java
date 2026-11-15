@@ -3,6 +3,7 @@ package ru.transferservis.admin.ui;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -54,6 +55,10 @@ public final class AdminViewModel extends AndroidViewModel {
     private final Handler main = new Handler(Looper.getMainLooper());
     private long request;
     private boolean initialized;
+    private boolean authenticationInFlight;
+    private String securityFlowId;
+    private long securityDeadlineElapsed;
+    private final Runnable expireSecurity=()->expireSecurityFlow();
     private interface Task { State run() throws IOException; }
     public AdminViewModel(Application app) { super(app); repository=((AdminApplication)app).repository(); }
     private static State idle(int error) { return new State(null,Collections.emptyList(),false,false,error); }
@@ -61,28 +66,31 @@ public final class AdminViewModel extends AndroidViewModel {
     public void initialize() { if(!initialized){initialized=true;if(repository.hasSession())restore();} }
     public void restore() { submit(()->new State(repository.me(),Collections.emptyList(),false,false,0)); }
     public void login(String login,String password) {
-        if(login.trim().isEmpty()||password.isEmpty()){state.setValue(idle(R.string.login_required));return;}
+        if(login.trim().isEmpty()||password.isEmpty()){publish(idle(R.string.login_required));return;}
         long generation=repository.generation();
-        submit(()->new State(repository.login(login.trim(),password,generation),Collections.emptyList(),false,false,0));
+        submit(()->new State(repository.login(login.trim(),password,generation),Collections.emptyList(),false,false,0),true);
     }
     public void verify(String code,boolean recovery) {
+        expireSecurityFlow();
         State before=state.getValue();long generation=repository.generation();
-        if(before==null||before.challenge==null||!before.challenge.active()){state.setValue(idle(R.string.mfa_expired));return;}
-        submit(()->new State(repository.verifyMfa(before.challenge,code,recovery,generation),Collections.emptyList(),false,false,0));
+        if(before==null||before.challenge==null||!before.challenge.active()){publish(idle(R.string.mfa_expired));return;}
+        submit(()->new State(repository.verifyMfa(before.challenge,code,recovery,generation),Collections.emptyList(),false,false,0),true);
     }
     public void startEnrollment(String bootstrap) {
+        expireSecurityFlow();
         State before=state.getValue();
-        if(before==null||before.challenge==null||!before.challenge.active()){state.setValue(idle(R.string.mfa_expired));return;}
+        if(before==null||before.challenge==null||!before.challenge.active()){publish(idle(R.string.mfa_expired));return;}
         submit(()->new State(null,Collections.emptyList(),false,false,0,before.challenge,
-                repository.startEnrollment(before.challenge,bootstrap),Collections.emptyList()));
+                repository.startEnrollment(before.challenge,bootstrap),Collections.emptyList()),true);
     }
     public void confirmEnrollment(String code) {
+        expireSecurityFlow();
         State before=state.getValue();
-        if(before==null||before.enrollment==null||!before.enrollment.active()){state.setValue(idle(R.string.mfa_expired));return;}
+        if(before==null||before.enrollment==null||!before.enrollment.active()){publish(idle(R.string.mfa_expired));return;}
         submit(()->new State(null,Collections.emptyList(),false,false,0,null,null,
-                repository.confirmEnrollment(before.enrollment,code)));
+                repository.confirmEnrollment(before.enrollment,code)),true);
     }
-    public void acknowledgeRecoveryCodes() { request++;state.setValue(idle(0)); }
+    public void acknowledgeRecoveryCodes() { request++;publish(idle(0)); }
     public void queue() {
         queue("");
     }
@@ -99,20 +107,20 @@ public final class AdminViewModel extends AndroidViewModel {
         submit(()->{AdminRepository.ReviewResult r=repository.review(driverId,actor);
             return reviewing(r.access,new ReviewScreen(r.registration,null,"",null),0);});
     }
-    public void closeReview(){request++;State current=state.getValue();state.setValue(new State(current==null?null:current.access,Collections.emptyList(),false,false,0));}
+    public void closeReview(){request++;State current=state.getValue();publish(new State(current==null?null:current.access,Collections.emptyList(),false,false,0));}
     public void startReview(){State s=state.getValue();if(s==null||s.access==null||s.reviewScreen==null||s.loading)return;
         try{sendReview(ReviewAction.start(s.access,s.reviewScreen.registration));}
-        catch(IOException invalid){state.setValue(reviewing(s.access,s.reviewScreen,R.string.review_unavailable));}}
+        catch(IOException invalid){publish(reviewing(s.access,s.reviewScreen,R.string.review_unavailable));}}
     public void decideReview(String itemId,String decision,String note){
         State s=state.getValue();if(s==null||s.access==null||s.reviewScreen==null||s.loading||s.reviewScreen.uncertain!=null)return;
         RegistrationReview.Item item=itemId==null?null:s.reviewScreen.registration.item(itemId);
         if(itemId!=null&&item==null)return;
         if(item!=null&&!item.isVehicle()&&"verified".equals(decision)
                 &&(!item.id.equals(s.reviewScreen.previewId)||s.reviewScreen.preview==null)){
-            state.setValue(reviewing(s.access,s.reviewScreen,R.string.preview_first));return;
+            publish(reviewing(s.access,s.reviewScreen,R.string.preview_first));return;
         }
         try{sendReview(ReviewAction.decide(s.access,s.reviewScreen.registration,item,decision,note));}
-        catch(IOException invalid){state.setValue(reviewing(s.access,s.reviewScreen,R.string.reason_required));}
+        catch(IOException invalid){publish(reviewing(s.access,s.reviewScreen,R.string.reason_required));}
     }
     public void retryReview(){State s=state.getValue();if(s!=null&&s.reviewScreen!=null&&s.reviewScreen.uncertain!=null)sendReview(s.reviewScreen.uncertain);}
     public void preview(String id){
@@ -124,7 +132,7 @@ public final class AdminViewModel extends AndroidViewModel {
     private void sendReview(ReviewAction action){
         State before=state.getValue();if(before==null||before.loading||before.reviewScreen==null)return;
         long id=++request,generation=repository.generation();
-        state.setValue(reviewing(before.access,new ReviewScreen(before.reviewScreen.registration,null,"",action),0).pending(true,0));
+        publish(reviewing(before.access,new ReviewScreen(before.reviewScreen.registration,null,"",action),0).pending(true,0));
         repository.executor.execute(()->{
             State next;boolean acknowledged=false;AdminAccess access=before.access;
             try{
@@ -140,7 +148,7 @@ public final class AdminViewModel extends AndroidViewModel {
                 else next=reviewing(access,new ReviewScreen(before.reviewScreen.registration,null,"",action),R.string.review_uncertain);
             }
             State result=next;main.post(()->{if(id==request&&generation==repository.generation())
-                state.setValue(repository.currentAccount(action.accountId)?result:idle(R.string.request_failed));});
+                publish(repository.currentAccount(action.accountId)?result:idle(R.string.request_failed));});
         });
     }
     private static int reviewError(Exception failure){
@@ -150,11 +158,13 @@ public final class AdminViewModel extends AndroidViewModel {
             if(f.status==422)return R.string.review_incomplete;
         }return R.string.request_failed;
     }
-    private void submit(Task task) {
+    private void submit(Task task) { submit(task,false); }
+    private void submit(Task task,boolean authentication) {
         State before=state.getValue();
         if(before!=null&&before.loading)return; // Do not replay one-time MFA submissions on double tap.
+        authenticationInFlight=authentication;
         long id=++request,generation=repository.generation();
-        state.setValue(before==null?idle(0).pending(true,0):before.pending(true,0));
+        publish(before==null?idle(0).pending(true,0):before.pending(true,0));
         repository.executor.execute(()->{
             State next;
             try { if(generation!=repository.generation())throw new IOException("Session replaced");next=task.run(); }
@@ -165,14 +175,43 @@ public final class AdminViewModel extends AndroidViewModel {
                 next=active?before.pending(false,R.string.mfa_failed):new State(before==null?null:before.access,Collections.emptyList(),false,false,reviewError(failure));
             }
             State result=next;
-            main.post(()->{if(id==request&&generation==repository.generation())
-                state.setValue(result.access==null||repository.currentAccount(result.access.accountId)?result:idle(R.string.request_failed));});
+            main.post(()->{if(id==request&&generation==repository.generation()) {
+                authenticationInFlight=false;
+                publish(result.access==null||repository.currentAccount(result.access.accountId)?result:idle(R.string.request_failed));}});
         });
     }
-    public void logout() { request++;repository.logout();state.setValue(idle(0)); }
-    public void hideSecurityFlow() {
-        State current=state.getValue();if(current!=null&&current.hasTransientSecurityData())logout();
-        else if(current!=null&&(current.reviewScreen!=null||current.queueLoaded)){request++;state.setValue(new State(current.access,Collections.emptyList(),false,false,0));}
+    private void publish(State next) {
+        main.removeCallbacks(expireSecurity);
+        String id=next.challenge!=null?next.challenge.id:next.enrollment!=null?next.enrollment.id:null;
+        if(id==null){securityFlowId=null;securityDeadlineElapsed=0;}
+        else{
+            long expiry=next.challenge!=null?next.challenge.expiresAt:next.enrollment.expiresAt;
+            if(next.enrollment!=null)expiry=Math.min(expiry,next.enrollment.expiresAt);
+            long now=SystemClock.elapsedRealtime(),remaining=Math.max(0,Math.min(300_000,expiry-System.currentTimeMillis()));
+            securityDeadlineElapsed=id.equals(securityFlowId)?Math.min(securityDeadlineElapsed,now+remaining):now+remaining;
+            securityFlowId=id;main.postDelayed(expireSecurity,Math.max(0,securityDeadlineElapsed-now));
+        }
+        state.setValue(next);
     }
-    @Override protected void onCleared(){request++;super.onCleared();}
+    public void expireSecurityFlow(){
+        State current=state.getValue();
+        if(current!=null&&((current.challenge!=null&&!current.challenge.active())||(current.enrollment!=null&&!current.enrollment.active())
+                ||(securityFlowId!=null&&SystemClock.elapsedRealtime()>=securityDeadlineElapsed))){
+            request++;authenticationInFlight=false;repository.logout();publish(idle(R.string.mfa_expired));
+        }
+    }
+    public void logout() { request++;authenticationInFlight=false;repository.logout();publish(idle(0)); }
+    public void hideSecurityFlow() {
+        State current=state.getValue();if(current==null)return;
+        if(authenticationInFlight){request++;authenticationInFlight=false;repository.logout();publish(idle(R.string.mfa_background_cancelled));return;}
+        if(!current.recoveryCodes.isEmpty()){logout();return;}
+        if(current.challenge!=null||current.enrollment!=null){
+            expireSecurityFlow();current=state.getValue();
+            if(current.challenge==null&&current.enrollment==null)return;
+            request++;publish(new State(null,Collections.emptyList(),false,false,0,current.challenge,
+                    current.enrollment==null?null:current.enrollment.withoutSecret(),Collections.emptyList()));return;
+        }
+        if(current.reviewScreen!=null||current.queueLoaded||current.loading){request++;repository.cancelPending();publish(new State(current.access,Collections.emptyList(),false,false,0));}
+    }
+    @Override protected void onCleared(){request++;main.removeCallbacks(expireSecurity);if(authenticationInFlight)repository.logout();super.onCleared();}
 }

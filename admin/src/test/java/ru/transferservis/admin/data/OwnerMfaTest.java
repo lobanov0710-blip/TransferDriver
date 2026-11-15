@@ -24,7 +24,9 @@ public final class OwnerMfaTest {
     @Test public void enrollmentRequiresBase32SeedAndNoWorkingTokens() throws Exception {
         JsonObject body=new JsonObject();body.addProperty("ok",true);body.addProperty("enrollmentId","enroll_"+repeat('a',43));
         body.addProperty("secret","GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ");body.addProperty("expiresAt",System.currentTimeMillis()+60000);
-        assertTrue(OwnerMfa.Enrollment.parse(body).active());assertNull(AdminSession.fromResponse(body));
+        OwnerMfa.Enrollment original=OwnerMfa.Enrollment.parse(body),cleared=original.withoutSecret();
+        assertEquals(original.id,cleared.id);assertEquals(original.expiresAt,cleared.expiresAt);assertEquals("",cleared.secret);
+        assertTrue(cleared.active());assertNull(AdminSession.fromResponse(body));
         body.addProperty("refreshToken","fixture");try{OwnerMfa.Enrollment.parse(body);fail();}catch(java.io.IOException expected){assertFalse(expected.getMessage().contains(body.get("secret").getAsString()));}
     }
     @Test public void recoveryCodesMustBeTenUnique128BitValues() throws Exception {
@@ -37,7 +39,10 @@ public final class OwnerMfaTest {
         admin.addProperty("accountId","owner");admin.addProperty("role","owner");JsonArray permissions=new JsonArray();permissions.add("*");admin.add("permissions",permissions);
         assertFalse(AdminAccess.fromResponse(body,"owner").canReadRegistrations());JsonObject mfa=new JsonObject();admin.add("mfa",mfa);
         mfa.addProperty("required",true);mfa.addProperty("verified",true);mfa.addProperty("method","totp");mfa.addProperty("expiresAt",System.currentTimeMillis()+60000);
-        assertTrue(AdminAccess.fromResponse(body,"owner").canReadRegistrations());mfa.addProperty("expiresAt",1);assertFalse(AdminAccess.fromResponse(body,"owner").canReadRegistrations());
+        assertTrue(AdminAccess.fromResponse(body,"owner").canReadRegistrations());
+        admin.addProperty("testScope","owner_phone");assertTrue(AdminAccess.fromResponse(body,"owner").ownerPhoneTest);
+        admin.addProperty("testScope","unexpected");assertNull(AdminAccess.fromResponse(body,"owner"));admin.remove("testScope");
+        mfa.addProperty("expiresAt",1);assertFalse(AdminAccess.fromResponse(body,"owner").canReadRegistrations());
         mfa.addProperty("expiresAt",System.currentTimeMillis()+60000);mfa.addProperty("verified","true");assertFalse(AdminAccess.fromResponse(body,"owner").canReadRegistrations());
     }
 }

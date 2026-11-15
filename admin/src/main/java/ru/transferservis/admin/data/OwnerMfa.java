@@ -44,6 +44,7 @@ public final class OwnerMfa {
         public final long expiresAt;
         private Enrollment(String id, String secret, long expiry) { this.id = id; this.secret = secret; expiresAt = expiry; }
         public boolean active() { return expiresAt > System.currentTimeMillis(); }
+        public Enrollment withoutSecret() { return new Enrollment(id,"",expiresAt); }
         public static Enrollment parse(JsonObject response) throws IOException {
             String id = AdminSession.string(response, "enrollmentId"), seed = AdminSession.string(response, "secret");
             long expiry = timestamp(response, "expiresAt");
