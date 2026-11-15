@@ -1410,3 +1410,38 @@ https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663103
 UI-07 — PARTIAL (synthetic). Серверная own-only HTTP авторизация,
 реальный сетевой replay и R2 upload не проверены.
 Production/STAGING/R2/D4, merge и remote migrations не затронуты.
+
+## 2026-11-15 — D3 UI-11/UI-12 и защита фотоконтроля от устаревших ответов
+
+- Предыдущие CI `43584663155` и `43584663103`: **FAIL**.
+  Компиляцию `SupportCasesActivity.java` блокировало совпадение
+  имени локальной переменной `AlertDialog dialog` и аргумента
+  `dialog` в lambda `setItems`. Исправлено переименованием
+  аргумента в `selectedDialog` (коммит `301c82d42b`).
+- `PhotoChecksActivity`: добавлен `loadGeneration`; ответы
+  отменённых логически запросов не обновляют список. Первый
+  `onResume` больше не инициирует лишний запрос, последующие
+  возвращения к списку запускают повторную проверку.
+- `PhotoCheckActivity`: `loadGeneration`, `currentCheck=null`
+  на время загрузки; поздний ответ не может повторно разрешить
+  съёмку или отменить актуальную ошибку. Два новых synthetic
+  Android-теста проверяют устаревшие list/detail callbacks.
+- `OrderDetailsViewModel`: `OrderDetailsGateway` с отдельными
+  debug/release factories; release всегда использует
+  `OrderRepository`. `currentOrderRevision` сбрасывается
+  при повторной загрузке до ответа assigned-only API.
+- `OrderDetailsActivity`: при revalidation скрывает устаревшие
+  детали пассажира и отключает terminal action; программный
+  вызов disabled confirmation отклоняется.
+- Добавлены instrumented tests `OrderDetailsD3InstrumentationTest`:
+  UI-11 taken verification gate disabled, UI-12 done timeout/
+  explicit replay с прежним expectedRevision и последующим
+  серверным done, плюс stale order refresh fail-closed.
+- Код SHA `d35fc2fc333cecd9428b34be986104bae383fb25`.
+  CI на момент записи ещё не подтверждены:
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312807
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312783
+- UI-11/UI-12 **PARTIAL** до проверки реального HTTP E2E.
+  Все новые тесты используют синтетические данные; owner phone
+  setup не выполнялся, секреты/SQL не выводились. Production,
+  STAGING, R2, D4, merge, remote migrations и deploy не затронуты.
