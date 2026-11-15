@@ -24,6 +24,8 @@ public final class PhotoChecksActivity
         extends SecureActivity {
 
     private PhotoCheckGateway repository;
+    private int loadGeneration;
+    private boolean firstResume = true;
 
     private PhotoCheckAdapter adapter;
 
@@ -99,16 +101,19 @@ public final class PhotoChecksActivity
     protected void onResume() {
         super.onResume();
 
-        if (
-                recycler.getVisibility()
-                        == View.VISIBLE
-        ) {
-
-            loadChecks();
+        if (firstResume) {
+            firstResume = false;
+            return;
         }
+
+        // Returning from a detail screen requires a fresh assigned-only list,
+        // even if the previous request ended in an error.
+        loadChecks();
     }
 
     private void loadChecks() {
+
+        final int generation = ++loadGeneration;
 
         // Hide stale assigned checks until the server revalidates access.
         recycler.setVisibility(View.GONE);
@@ -137,6 +142,10 @@ public final class PhotoChecksActivity
 
                         runOnUiThread(
                                 () -> {
+
+                                    if (generation != loadGeneration || isFinishing() || isDestroyed()) {
+                                        return;
+                                    }
 
                                     progress.setVisibility(
                                             View.GONE
@@ -176,8 +185,11 @@ public final class PhotoChecksActivity
                     public void onAuthenticationRequired() {
 
                         runOnUiThread(
-                                () ->
-                                        openLogin()
+                                () -> {
+                                    if (generation == loadGeneration && !isFinishing() && !isDestroyed()) {
+                                        openLogin();
+                                    }
+                                }
                         );
                     }
 
@@ -189,6 +201,10 @@ public final class PhotoChecksActivity
 
                         runOnUiThread(
                                 () -> {
+
+                                    if (generation != loadGeneration || isFinishing() || isDestroyed()) {
+                                        return;
+                                    }
 
                                     progress.setVisibility(
                                             View.GONE
