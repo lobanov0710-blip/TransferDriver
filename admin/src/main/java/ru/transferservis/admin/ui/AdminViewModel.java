@@ -15,6 +15,9 @@ import ru.transferservis.admin.data.AdminAccess;
 import ru.transferservis.admin.data.AdminRepository;
 import ru.transferservis.admin.data.OwnerMfa;
 import ru.transferservis.admin.data.RegistrationRow;
+import ru.transferservis.admin.data.RegistrationReview;
+import ru.transferservis.admin.data.ReviewAction;
+import ru.transferservis.admin.data.AdminApiClient;
 
 public final class AdminViewModel extends AndroidViewModel {
     public static final class State {
@@ -26,17 +29,24 @@ public final class AdminViewModel extends AndroidViewModel {
         public final OwnerMfa.Challenge challenge;
         public final OwnerMfa.Enrollment enrollment;
         public final List<String> recoveryCodes;
+        public final ReviewScreen reviewScreen;
         State(AdminAccess access, List<RegistrationRow> rows, boolean loading, boolean loaded, int error) {
             this(access,rows,loading,loaded,error,null,null,Collections.emptyList());
         }
         State(AdminAccess access, List<RegistrationRow> rows, boolean loading, boolean loaded, int error,
                 OwnerMfa.Challenge challenge, OwnerMfa.Enrollment enrollment, List<String> recovery) {
+            this(access,rows,loading,loaded,error,challenge,enrollment,recovery,null);
+        }
+        State(AdminAccess access,List<RegistrationRow> rows,boolean loading,boolean loaded,int error,
+                OwnerMfa.Challenge challenge,OwnerMfa.Enrollment enrollment,List<String> recovery,ReviewScreen screen) {
             this.access=access;registrations=rows;this.loading=loading;queueLoaded=loaded;this.error=error;
             this.challenge=challenge;this.enrollment=enrollment;recoveryCodes=recovery;
+            reviewScreen=screen;
         }
         public boolean hasTransientSecurityData() { return challenge!=null||enrollment!=null||!recoveryCodes.isEmpty(); }
         State pending(boolean busy,int failure) {
-            return new State(null,Collections.emptyList(),busy,false,failure,challenge,enrollment,recoveryCodes);
+            return new State(null,Collections.emptyList(),busy,false,failure,challenge,enrollment,recoveryCodes,
+                    reviewScreen==null?null:new ReviewScreen(reviewScreen.registration,null,"",reviewScreen.uncertain));
         }
     }
     private final AdminRepository repository;
@@ -74,8 +84,71 @@ public final class AdminViewModel extends AndroidViewModel {
     }
     public void acknowledgeRecoveryCodes() { request++;state.setValue(idle(0)); }
     public void queue() {
-        submit(()->{AdminRepository.QueueResult result=repository.registrations();
+        queue("");
+    }
+    public void queue(String status) {
+        submit(()->{AdminRepository.QueueResult result=repository.registrations(status);
             return new State(result.access,RegistrationRow.parse(result.response),false,true,0);});
+    }
+    private static State reviewing(AdminAccess access,ReviewScreen screen,int error) {
+        return new State(access,Collections.emptyList(),false,false,error,null,null,Collections.emptyList(),screen);
+    }
+    public void openReview(String driverId) {
+        State before=state.getValue();if(before==null||before.access==null)return;
+        String actor=before.access.accountId;
+        submit(()->{AdminRepository.ReviewResult r=repository.review(driverId,actor);
+            return reviewing(r.access,new ReviewScreen(r.registration,null,"",null),0);});
+    }
+    public void closeReview(){request++;State current=state.getValue();state.setValue(new State(current==null?null:current.access,Collections.emptyList(),false,false,0));}
+    public void startReview(){State s=state.getValue();if(s==null||s.access==null||s.reviewScreen==null||s.loading)return;
+        try{sendReview(ReviewAction.start(s.access,s.reviewScreen.registration));}
+        catch(IOException invalid){state.setValue(reviewing(s.access,s.reviewScreen,R.string.review_unavailable));}}
+    public void decideReview(String itemId,String decision,String note){
+        State s=state.getValue();if(s==null||s.access==null||s.reviewScreen==null||s.loading||s.reviewScreen.uncertain!=null)return;
+        RegistrationReview.Item item=itemId==null?null:s.reviewScreen.registration.item(itemId);
+        if(itemId!=null&&item==null)return;
+        if(item!=null&&!item.isVehicle()&&"verified".equals(decision)
+                &&(!item.id.equals(s.reviewScreen.previewId)||s.reviewScreen.preview==null)){
+            state.setValue(reviewing(s.access,s.reviewScreen,R.string.preview_first));return;
+        }
+        try{sendReview(ReviewAction.decide(s.access,s.reviewScreen.registration,item,decision,note));}
+        catch(IOException invalid){state.setValue(reviewing(s.access,s.reviewScreen,R.string.reason_required));}
+    }
+    public void retryReview(){State s=state.getValue();if(s!=null&&s.reviewScreen!=null&&s.reviewScreen.uncertain!=null)sendReview(s.reviewScreen.uncertain);}
+    public void preview(String id){
+        State s=state.getValue();if(s==null||s.access==null||s.reviewScreen==null||s.reviewScreen.uncertain!=null)return;
+        RegistrationReview registration=s.reviewScreen.registration;RegistrationReview.Item item=registration.item(id);
+        if(item==null)return;
+        submit(()->reviewing(s.access,new ReviewScreen(registration,ReviewScreen.decode(repository.preview(registration,item,s.access.accountId)),id,null),0));
+    }
+    private void sendReview(ReviewAction action){
+        State before=state.getValue();if(before==null||before.loading||before.reviewScreen==null)return;
+        long id=++request,generation=repository.generation();
+        state.setValue(reviewing(before.access,new ReviewScreen(before.reviewScreen.registration,null,"",action),0).pending(true,0));
+        repository.executor.execute(()->{
+            State next;boolean acknowledged=false;AdminAccess access=before.access;
+            try{
+                if(generation!=repository.generation())throw new IOException("Session replaced");
+                access=repository.applyReview(action);acknowledged=true;
+                AdminRepository.ReviewResult r=repository.review(action.driverId,action.accountId);
+                next=reviewing(r.access,new ReviewScreen(r.registration,null,"",null),0);
+            }catch(IOException|RuntimeException failure){
+                boolean definitive=failure instanceof AdminApiClient.Failure&&((AdminApiClient.Failure)failure).status>=400
+                        &&((AdminApiClient.Failure)failure).status<500&&((AdminApiClient.Failure)failure).status!=408;
+                if(acknowledged||definitive)next=new State(access,Collections.emptyList(),false,false,
+                        acknowledged?R.string.review_reload:reviewError(failure));
+                else next=reviewing(access,new ReviewScreen(before.reviewScreen.registration,null,"",action),R.string.review_uncertain);
+            }
+            State result=next;main.post(()->{if(id==request&&generation==repository.generation())
+                state.setValue(repository.currentAccount(action.accountId)?result:idle(R.string.request_failed));});
+        });
+    }
+    private static int reviewError(Exception failure){
+        if(failure instanceof AdminApiClient.Failure){AdminApiClient.Failure f=(AdminApiClient.Failure)failure;
+            if(f.status==403)return R.string.review_permission_denied;
+            if(f.status==409)return R.string.review_conflict;
+            if(f.status==422)return R.string.review_incomplete;
+        }return R.string.request_failed;
     }
     private void submit(Task task) {
         State before=state.getValue();
@@ -84,20 +157,22 @@ public final class AdminViewModel extends AndroidViewModel {
         state.setValue(before==null?idle(0).pending(true,0):before.pending(true,0));
         repository.executor.execute(()->{
             State next;
-            try { next=task.run(); }
+            try { if(generation!=repository.generation())throw new IOException("Session replaced");next=task.run(); }
             catch(OwnerMfa.Required required){next=new State(null,Collections.emptyList(),false,false,0,required.challenge,null,Collections.emptyList());}
             catch(IOException|RuntimeException failure){
                 boolean active=before!=null&&before.challenge!=null&&before.challenge.active()
                         &&(before.enrollment==null||before.enrollment.active());
-                next=active?before.pending(false,R.string.mfa_failed):idle(R.string.request_failed);
+                next=active?before.pending(false,R.string.mfa_failed):new State(before==null?null:before.access,Collections.emptyList(),false,false,reviewError(failure));
             }
             State result=next;
-            main.post(()->{if(id==request&&generation==repository.generation())state.setValue(result);});
+            main.post(()->{if(id==request&&generation==repository.generation())
+                state.setValue(result.access==null||repository.currentAccount(result.access.accountId)?result:idle(R.string.request_failed));});
         });
     }
     public void logout() { request++;repository.logout();state.setValue(idle(0)); }
     public void hideSecurityFlow() {
         State current=state.getValue();if(current!=null&&current.hasTransientSecurityData())logout();
+        else if(current!=null&&(current.reviewScreen!=null||current.queueLoaded)){request++;state.setValue(new State(current.access,Collections.emptyList(),false,false,0));}
     }
     @Override protected void onCleared(){request++;super.onCleared();}
 }

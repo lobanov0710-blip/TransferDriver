@@ -15,6 +15,7 @@ public final class AdminRepository {
     public AdminRepository(Context context) { this(context, new AdminApiClient()); }
     AdminRepository(Context context, AdminApiClient api) { store = new AdminSessionStore(context); this.api = api; }
     public boolean hasSession() { return store.load() != null; }
+    public boolean currentAccount(String id){AdminSession current=store.load();return current!=null&&current.accountId.equals(id);}
     public long generation() { synchronized (stateLock) { return generation; } }
     public AdminAccess login(String login, String password, long expectedGeneration) throws IOException {
         JsonObject response = api.login(login, password);
@@ -60,19 +61,21 @@ public final class AdminRepository {
             return access;
         } catch (IOException failure) { revoke(candidate); throw failure; }
     }
-    public AdminAccess me() throws IOException {
-        AdminSession current = requireSession();
-        try {
-            return readAccess(current);
-        } catch (AdminApiClient.Failure failure) {
-            if (failure.status != 401) throw failure;
-            AdminSession rotated = refresh(current);
-            try { return readAccess(rotated); }
-            catch (AdminApiClient.Failure denied) {
-                if (denied.status == 401) store.clearIfCurrent(rotated);
-                throw denied;
-            }
+    private static final class Authorized {
+        final AdminSession session;final AdminAccess access;
+        Authorized(AdminSession session,AdminAccess access){this.session=session;this.access=access;}
+    }
+    public AdminAccess me() throws IOException { return authorize().access; }
+    private Authorized authorize() throws IOException {
+        AdminSession current=requireSession();AdminAccess access;
+        try { access=readAccess(current); }
+        catch(AdminApiClient.Failure failure){
+            if(failure.status!=401)throw failure;
+            current=refresh(current);
+            try {access=readAccess(current);}
+            catch(AdminApiClient.Failure denied){if(denied.status==401)store.clearIfCurrent(current);throw denied;}
         }
+        ensureCurrent(current);return new Authorized(current,access);
     }
     private AdminAccess readAccess(AdminSession session) throws IOException {
         JsonObject response;
@@ -91,20 +94,53 @@ public final class AdminRepository {
         QueueResult(AdminAccess access, JsonObject response) { this.access = access; this.response = response; }
     }
     public QueueResult registrations() throws IOException {
+        return registrations("");
+    }
+    public QueueResult registrations(String status) throws IOException {
         // Resolve current permissions on the server for every queue read; no persisted grants.
-        AdminAccess access = me();
+        Authorized authorized=authorize();AdminAccess access=authorized.access;
         if (!access.canReadRegistrations()) throw new IOException("Permission required");
-        AdminSession current = requireSession();
+        AdminSession current = authorized.session;
         if (!current.accountId.equals(access.accountId)) throw new IOException("Session replaced");
-        try { return new QueueResult(access, api.registrations(current.accessToken)); }
+        try { JsonObject result=api.registrations(current.accessToken,status);ensureCurrent(current);return new QueueResult(access,result); }
         catch (AdminApiClient.Failure failure) {
             if (failure.status != 401) throw failure;
             // A rotated session can lose permission; re-resolve before retrying this read-only GET.
             AdminSession rotated = refresh(current);
             AdminAccess updated = readAccess(rotated);
             if (!updated.canReadRegistrations()) throw new IOException("Permission required");
-            return new QueueResult(updated, api.registrations(rotated.accessToken));
+            JsonObject result=api.registrations(rotated.accessToken,status);ensureCurrent(rotated);return new QueueResult(updated,result);
         }
+    }
+    public static final class ReviewResult {
+        public final AdminAccess access;
+        public final RegistrationReview registration;
+        ReviewResult(AdminAccess access,RegistrationReview registration){this.access=access;this.registration=registration;}
+    }
+    private void ensureCurrent(AdminSession session) throws IOException {
+        if(!session.same(store.load()))throw new IOException("Session replaced");
+    }
+    public ReviewResult review(String driverId,String expectedAccount) throws IOException {
+        Authorized auth=authorize();AdminAccess access=auth.access;
+        if(!access.accountId.equals(expectedAccount)||!access.canReadReview())throw new AdminApiClient.Failure(403);
+        RegistrationReview review=RegistrationReview.parse(api.review(auth.session.accessToken,driverId),driverId);
+        ensureCurrent(auth.session);return new ReviewResult(access,review);
+    }
+    public byte[] preview(RegistrationReview review,RegistrationReview.Item item,String expectedAccount) throws IOException {
+        if(review.item(item.id)!=item)throw new IOException("Resource replaced");
+        Authorized auth=authorize();
+        if(!auth.access.accountId.equals(expectedAccount)||!auth.access.canReadResource(item))throw new AdminApiClient.Failure(403);
+        byte[] bytes=api.resource(auth.session.accessToken,review.driverId,item);
+        ensureCurrent(auth.session);return bytes;
+    }
+    public AdminAccess applyReview(ReviewAction action) throws IOException {
+        Authorized auth=authorize();AdminAccess access=auth.access;
+        if(!access.accountId.equals(action.accountId))throw new IOException("Session replaced");
+        boolean allowed="start".equals(action.type)?access.canStartReview():"complete".equals(action.type)?access.canFinalizeReview():
+                access.can("document".equals(action.type)?"drivers.verify_documents":"vehicles.verify");
+        if(!allowed)throw new AdminApiClient.Failure(403);
+        // POST is never automatically retried/refreshed. Explicit retry reuses the same action/key.
+        api.reviewAction(auth.session.accessToken,action);ensureCurrent(auth.session);return access;
     }
     private AdminSession requireSession() throws IOException {
         AdminSession current = store.load();

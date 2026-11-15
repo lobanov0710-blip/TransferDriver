@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 public final class RegistrationRow {
-    public final String fullName, region, status;
-    private RegistrationRow(String name, String region, String status) {
-        fullName = name; this.region = region; this.status = status;
+    public final String driverId, fullName, region, status;
+    private RegistrationRow(String id,String name, String region, String status) {
+        driverId=id;fullName = name; this.region = region; this.status = status;
     }
     public static List<RegistrationRow> parse(JsonObject response) throws IOException {
         try {
@@ -22,8 +22,8 @@ public final class RegistrationRow {
                 JsonObject row = item.getAsJsonObject();
                 String id = AdminSession.string(row, "driverId"), status = AdminSession.string(row, "registrationStatus");
                 if (id.isEmpty() || !("submitted".equals(status) || "under_review".equals(status)
-                        || "changes_required".equals(status))) throw new IOException("Invalid registration");
-                rows.add(new RegistrationRow(AdminSession.string(row, "fullName"), AdminSession.string(row, "region"), status));
+                        || "changes_required".equals(status)||"approved".equals(status)||"rejected".equals(status))) throw new IOException("Invalid registration");
+                rows.add(new RegistrationRow(id,AdminSession.string(row, "fullName"), AdminSession.string(row, "region"), status));
             }
             return Collections.unmodifiableList(rows);
         } catch (RuntimeException invalid) { throw new IOException("Invalid queue"); }

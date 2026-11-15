@@ -249,6 +249,13 @@ jobs:
                       'enrollmentSeedAndRecoveryCodesNeverEnterPersistentStorage',
                       'enrollmentSecretIsNotSavedAndBackgroundPurgesVolatileFlow',
                       'recoveryCodesAreNotSavedOrRetainedWhenScreenLeavesForeground',
+                      'partialReviewUsesFreshPermissionsAndPreservesOtherVerifiedItems',
+                      'lostAcknowledgementRequiresExplicitRetryWithSameBodyAndKey',
+                      'revokedGrantStopsPendingMutationBeforePostAndSensitiveReadBeforeTransport',
+                      'delayedMutationUnauthorizedDoesNotRefreshOrUseAnotherAccount',
+                      'resourceIsBoundToSnapshotAndNeverStoredInPreferences',
+                      'moderationUiExplicitlyRetriesUncertainStartAndReturnsOneElementWithReason',
+                      'reviewMaterialReasonAndProfileAreNotSavedAndBackgroundClearsThem',
                   ):
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               print(name + '_TESTS=PASS count=' + str(len(cases)))

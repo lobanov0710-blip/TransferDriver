@@ -6,6 +6,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.core.graphics.Insets;
@@ -16,6 +19,7 @@ import ru.transferservis.admin.data.RegistrationRow;
 
 public final class AdminActivity extends AppCompatActivity {
     private AdminViewModel model;
+    private ReviewPanel reviews;
     @Override protected void onCreate(Bundle savedInstanceState) {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         super.onCreate(savedInstanceState); setContentView(R.layout.activity_admin);
@@ -25,13 +29,17 @@ public final class AdminActivity extends AppCompatActivity {
             return insets;
         });
         model = new ViewModelProvider(this).get(AdminViewModel.class);
+        reviews=new ReviewPanel(this,model);
+        Spinner filter=findViewById(R.id.queueFilter);
+        filter.setAdapter(new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item,getResources().getStringArray(R.array.queue_filters)));
+        findViewById(R.id.queueItems).setSaveFromParentEnabled(false);
         EditText login = findViewById(R.id.login), password = findViewById(R.id.password);
         findViewById(R.id.signIn).setOnClickListener(v -> {
             String secret = password.getText().toString(); password.setText("");
             model.login(login.getText().toString(), secret);
         });
         findViewById(R.id.retry).setOnClickListener(v -> model.restore());
-        findViewById(R.id.queue).setOnClickListener(v -> model.queue());
+        findViewById(R.id.queue).setOnClickListener(v -> model.queue(new String[]{"","submitted","under_review","changes_required","approved","rejected"}[filter.getSelectedItemPosition()]));
         findViewById(R.id.logout).setOnClickListener(v -> { login.setText(""); password.setText(""); model.logout(); });
         findViewById(R.id.verifyTotp).setOnClickListener(v -> model.verify(take(R.id.totpCode), false));
         findViewById(R.id.verifyRecovery).setOnClickListener(v -> model.verify(take(R.id.recoveryCode), true));
@@ -42,6 +50,7 @@ public final class AdminActivity extends AppCompatActivity {
         model.initialize();
     }
     private void render(AdminViewModel.State state) {
+        reviews.render(state);
         boolean authenticated = state.access != null;
         findViewById(R.id.progress).setVisibility(state.loading ? View.VISIBLE : View.GONE);
         boolean securityFlow = state.hasTransientSecurityData();
@@ -65,19 +74,23 @@ public final class AdminActivity extends AppCompatActivity {
         Button queue = findViewById(R.id.queue);
         queue.setEnabled(authenticated && state.access.canReadRegistrations() && !state.loading);
         TextView registrations = findViewById(R.id.registrations);
-        StringBuilder content = new StringBuilder();
+        LinearLayout rows=findViewById(R.id.queueItems);rows.removeAllViews();
         for (RegistrationRow row : state.registrations) {
-            int status = "submitted".equals(row.status) ? R.string.submitted
-                    : "under_review".equals(row.status) ? R.string.under_review : R.string.changes_required;
-            content.append(getString(R.string.registration_row, limited(row.fullName), limited(row.region), getString(status)));
+            String label=getString(R.string.registration_row,limited(row.fullName),limited(row.region),reviews.status(row.status));
+            Button entry=new Button(this);entry.setText(label);entry.setSaveEnabled(false);
+            entry.setEnabled(authenticated&&state.access.canReadReview()&&!state.loading);
+            entry.setOnClickListener(v->model.openReview(row.driverId));rows.addView(entry);
         }
-        registrations.setText(state.queueLoaded && state.registrations.isEmpty() ? getString(R.string.queue_empty) : content.toString());
+        registrations.setText(state.queueLoaded && state.registrations.isEmpty() ? getString(R.string.queue_empty) : "");
         registrations.setVisibility(state.queueLoaded ? View.VISIBLE : View.GONE);
     }
     private String take(int id) {
         EditText field = findViewById(id); String value = field.getText().toString(); field.setText(""); return value;
     }
     @Override protected void onStop() {
+        if(reviews!=null)reviews.clear();
+        ((LinearLayout)findViewById(R.id.queueItems)).removeAllViews();
+        ((TextView)findViewById(R.id.registrations)).setText("");
         for (int id : new int[]{R.id.password,R.id.totpCode,R.id.recoveryCode,R.id.bootstrapCode,R.id.enrollmentCode})
             ((EditText)findViewById(id)).setText("");
         ((TextView)findViewById(R.id.enrollmentSecret)).setText("");

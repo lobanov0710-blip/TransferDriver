@@ -42,4 +42,16 @@ public final class AdminAccess {
         return ("dispatcher".equals(role) && permissions.contains("drivers.read"))
                 || (isOwner() && hasVerifiedMfa() && permissions.contains("*"));
     }
+    public boolean can(String permission) {
+        return isOwner()?hasVerifiedMfa()&&permissions.contains("*"):"dispatcher".equals(role)&&permissions.contains(permission);
+    }
+    public boolean canReadReview(){return can("drivers.verify_documents")||can("drivers.verify_identity")||can("vehicles.verify");}
+    public boolean canStartReview(){return can("drivers.verify_documents")||can("drivers.verify_identity");}
+    public boolean canFinalizeReview(){return can("drivers.verify_documents")&&can("drivers.verify_identity")&&can("vehicles.verify");}
+    public boolean canReviewItem(RegistrationReview.Item item){return can(item.isVehicle()||"vehicle_photo".equals(item.type)?"vehicles.verify":"drivers.verify_documents");}
+    public boolean canReadResource(RegistrationReview.Item item){
+        if("vehicle_photo".equals(item.type))return can("vehicles.verify");
+        boolean identity="passport_selfie".equals(item.kind)||"identity_reference_selfie".equals(item.kind);
+        return "document".equals(item.type)&&can("documents.read_sensitive")&&can(identity?"drivers.verify_identity":"drivers.verify_documents");
+    }
 }

@@ -4,7 +4,7 @@
 > отклонения запрещены. Неутверждённые варианты предлагаются владельцу без выбора за него.
 > [Обязательное правило работы](../AGENTS.md).
 
-Актуализация: 2026-11-14. Основание — [утверждённое ТЗ](TRANSFER_DRIVER_TECHNICAL_SPEC_V1_0.md),
+Актуализация: 2026-11-15. Основание — [утверждённое ТЗ](TRANSFER_DRIVER_TECHNICAL_SPEC_V1_0.md),
 [решения D1–D7](TECHNICAL_DECISIONS_V1_0_PROPOSED.md), журналы и фактический код.
 Это сводный рабочий план существующего объёма, а не изменение ТЗ или новое утверждение.
 D1–D3 утверждены; D4–D7 остаются неутверждёнными.
@@ -63,16 +63,16 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 25 | Отсутствует; D5 | Passenger ↔ Driver order-chat, его архив и 30 календарных дней не реализованы как полный сценарий. Support chat — другой контур. |
 | 26 | Отсутствует; D5 | Нет полноценного VoIP/signaling/TURN/записи/архива. Таблица calls не закрывает требование; сроки и правовые условия требуют решения. |
 | 27 | Частично | Driver support cases/messages и backend admin lifecycle/retention есть; Admin-приложение, все каналы связи и реальный E2E не завершены. |
-| 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login, собственный server profile и read-only очередь dispatcher; полный набор разделов Admin не завершён. |
+| 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login/MFA, server profile и Admin moderation UI с пятью фильтрами, карточкой, поэлементными решениями и историей; финальный CI этого среза ожидается. Полный набор разделов Admin не завершён. |
 | 29 | Код MFA проверен; E2E не выполнен | Параметры/API TOTP MFA утверждены. Server challenge/enrollment/TOTP/recovery/evidence и Admin flow проверены локально и в CI/runtime. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
 | 30 | Частично | Серверные granular permissions и Admin read-only очередь dispatcher с drivers.read реализованы. Управление сотрудниками, остальные разделы и приёмка полного набора прав впереди. |
-| 31 | Частично | Backend queue/review/item moderation и Admin read-only очередь submitted/under_review/changes_required есть. Модерация/возврат элементов, остальные статусы и исправления Driver UI не завершены. |
+| 31 | Частично | Добавлены пять фильтров очереди, карточка/история, review/возврат элементов и итоговое решение. Локальные проверки выполняются; CI/runtime ожидаются. Driver исправления и live E2E не завершены; реальная identity verification зависит от D4/D5. |
 | 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver/Admin UX и E2E не приняты. |
 | 33 | Частично | Assignment revision, reassign, audit и отзыв серверного доступа есть. GPS/order-chat/новая trip-selfie цепочка ещё не завершены. |
 | 34 | Частично | Реализованные mutations/доступ к private resources аудируются. Нет полного Admin audit/архивного UX и всех будущих событий GPS/VoIP/identity. |
 | 35 | Частично | HTTPS/origin locks, Keystore AES-GCM AAD v2, private uploads, PII-free push/log guards есть. Полный будущий data lifecycle и E2E не проверены. |
 | 36 | Код; E2E блокирован | Firebase identity обменивается на access JWT + rotating refresh; token types разделены. Подтвердить живой вход/refresh/logout. |
-| 37 | Соблюдается в проверенных PR | Feature branches, Draft PR #6/#28, merge отсутствует. Production release/deploy не выполняются без отдельного решения владельца. |
+| 37 | Соблюдается в проверенных PR | Feature branches, Draft PR #6/#28 и G2 #7/#29; merge отсутствует. Production release/deploy не выполняются без отдельного решения владельца. |
 | 38 | Частично | Продуктовые решения не отменены. Полное выполнение зависит от незавершённых разделов выше; сводный список не означает их приёмку. |
 | 39 | Частично утверждено | D1–D3 утверждены 2026-11-07; D4/D5/D6/D7 ожидают отдельных решений. Конкретизация не должна изменять ТЗ. |
 | 40 | Подтверждено | ТЗ утверждено 2026-11-06. Git blob 7434dc0b1548b4f2c5382f12d6cc5399f93d0a84 совпал; исходный текст не менялся. |

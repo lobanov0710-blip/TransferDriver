@@ -27,8 +27,31 @@
                 android:saveEnabled="false" android:textAppearance="?attr/textAppearanceHeadline6" />
             <TextView android:id="@+id/security" android:layout_width="match_parent" android:layout_height="wrap_content" android:saveEnabled="false" />
             <Button android:id="@+id/queue" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/registrations" />
+            <Spinner android:id="@+id/queueFilter" android:layout_width="match_parent" android:layout_height="48dp" android:saveEnabled="false" android:contentDescription="@string/queue_filter" />
+            <LinearLayout android:id="@+id/queueItems" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:saveEnabled="false" />
             <TextView android:id="@+id/registrations" android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:saveEnabled="false" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/reviewCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone" android:saveEnabled="false">
+            <TextView android:id="@+id/reviewProfile" android:layout_width="match_parent" android:layout_height="wrap_content" android:saveEnabled="false" />
+            <TextView android:id="@+id/reviewIdentity" android:layout_width="match_parent" android:layout_height="wrap_content" android:saveEnabled="false" />
+            <Button android:id="@+id/reviewStart" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_start" />
+            <Spinner android:id="@+id/reviewItems" android:layout_width="match_parent" android:layout_height="48dp" android:saveEnabled="false" android:contentDescription="@string/review_select_item" />
+            <TextView android:id="@+id/reviewItemDetails" android:layout_width="match_parent" android:layout_height="wrap_content" android:saveEnabled="false" />
+            <Button android:id="@+id/reviewPreview" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_preview" />
+            <ImageView android:id="@+id/reviewImage" android:layout_width="match_parent" android:layout_height="320dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:saveEnabled="false" android:contentDescription="@string/review_private_image" />
+            <EditText android:id="@+id/reviewNote" android:imeOptions="flagNoPersonalizedLearning" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:inputType="textMultiLine|textNoSuggestions" android:maxLength="1000" android:saveEnabled="false" android:importantForAutofill="no" android:hint="@string/review_reason" />
+            <Button android:id="@+id/reviewApproveItem" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_approve_item" />
+            <Button android:id="@+id/reviewReturnItem" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_return_item" />
+            <Button android:id="@+id/reviewRejectItem" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_reject_item" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_complete_title" />
+            <Button android:id="@+id/reviewApprove" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_approve" />
+            <Button android:id="@+id/reviewReturn" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_return" />
+            <Button android:id="@+id/reviewReject" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_reject" />
+            <Button android:id="@+id/reviewRetry" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_retry" />
+            <Button android:id="@+id/reviewReload" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_refresh" />
+            <TextView android:id="@+id/reviewHistory" android:layout_width="match_parent" android:layout_height="wrap_content" android:saveEnabled="false" />
+            <Button android:id="@+id/reviewClose" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/review_close" />
         </LinearLayout>
         <LinearLayout android:id="@+id/mfaForm" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:visibility="gone">
