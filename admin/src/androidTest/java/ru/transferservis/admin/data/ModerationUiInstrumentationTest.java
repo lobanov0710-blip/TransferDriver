@@ -31,6 +31,7 @@ import ru.transferservis.admin.ui.AdminViewModel;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
@@ -57,13 +58,13 @@ public final class ModerationUiInstrumentationTest {
     @Test public void moderationUiExplicitlyRetriesUncertainStartAndReturnsOneElementWithReason() throws Exception {
         try(ActivityScenario<AdminActivity> activity=ActivityScenario.launch(AdminActivity.class)){
             open(activity);server.dropAcknowledgement=true;
-            activity.onActivity(screen->screen.findViewById(R.id.reviewStart).performClick());onView(withText(R.string.review_yes)).perform(click());
+            activity.onActivity(screen->screen.findViewById(R.id.reviewStart).performClick());onView(withText(R.string.review_yes)).inRoot(isDialog()).perform(click());
             await(activity,s->s.reviewScreen!=null&&s.reviewScreen.uncertain!=null&&!s.loading);String key=server.lastKey;
             activity.onActivity(screen->screen.findViewById(R.id.reviewRetry).performClick());
             await(activity,s->s.reviewScreen!=null&&s.reviewScreen.uncertain==null&&!s.loading&&"under_review".equals(s.reviewScreen.registration.status));
             assertEquals(key,server.lastKey);assertEquals(1,server.history.size());
             activity.onActivity(screen->{((EditText)screen.findViewById(R.id.reviewNote)).setText("Synthetic correction reason");screen.findViewById(R.id.reviewReturnItem).performClick();});
-            onView(withText(R.string.review_yes)).perform(click());
+            onView(withText(R.string.review_yes)).inRoot(isDialog()).perform(click());
             await(activity,s->s.reviewScreen!=null&&!s.loading&&"changes_required".equals(s.reviewScreen.registration.items.get(0).status));
             activity.onActivity(screen->{AdminViewModel.State s=new ViewModelProvider(screen).get(AdminViewModel.class).state().getValue();assertEquals("verified",s.reviewScreen.registration.items.get(1).status);assertEquals("",((EditText)screen.findViewById(R.id.reviewNote)).getText().toString());assertFalse(screen.findViewById(R.id.reviewApprove).isEnabled());});
         }
