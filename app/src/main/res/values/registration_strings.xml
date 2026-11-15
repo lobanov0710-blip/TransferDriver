@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="registration_vehicle_row">%1$s %2$s · %3$s\n%4$s</string>
+    <string name="registration_title">Анкета и автомобили</string>
+    <string name="registration_profile_title">Личные данные</string>
+    <string name="registration_vehicles_title">Автомобили</string>
+    <string name="registration_vehicle_title">Данные автомобиля</string>
+    <string name="registration_save_profile">Сохранить личные данные</string>
+    <string name="registration_add_vehicle">Добавить автомобиль</string>
+    <string name="registration_save_vehicle">Сохранить автомобиль</string>
+    <string name="registration_cancel">К анкете</string>
+    <string name="registration_back">Назад</string>
+    <string name="registration_reload">Обновить данные</string>
+    <string name="registration_loading">Загружаем анкету…</string>
+    <string name="registration_note">Сохраните личные данные и каждый автомобиль отдельно. Несохранённый ввод очищается при уходе с экрана.</string>
+    <string name="registration_empty">Автомобилей пока нет. Добавьте первый автомобиль.</string>
+    <string name="registration_vehicle_note">Изменение VIN, госномера или основания использования может потребовать повторной проверки.</string>
+    <string name="registration_class">Класс автомобиля</string>
+    <string name="registration_baggage">Багаж</string>
+    <string name="registration_usage">Основание использования</string>
+    <string name="registration_phone">Подтверждённый телефон</string>
+    <string name="registration_section">Анкета и автомобили</string>
+    <string name="registration_fullName_label">ФИО</string>
+    <string name="registration_birthDate_label">Дата рождения · ДД.ММ.ГГГГ</string>
+    <string name="registration_region_label">Регион работы</string>
+    <string name="registration_vin_label">VIN · 17 символов</string>
+    <string name="registration_plate_label">Госномер</string>
+    <string name="registration_make_label">Марка</string>
+    <string name="registration_model_label">Модель</string>
+    <string name="registration_color_label">Цвет (необязательно)</string>
+    <string name="registration_capacity_label">Пассажирских мест</string>
+    <string name="registration_capacity_help">От 1 до 20</string>
+    <string-array name="registration_class_choices"><item>Выберите класс</item><item>Комфорт</item><item>Бизнес</item><item>Минивэн</item></string-array>
+    <string-array name="registration_baggage_choices"><item>Выберите объём багажа</item><item>Меньше стандартного</item><item>Стандартный</item><item>Большой</item></string-array>
+    <string-array name="registration_usage_choices"><item>Выберите основание</item><item>Собственность</item><item>Аренда</item><item>Иное</item></string-array>
+</resources>

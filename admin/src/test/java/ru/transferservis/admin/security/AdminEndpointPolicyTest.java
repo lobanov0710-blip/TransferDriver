@@ -23,4 +23,16 @@ public final class AdminEndpointPolicyTest {
         try {client.newCall(new Request.Builder().url("https://evil.example/").header("Authorization","Bearer fixture-secret").build()).execute();fail();}
         catch(java.io.IOException expected){assertFalse(expected.getMessage().contains("fixture-secret"));}
     }
+
+    @Test public void mutationBodiesAreOneShotBeforeTransport() throws Exception {
+        okhttp3.OkHttpClient client=AdminEndpointPolicy.clientBuilder().addInterceptor(chain->{
+            assertTrue(chain.request().body().isOneShot());
+            return new okhttp3.Response.Builder().request(chain.request()).protocol(okhttp3.Protocol.HTTP_1_1)
+                    .code(503).message("Synthetic").header("Retry-After","0").body(okhttp3.ResponseBody.create(null,"")).build();
+        }).build();
+        for(String method:new String[]{"POST","PUT","PATCH"})try(okhttp3.Response response=client.newCall(new okhttp3.Request.Builder()
+                .url(AdminEndpointPolicy.BASE_URL+"synthetic-mutation").method(method,okhttp3.RequestBody.create(null,"{}")).build()).execute()) {
+            assertEquals(503,response.code());
+        }
+    }
 }

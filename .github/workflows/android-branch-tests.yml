@@ -96,6 +96,9 @@ jobs:
             :app:assembleRelease \
             :app:bundleStaging \
             :app:assembleDebugAndroidTest \
+            :app:lintDebug \
+            :app:lintStaging \
+            :app:lintRelease \
             :admin:testDebugUnitTest \
             :admin:testStagingUnitTest \
             :admin:testReleaseUnitTest \
@@ -200,7 +203,11 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
+            mkdir -p registration-evidence
+            for image in profile-light profile-dark-large vehicle-light vehicle-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
+            python3 tools/check_registration_evidence.py registration-evidence
+            touch registration-evidence/.validated
             ./gradlew :app:installDebug --no-daemon --stacktrace
             ./gradlew :admin:connectedDebugAndroidTest --no-daemon --stacktrace
 
@@ -230,6 +237,18 @@ jobs:
                       'delayedHttpUnauthorizedPreservesTheSubsequentLogin',
                       'sessionFromAnotherBackendRequiresLogin',
                       'legacySessionWithoutBackendBindingRequiresLogin',
+                      'profileAndVehicleMutationsHaveNoAutomatic401RefreshOrReplay',
+                      'ambiguousVehicleCreateIsSentExactlyOnce',
+                      'changedAccountStopsQueuedMutationBeforeNetwork',
+                      'sameAccountReloginCannotReuseOldFormSession',
+                      'delayedResponseCannotExposePreviousAccountData',
+                      'cancelledQueuedMutationCannotRunAfterRebind',
+                      'uiSavesRevisionAndConfirmedPhoneCannotBeEdited',
+                      'vehicleUiRequiresVinAndSavesSeparateVehicleRevision',
+                      'ambiguousUiMutationRequiresReloadBeforeAnotherSave',
+                      'backgroundClearsUnsavedInputAndSecureCaptureFlagRemains',
+                      'nativeSyntheticScreensLight',
+                      'nativeSyntheticScreensDarkLargeFont',
                   ):
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               if name == 'ADMIN_ANDROID':
@@ -262,6 +281,15 @@ jobs:
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               print(name + '_TESTS=PASS count=' + str(len(cases)))
           PY
+
+      - name: Upload synthetic native form evidence
+        if: ${{ !cancelled() && hashFiles('registration-evidence/.validated') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: registration-synthetic-native-evidence
+          path: registration-evidence/*.png
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Print instrumentation report on failure
         if: failure()
