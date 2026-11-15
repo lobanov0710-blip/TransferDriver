@@ -64,7 +64,7 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 26 | Отсутствует; D5 | Нет полноценного VoIP/signaling/TURN/записи/архива. Таблица calls не закрывает требование; сроки и правовые условия требуют решения. |
 | 27 | Частично | Driver support cases/messages и backend admin lifecycle/retention есть; Admin-приложение, все каналы связи и реальный E2E не завершены. |
 | 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login, собственный server profile и read-only очередь dispatcher; полный набор разделов Admin не завершён. |
-| 29 | Код MFA; CI/E2E не завершены | Параметры/API TOTP MFA утверждены. В отдельных ветках реализованы server challenge/enrollment/TOTP/recovery/evidence и Admin flow; локальные тесты PASS, новые CI/runtime ожидаются. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
+| 29 | Код MFA проверен; E2E не выполнен | Параметры/API TOTP MFA утверждены. Server challenge/enrollment/TOTP/recovery/evidence и Admin flow проверены локально и в CI/runtime. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
 | 30 | Частично | Серверные granular permissions и Admin read-only очередь dispatcher с drivers.read реализованы. Управление сотрудниками, остальные разделы и приёмка полного набора прав впереди. |
 | 31 | Частично | Backend queue/review/item moderation и Admin read-only очередь submitted/under_review/changes_required есть. Модерация/возврат элементов, остальные статусы и исправления Driver UI не завершены. |
 | 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver/Admin UX и E2E не приняты. |
@@ -102,11 +102,20 @@ G2 не требует ожидания выбора liveness SDK для неч�
 ## Решение владельца для следующего шага G2
 
 Подготовлено [предложение TOTP MFA OWNER](ADMIN_MFA_TOTP_PROPOSAL.md).
-Параметры и API явно утверждены владельцем 2026-11-14. Server MFA реализуется
+Параметры и API явно утверждены владельцем 2026-11-14. Server MFA реализована
 в arch/g2-owner-totp-mfa; OWNER operational UI открывается только после серверной
 проверки MFA, не по одному имени роли.
-Первый срез Admin проверен: CI 43587414797, 51 JVM + 13 runtime и полный lint
-без issues; это не полная приёмка G2.
+MFA source проверен: Android c6badd3a / CI 43608123183 — 69 Admin JVM + 20 runtime,
+Driver 87 JVM + 12 runtime. Backend 1598dff3 / CI 43608125351 — 65 test scripts,
+18 migrations, 12 preflight, native workerd HTTP/D1 и dry-run PASS.
+Admin full lint трёх variants — 0 issues. OSV scan 6 runtime configurations,
+152 Maven components — 0 опубликованных advisories на момент проверки.
+Сводный отчёт: [OWNER_MFA_VERIFICATION_2026-11-15.json](OWNER_MFA_VERIFICATION_2026-11-15.json).
+Полный локальный receipt/inventory ожидают доступной execution environment.
+Это не полная приёмка G2: server changes не развёрнуты, live E2E не выполнен.
+Далее по G2 — оставшийся Driver registration/vehicle/availability UX и
+Admin moderation/assignment UX в рамках D1–D3; новые локальные сборки
+сейчас блокированы недоступностью execution environment.
 
 ## Отложенные настройки G1 и решения будущих этапов
 

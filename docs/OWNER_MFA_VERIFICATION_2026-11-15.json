@@ -1,0 +1,105 @@
+{
+  "date": "2026-11-15",
+  "status": "verified_source_ci_passed_local_receipt_publication_pending",
+  "source": {
+    "android": {
+      "repository": "lobanov0710-blip/TransferDriver",
+      "branch": "arch/g2-transfer-admin",
+      "commit": "c6badd3a13bdad89140e43df09b181bfd85ec069",
+      "ciRun": 43608123183,
+      "ciJob": 132487059220,
+      "ciStatus": "success",
+      "draftPr": 7
+    },
+    "backend": {
+      "repository": "lobanov0710-blip/uber-v3",
+      "branch": "arch/g2-owner-totp-mfa",
+      "commit": "1598dff3e17799947c4eedc79f3c22ae68a8a256",
+      "ciRun": 43608125351,
+      "ciJob": 132487065843,
+      "ciStatus": "success",
+      "draftPr": 29
+    }
+  },
+  "checks": {
+    "adminJvm": {
+      "debug": 23,
+      "staging": 23,
+      "release": 23
+    },
+    "adminRuntimeApi35": 20,
+    "driverJvm": {
+      "debug": 29,
+      "staging": 29,
+      "release": 29
+    },
+    "driverRuntimeApi35": 12,
+    "reportedTestFailures": 0,
+    "reportedTestErrors": 0,
+    "reportedTestSkips": 0,
+    "adminFullLintIssuesPerVariant": 0,
+    "sourceGuards": {
+      "admin": 5,
+      "driver": 7
+    },
+    "backendTestScripts": 65,
+    "newBackendMfaScenarios": 18,
+    "localMigrationCount": 18,
+    "preflightTests": 12,
+    "backendNpmAdvisories": 0,
+    "nativeWorkerdD1": "PASS",
+    "nativeWorkerdMfaHttpD1": "PASS",
+    "workerDryRun": "PASS",
+    "adminAndDriverPackageSignatureUidIsolation": "PASS"
+  },
+  "runtimeDependencyAudit": {
+    "database": "https://api.osv.dev/v1/querybatch",
+    "date": "2026-11-15",
+    "scope": [
+      "app:debugRuntimeClasspath",
+      "app:stagingRuntimeClasspath",
+      "app:releaseRuntimeClasspath",
+      "admin:debugRuntimeClasspath",
+      "admin:stagingRuntimeClasspath",
+      "admin:releaseRuntimeClasspath"
+    ],
+    "distinctMavenComponents": 152,
+    "advisoryMatches": 0,
+    "fullInventoryPublication": "pending execution environment recovery",
+    "limitations": "Public OSV advisories at check time, not a complete vulnerability or build-plugin audit."
+  },
+  "localArtifacts": {
+    "buildDate": "2026-11-14",
+    "verifiedArtifactCount": 6,
+    "directory": "/workspace/artifacts/transfer-admin-mfa-2026-11-14/",
+    "knownDebugApk": {
+      "name": "TransferAdmin-debug.apk",
+      "bytes": 9018498,
+      "sha256": "01a6198216124b122271685cc2a7f084249d6c96989089ca6b152033962529d7"
+    },
+    "allArtifactHashesPublication": "pending execution environment recovery",
+    "debugCertificateSha256": "ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b",
+    "stagingAndReleaseUnsigned": true,
+    "oldArtifactSetPreserved": true,
+    "currentLocalFileAvailability": "not verifiable while execution environment unavailable"
+  },
+  "approval": {
+    "totpParametersAndApiApproved": true,
+    "G1Suspended": true,
+    "D4throughD7Approved": false
+  },
+  "boundaries": {
+    "liveServerE2E": false,
+    "remoteMigrationApplied": false,
+    "deployed": false,
+    "merged": false,
+    "realOwnerEncryptionKeyCreated": false,
+    "realOwnerSeedCreated": false
+  },
+  "environment": {
+    "execution": "unavailable",
+    "cloudStatus": "running_connected_but_no_usable_execution_environment",
+    "localGitCheckpointPending": true
+  },
+  "specGitBlob": "7434dc0b1548b4f2c5382f12d6cc5399f93d0a84"
+}
