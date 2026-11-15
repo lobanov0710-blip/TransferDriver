@@ -82,6 +82,7 @@ public final class PhotoCheckActivity
     private File pendingUploadFile;
 
     private boolean uploading;
+    private int loadGeneration;
 
     public static Intent createIntent(
             Context context,
@@ -360,6 +361,10 @@ public final class PhotoCheckActivity
             return;
         }
 
+        final int generation = ++loadGeneration;
+        // Do not authorize capture from a stale previously loaded check.
+        currentCheck = null;
+
         // Revalidation must not leave stale capture buttons active while
         // an asynchronous server response is pending.
         setAllButtonsEnabled(false);
@@ -382,6 +387,10 @@ public final class PhotoCheckActivity
 
                         runOnUiThread(
                                 () -> {
+
+                                    if (generation != loadGeneration || isFinishing() || isDestroyed()) {
+                                        return;
+                                    }
 
                                     progress.setVisibility(
                                             View.GONE
@@ -454,8 +463,11 @@ public final class PhotoCheckActivity
                     public void onAuthenticationRequired() {
 
                         runOnUiThread(
-                                () ->
-                                        openLogin()
+                                () -> {
+                                    if (generation == loadGeneration && !isFinishing() && !isDestroyed()) {
+                                        openLogin();
+                                    }
+                                }
                         );
                     }
 
@@ -467,6 +479,10 @@ public final class PhotoCheckActivity
 
                         runOnUiThread(
                                 () -> {
+
+                                    if (generation != loadGeneration || isFinishing() || isDestroyed()) {
+                                        return;
+                                    }
 
                                     progress.setVisibility(
                                             View.GONE
@@ -891,6 +907,8 @@ public final class PhotoCheckActivity
             return;
         }
 
+        // A delayed list response cannot authorize capture during upload.
+        ++loadGeneration;
         uploading =
                 true;
 
