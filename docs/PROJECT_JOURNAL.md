@@ -2769,3 +2769,32 @@ selector восстанавливается в finally. Это защита те
 запроса при recreation, не production transport hook. Production code/permissions/
 TLS/FLAG_SECURE с предыдущего source не менялись. Instrumentation APK повторно
 компилируется; окончательный CI/recapture/verdict ещё ожидаются.
+
+
+### Следующий runtime: Driver PASS, Admin dialog focus failure
+
+CI43739771085/job132890126120, source505454a52a257a986391e8999dd416f5afb31eab:
+Driver connected27 cases PASS после fixture synchronization/network denial;
+все4PNG1080×2400 прошли validator. Следующий Admin connected этап FAILURE:
+ModerationUiInstrumentationTest line61 получил RootViewWithoutFocusException
+на первом confirmation dialog (10s). Остальные material assertions не удаляются.
+Общий CI не объявляется успешным. Снимки были извлечены, но upload стоял под
+обычным success условием и после позднего Admin failure не выполнился; image
+bytes для post-fix review ещё не получены.
+
+Проверено по emulator logs: screen_off_timeout уже2147483647, device menu
+keyevent уже выполнен runner; гипотеза screen timeout не подтверждается.
+Не добавляются обходы app auth/permission/keyguard и не повышаются таймауты.
+В тесте Admin model-ready ранее не означал window-focused: programmatic click
+мог создать dialog до фокуса Activity, а isDialog matcher мог выбрать root
+без фокуса. Добавлены event-based ожидание фактического parent window focus
+(те же10s) и matcher реально focused dialog. Espresso click и все проверки
+uncertain action/reused key/partial correction остаются обязательными. Это
+исправление synchronization fixture, не изменение production UI/модерации.
+
+Workflow пишет marker только после успешного PNG validator; upload разрешён
+после позднего failure только при наличии этого marker и без cancellation.
+Содержимое upload по-прежнему только4 synthetic PNG. Это сохраняет evidence,
+не меняет failure status и не делает незавершённый test suite успешным.
+Admin instrumentation APK локально собран PASS (19s). Production исходники
+Driver/Admin после предыдущего UI fix не меняются. Новый полный CI ожидается.

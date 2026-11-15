@@ -54,17 +54,32 @@ public final class ModerationUiInstrumentationTest {
         activity.onActivity(screen->screen.findViewById(R.id.queue).performClick());await(activity,s->s.queueLoaded&&!s.loading);
         activity.onActivity(screen->{LinearLayout rows=screen.findViewById(R.id.queueItems);assertEquals(1,rows.getChildCount());rows.getChildAt(0).performClick();});
         await(activity,s->s.reviewScreen!=null&&!s.loading&&s.access!=null);
+        awaitWindowFocus(activity);
+    }
+    private void awaitWindowFocus(ActivityScenario<AdminActivity> activity) throws Exception {
+        CountDownLatch ready=new CountDownLatch(1);
+        android.view.ViewTreeObserver.OnWindowFocusChangeListener listener=focused->{if(focused)ready.countDown();};
+        activity.onActivity(screen->{android.view.View decor=screen.getWindow().getDecorView();decor.getViewTreeObserver().addOnWindowFocusChangeListener(listener);if(decor.hasWindowFocus())ready.countDown();});
+        try{assertTrue("The confirmation must be opened from a focused Activity",ready.await(10,TimeUnit.SECONDS));}
+        finally{activity.onActivity(screen->screen.getWindow().getDecorView().getViewTreeObserver().removeOnWindowFocusChangeListener(listener));}
+    }
+    private org.hamcrest.Matcher<androidx.test.espresso.Root> focusedDialog() {
+        return org.hamcrest.Matchers.allOf(isDialog(),new org.hamcrest.TypeSafeMatcher<androidx.test.espresso.Root>(){
+            @Override protected boolean matchesSafely(androidx.test.espresso.Root root){return root.getDecorView().hasWindowFocus();}
+            @Override public void describeTo(org.hamcrest.Description description){description.appendText("the focused confirmation dialog");}
+        });
     }
     @Test public void moderationUiExplicitlyRetriesUncertainStartAndReturnsOneElementWithReason() throws Exception {
         try(ActivityScenario<AdminActivity> activity=ActivityScenario.launch(AdminActivity.class)){
             open(activity);server.dropAcknowledgement=true;
-            activity.onActivity(screen->screen.findViewById(R.id.reviewStart).performClick());onView(withText(R.string.review_yes)).inRoot(isDialog()).perform(click());
+            activity.onActivity(screen->screen.findViewById(R.id.reviewStart).performClick());onView(withText(R.string.review_yes)).inRoot(focusedDialog()).perform(click());
             await(activity,s->s.reviewScreen!=null&&s.reviewScreen.uncertain!=null&&!s.loading);String key=server.lastKey;
             activity.onActivity(screen->screen.findViewById(R.id.reviewRetry).performClick());
             await(activity,s->s.reviewScreen!=null&&s.reviewScreen.uncertain==null&&!s.loading&&"under_review".equals(s.reviewScreen.registration.status));
             assertEquals(key,server.lastKey);assertEquals(1,server.history.size());
+            awaitWindowFocus(activity);
             activity.onActivity(screen->{((EditText)screen.findViewById(R.id.reviewNote)).setText("Synthetic correction reason");screen.findViewById(R.id.reviewReturnItem).performClick();});
-            onView(withText(R.string.review_yes)).inRoot(isDialog()).perform(click());
+            onView(withText(R.string.review_yes)).inRoot(focusedDialog()).perform(click());
             await(activity,s->s.reviewScreen!=null&&!s.loading&&"changes_required".equals(s.reviewScreen.registration.items.get(0).status));
             activity.onActivity(screen->{AdminViewModel.State s=new ViewModelProvider(screen).get(AdminViewModel.class).state().getValue();assertEquals("verified",s.reviewScreen.registration.items.get(1).status);assertEquals("",((EditText)screen.findViewById(R.id.reviewNote)).getText().toString());assertFalse(screen.findViewById(R.id.reviewApprove).isEnabled());});
         }
