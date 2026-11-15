@@ -28,6 +28,7 @@ import ru.transferservis.driver.data.repository.OrderDetailsGateway;
 import ru.transferservis.driver.data.repository.OrderRepository;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.*;
@@ -132,7 +133,7 @@ public final class OrderDetailsD3InstrumentationTest {
                 assertTrue(action.isEnabled());
                 action.performClick();
             });
-            onView(withId(android.R.id.button1)).perform(click());
+            onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
 
             scenario.onActivity(activity -> {
                 Button action = activity.findViewById(R.id.buttonDetailsAction);
@@ -147,7 +148,7 @@ public final class OrderDetailsD3InstrumentationTest {
                 assertTrue(action.isEnabled());
                 action.performClick();
             });
-            onView(withId(android.R.id.button1)).perform(click());
+            onView(withId(android.R.id.button1)).inRoot(isDialog()).perform(click());
 
             scenario.onActivity(activity -> {
                 assertEquals(2, fake.attempts.size());
