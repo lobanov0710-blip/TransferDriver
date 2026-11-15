@@ -185,3 +185,18 @@ scoring verdict ship относится только к перечисленны
 [UI review](DRIVER_REGISTRATION_UI_REVIEW_2026-11-15.md) сохраняют ограничения.
 Это завершение проверенного первого среза, не всего G2/мастера и не live E2E.
 Следующая утверждённая часть — availability/manual assignment, G1 на паузе.
+
+
+## Следующий срез G2: Driver availability и контракт Admin assignment
+
+Начат в отдельной arch/g2-availability-assignment (Draft PR#9), без возобновления
+G1. Driver GET me/PUT availability уже предусмотрены D3: нижний slider и active
+vehicle, no optimistic on_line, independent revision, idempotency и lifecycle
+binding. Runtime/visual проверка ещё ожидаются; прежний checkpoint остаётся
+историческим результатом своего source.
+
+Admin read API предложен, не утверждён:
+[версия2, варианты A/B](ADMIN_ASSIGNMENT_READ_API_PROPOSAL_2026-11-15.md).
+OWNER/DISPATCHER сохраняют auth category admin; первоначальное противоположное
+утверждение исправлено в анализе и журнале. Зависимые endpoints не реализуются
+без явного решения владельца. Синтетические проверки продолжаются независимо.

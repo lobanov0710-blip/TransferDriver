@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/availabilityPanel" android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="vertical" android:layout_marginTop="8dp" android:saveEnabled="false" android:visibility="gone">
+    android:orientation="vertical" android:layout_marginTop="8dp" android:saveEnabled="false" android:importantForAutofill="noExcludeDescendants" android:visibility="gone">
     <ProgressBar android:id="@+id/availabilityProgress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="4dp" android:indeterminate="true" android:visibility="gone" />
     <TextView android:id="@+id/availabilityMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="?attr/textAppearanceBodyMedium" android:accessibilityLiveRegion="polite" android:saveEnabled="false" />
     <LinearLayout android:id="@+id/availabilityOffline" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">

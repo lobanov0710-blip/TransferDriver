@@ -2967,3 +2967,33 @@ Fixture теперь запускается ActivityScenario и переводи
 GONE/empty vehicle/FLAG_SECURE. Teardown закрывает scenario; сброс выбора и
 инвалидация незавершённой mutation, assertion count/таймауты не ослаблены.
 Production Java/XML/security policy не меняются, новый полный CI обязателен.
+
+
+### Privacy review: исключение availability subtree из Autofill
+
+Обнаружено несоответствие source/scope формулировке: saveEnabled=false не
+отключает Android Autofill. Новый Spinner мог участвовать в Autofill structure
+со списком автомобилей, хотя локальное сохранение/Parcel уже исключено.
+Исправлено root importantForAutofill=noExcludeDescendants для availability
+subtree (API26, соответствует minSdk), не затрагивая TalkBack/slider accessibility.
+Это не утверждение фактически произошедшей утечки; устранена возможность
+непредусмотренной передачи новых полей autofill service. Новых permissions/
+SDK/dependencies нет. Требуется compile/runtime нового source; текущий CI
+проверяет предыдущий source, его результат не будет выдан за эту правку.
+
+
+### Availability runtime3: проверка очищенных данных вместо cached Spinner count
+
+Sourcef15aa56a0af983bd8330544ef955af8f1fe600f9, CI43775678761/job133001307324:
+FAILURE в одном из11 новых native cases.10PASS; фактический lifecycle CREATED
+и GONE уже подтверждены. Background case затем ожидал getCount=0, получил3.
+Проверен AOSP android-15.0.0_r1 AbsSpinner.setAdapter/resetList/getCount и
+AdapterView.getSelectedItem: null adapter удаляет selection/children, однако
+mItemCount в этой ветке не сбрасывается. Числовой cached count не означает
+сохранение списка автомобилей. Тест проверяет фактические privacy условия:
+null adapter, null selectedItem, null selectedView, CREATED/GONE/FLAG_SECURE,
+отмену одного pending PUT. Assertions на данные сохранены, timeout не увеличен.
+Добавлен assert importantForAutofill=NO_EXCLUDE_DESCENDANTS. Новый source включает
+ранее найденную privacy XML правку; build/unit/lint/runtime будут проверены CI.
+Локальная Gradle compilation остаётся ограничена sandbox service socket;
+повторные запросы сетевых разрешений не используются для обхода ограничения.
