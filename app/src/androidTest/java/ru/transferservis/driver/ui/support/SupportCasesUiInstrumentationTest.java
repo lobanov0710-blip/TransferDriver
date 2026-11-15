@@ -26,6 +26,7 @@ import ru.transferservis.driver.data.repository.DriverV1Repository;
 import ru.transferservis.driver.data.repository.SupportCasesGateway;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.*;
@@ -161,7 +162,7 @@ public final class SupportCasesUiInstrumentationTest {
             scenario.onActivity(activity ->
                     ((Button) activity.findViewById(R.id.buttonCreateSupportCase))
                             .performClick());
-            onView(withText(R.string.support_category_vehicle)).perform(click());
+            onView(withText(R.string.support_category_vehicle)).inRoot(isDialog()).perform(click());
             assertEquals(1, fake.mutations.size());
             assertEquals("vehicle", fake.mutations.get(0).category);
             assertNull(fake.mutations.get(0).orderId);
