@@ -1468,3 +1468,20 @@ Production/STAGING/R2/D4, merge и remote migrations не затронуты.
   — **PENDING**, PASS ещё не подтверждён.
 - Ни один production/STAGING вызов, owner phone setup, R2, D4,
   merge или deploy не выполнялся.
+
+## 2026-11-15 — D3 emulator repeat verified PASS
+
+- Коммит кода `3a4dba477e34efab7f126eefa236ed2a077a1277`.
+- [Android branch tests 43722768440](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722768440)
+  — **PASS**, JVM/сборка debug/release.
+- [D3 UI instrumentation 43722768431](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722768431)
+  — **PASS**, Android emulator `connectedDebugAndroidTest`.
+- Подтверждены синтетические UI-07 (support list/retry),
+  UI-11 (taken verification gate disabled), UI-12
+  (done timeout/retry same revision, серверное done скрывает action),
+  а также защита photo list/detail от запоздавших success/error.
+- Все перечисленные сценарии имеют **synthetic emulator PASS**,
+  но UI-07/UI-11/UI-12 в матрице остаются **PARTIAL** до
+  реальных HTTP/authorization/replay/audit E2E.
+- Не запускались owner phone setup, production/STAGING,
+  R2, D4, merge, remote migrations или deploy.
