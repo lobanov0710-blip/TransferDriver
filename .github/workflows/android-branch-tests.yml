@@ -265,7 +265,8 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          report_dir=app/build/outputs/androidTest-results/connected
-          if [[ -d "$report_dir" ]]; then
-            find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,200p' {} \;
-          fi
+          for report_dir in app/build/outputs/androidTest-results/connected admin/build/outputs/androidTest-results/connected; do
+            if [[ -d "$report_dir" ]]; then
+              find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,260p' {} \;
+            fi
+          done
