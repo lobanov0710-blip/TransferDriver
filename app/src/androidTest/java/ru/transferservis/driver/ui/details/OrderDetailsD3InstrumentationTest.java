@@ -140,7 +140,7 @@ public final class OrderDetailsD3InstrumentationTest {
                 assertEquals("done", fake.attempts.get(0).status);
                 assertEquals(7L, fake.attempts.get(0).revision);
                 assertFalse(action.isEnabled());
-                assertFalse(action.performClick());
+                // Android disables user taps; performClick() can bypass enabled state.
                 assertEquals(1, fake.attempts.size());
 
                 fake.pendingTransition.onError(0, "Synthetic timeout");
