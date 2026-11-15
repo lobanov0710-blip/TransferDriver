@@ -863,6 +863,8 @@ public final class OrderDetailsActivity
                 currentOrder == null
                         ||
                         currentTargetStatus == null
+                        ||
+                        !buttonDetailsAction.isEnabled()
         ) {
 
             return;
