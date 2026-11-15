@@ -2946,3 +2946,24 @@ GitHub CI build/runtime pipeline; результат будет привязан
 Локальная предыдущая variants сборка staging/release/unit/lint PASS(3m15s),
 но она предшествовала test-only correction. Admin read API всё ещё не выбран;
 команда продолжения не трактуется как новое утверждение A/B.
+
+
+### Availability runtime2: реальный lifecycle вместо ручного onStop в fixture
+
+Source87b0acb949b31acffd3aa83b7e8e143ed1f01045, CI43774408323/job132997285290:
+FAILURE на одном из11 новых native cases.10PASS, включая настоящий swipe,
+framework accessibility action, отсутствие optimistic radar, ack loss/late401.
+backgroundClearsVehicleAndInvalidatesPendingOperation ожидал GONE, получил
+VISIBLE. Build/unit/lint этап PASS; общий runtime/visual acceptance не объявлен.
+
+Fixture вручную вызывал Instrumentation.callActivityOnStop. Такой вызов метода
+не воспроизводит framework Activity lifecycle transition/ON_STOP Registry,
+к которому подписан DefaultLifecycleObserver панели (наAPI35 dispatch через
+pre-stopped callbacks). Прежний Registration тест собственный onStop проверял
+напрямую, но это не корректный lifecycle тест observer-компонента.
+
+Fixture теперь запускается ActivityScenario и переводится moveToState(CREATED);
+дополнительно assert фактического Lifecycle.State.CREATED перед проверкой
+GONE/empty vehicle/FLAG_SECURE. Teardown закрывает scenario; сброс выбора и
+инвалидация незавершённой mutation, assertion count/таймауты не ослаблены.
+Production Java/XML/security policy не меняются, новый полный CI обязателен.

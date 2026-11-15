@@ -52,6 +52,7 @@ public final class AvailabilityInstrumentationTest {
     private final Context context=instrumentation.getTargetContext();
     private SecureSessionStore store;
     private RegistrationActivity host;
+    private androidx.test.core.app.ActivityScenario<RegistrationActivity> scenario;
     private View main;
     private AvailabilityPanel panel;
     private java.net.ProxySelector originalProxy;
@@ -65,7 +66,7 @@ public final class AvailabilityInstrumentationTest {
     }
     @After public void after() throws Exception {
         try{
-            store.clear();if(host!=null){instrumentation.runOnMainSync(()->host.finish());long until=System.currentTimeMillis()+8000;
+            store.clear();if(host!=null){scenario.close();long until=System.currentTimeMillis()+8000;
                 while(!host.isDestroyed()&&System.currentTimeMillis()<until){instrumentation.waitForIdleSync();Thread.sleep(40);}assertTrue(host.isDestroyed());}
             instrumentation.runOnMainSync(()->AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));shell("settings put system font_scale 1.0");awaitFont(1.0f);
         }finally{java.net.ProxySelector.setDefault(originalProxy);}
@@ -97,7 +98,7 @@ public final class AvailabilityInstrumentationTest {
         }
     }
     private void launch(Server server) throws Exception {
-        store.clear();host=(RegistrationActivity)instrumentation.startActivitySync(new Intent(context,RegistrationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        store.clear();scenario=androidx.test.core.app.ActivityScenario.launch(new Intent(context,RegistrationActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));scenario.onActivity(screen->host=screen);
         await(()->((TextView)host.findViewById(R.id.registrationMessage)).getText().toString().contains("Сессия изменилась"));
         assertTrue(store.save(session("original")));Field field=RegistrationActivity.class.getDeclaredField("repository");field.setAccessible(true);
         RegistrationRepository hidden=new RegistrationRepository(context,server),availability=new RegistrationRepository(context,server);
@@ -146,8 +147,8 @@ public final class AvailabilityInstrumentationTest {
     @Test public void backgroundClearsVehicleAndInvalidatesPendingOperation() throws Exception {
         Server s=new Server();s.entered=new CountDownLatch(1);s.release=new CountDownLatch(1);launch(s);
         instrumentation.runOnMainSync(()->{android.util.SparseArray<android.os.Parcelable> state=new android.util.SparseArray<>();main.saveHierarchyState(state);Parcel p=Parcel.obtain();try{p.writeSparseArray(state);assertFalse(new String(p.marshall(),java.nio.charset.StandardCharsets.UTF_16LE).contains("SYNTH-001"));}finally{p.recycle();}});
-        onlineAction();assertTrue(s.entered.await(8,TimeUnit.SECONDS));instrumentation.runOnMainSync(()->instrumentation.callActivityOnStop(host));s.release.countDown();instrumentation.waitForIdleSync();
-        instrumentation.runOnMainSync(()->{assertEquals(View.GONE,main.findViewById(R.id.availabilityPanel).getVisibility());assertEquals(0,((Spinner)main.findViewById(R.id.availabilityVehicle)).getCount());assertTrue((host.getWindow().getAttributes().flags&WindowManager.LayoutParams.FLAG_SECURE)!=0);});assertEquals(1,s.puts.get());
+        onlineAction();assertTrue(s.entered.await(8,TimeUnit.SECONDS));scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED);s.release.countDown();instrumentation.waitForIdleSync();
+        instrumentation.runOnMainSync(()->{assertEquals(androidx.lifecycle.Lifecycle.State.CREATED,host.getLifecycle().getCurrentState());assertEquals(View.GONE,main.findViewById(R.id.availabilityPanel).getVisibility());assertEquals(0,((Spinner)main.findViewById(R.id.availabilityVehicle)).getCount());assertTrue((host.getWindow().getAttributes().flags&WindowManager.LayoutParams.FLAG_SECURE)!=0);});assertEquals(1,s.puts.get());
     }
     @Test public void cancelledAvailabilityCannotRunAfterNewScope() throws Exception {
         assertTrue(store.save(session("original")));Server s=new Server();RegistrationRepository r=new RegistrationRepository(context,s);long old=r.bind();r.cancel();r.bind();
