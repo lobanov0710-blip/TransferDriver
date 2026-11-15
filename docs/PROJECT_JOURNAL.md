@@ -2570,3 +2570,231 @@ Account id/password_hash/token_version/role/status сохраняются. PASS,
 приватно переписать: Admin очищает его в фоне, IDs сохраняет только до исходных
 5 минут. Значения ключей/OTP/bootstrap/recovery в чат не присылать. Фактический
 перевыпуск/phone login ожидаются от владельца. G1 остаётся на паузе.
+
+
+## 2026-11-15 — Владелец подтвердил новый TOTP и вход; продолжение G2
+
+Владелец подтвердил: после перевыпуска новый TOTP подключён, вход в Transfer
+Admin на телефоне выполнен. Это результат проверки владельцем; независимого
+чтения live factor/session или новой полной STAGING E2E проверки не проводилось.
+Значения seed/bootstrap/OTP/recovery не запрашиваются и не фиксируются.
+Задача восстановления OWNER phone login закрывается по подтверждению владельца.
+
+Продолжается ранее утверждённая последовательность G2: после Admin moderation
+— Driver registration/vehicles, затем availability/manual assignment. Для
+анкеты и автомобилей создана отдельная ветка arch/g2-driver-registration.
+Используются действующие D3 API, Java/XML, существующие Material-компоненты.
+Реальные документы/биометрия не собираются: D4–D7 не утверждены, G1 на паузе.
+Флаг ADMIN_PHONE_TEST_ONLY не снимается; Driver UI проверяется на синтетическом
+транспорте, а не обходом изоляции STAGING. Merge и production deploy не разрешены.
+
+В текущем GET /v1/driver/me есть profile/vehicles/status/revision, но нет
+причин возврата отдельных элементов. Не придумывать эти данные в UI; расширение
+контракта требует отдельной конкретизации. Первый срез: сохранение личных
+данных, read-only подтверждённый телефон, список/создание/изменение автомобилей,
+VIN, серверные статусы, optimistic revision conflict и защита от повтора mutation.
+Отправка документов и финальная подача всей регистрации в этот срез не входят.
+
+
+## 2026-11-15 — G2 Driver: первый срез анкеты и автомобилей, перед runtime CI
+
+Добавлены Java/XML формы с read-only подтверждённым телефоном, личными данными,
+несколькими автомобилями, VIN, статусами и independent expectedRevision.
+Серверные правила draft/changes_required и suspended/rejected сохраняются.
+Mutation transport без refresh/replay/redirect/cache использует существующий
+HTTPS allowlist и привязку staffId/access/refresh. При анализе lifecycle найден
+риск запуска ещё не начавшейся задачи после cancelAll: исправлен operation epoch,
+инвалидируемый onStop; старый scope не работает после rebind. Формы и серверные
+данные очищаются onStop, input не входит в autofill/SavedState. Неопределённый
+результат записи требует явный GET/reload перед следующим сохранением.
+
+Совместимость: API допускает null usageBasis старого автомобиля. Чтение этого
+случая разрешено, при сохранении обязателен явный выбор. Причины исправлений
+не возвращаются GET me и не выдумываются в UI. Финальный submit, документы,
+identity и availability не реализуются в этом первом срезе.
+
+Локально build debug/staging/release, unit tests трёх variants и lint трёх
+variants прошли на промежуточном source. После lifecycle/compatibility правок
+повторены debug unit/compile androidTest/lint: 40 JVM cases PASS (29 прежних +
+11 новых); instrumentation APK с 15 новыми cases компилируется, runtime ещё
+не запускался. Security guards: Driver 7 + Admin 5 PASS. Четыре действующих
+backend registration service/readiness/submit/migration contract scripts PASS.
+Новых dependencies/API/schema/Worker/deploy изменений нет.
+
+Начальный lint выявил 3 API28-only heading attributes и private back resource
+в новом UI: исправлено через ViewCompat и собственный vector. В новом срезе
+lint warnings/errors 0. Общий Driver debug lint: 0 errors / 54 прежних warnings
+(в том числе unused resources, available upgrades, старые UI/locale замечания).
+Они не объявляются исправленными или полноценным security clearance; dependency
+upgrade не выполняется вне текущего scope. Имеются безопасные build notices о
+metrics path/deprecated APIs/native strip, не failures.
+
+CI расширен полным Driver lint и обязательными runtime cases. Native screenshots
+light/dark font1.3 создаются только test APK с synthetic account/transport:
+временно clear FLAG_SECURE в test и restore/assert в finally; в production app
+нет screenshot bypass. Извлекаются только четыре фиксированных PNG, без app
+storage/конфигурации/ключей. Ожидается runtime CI; его успех пока не заявляется.
+Границы/контракты: DRIVER_REGISTRATION_SCOPE_2026-11-15.md. G1 на паузе.
+
+
+### Дополнительный аудит: автоматический HTTP 503 replay
+
+Проверен bytecode actual locked OkHttp 4.12.0: ветка 503 Retry-After:0 не
+проверяет retryOnConnectionFailure. Реальный loopback HTTP fixture воспроизвёл
+две отправки обычного тела при retryOnConnectionFailure=false. Это не mock
+application interceptor, который обходит внутренний retry.
+
+Устранено в общих HTTP builders Driver и Admin: тело помечается isOneShot=true
+с делегированием contentType/contentLength/isDuplex/writeTo; HTTP-клиент
+прекращает follow-up до повторной отправки. HTTPS/origin policy, deadlines и
+серверные/API контракты не меняются. Новые зависимости не добавляются.
+Это исправление найденного дефекта безопасности, а не новое продуктовое решение.
+
+В обоих модулях actual HTTP regression сравнивает обычное тело (2 requests)
+и защищённое (1 request, no priorResponse); также проверяется применение
+защиты общим builder до транспорта для POST/PUT/PATCH. Локальные полные debug
+наборы теперь Driver 43 + Admin 34 JVM PASS; instrumentation compile, оба debug
+lint PASS. Driver lint 0 errors / 54 warnings, новые формы без замечаний; Admin
+0 issues. Исходный CI 43735703470 запущен до этого исправления; его результат
+не будет выдан за проверку окончательного source. Окончательный CI ожидается.
+
+
+### Runtime первого source и обнаруженная непригодность screenshot evidence
+
+CI 43735703470 / job 132877757100, source 6cc32fb745bae905541fd0325ca4cd42b9a71a65:
+SUCCESS. Driver JVM 40×3=120, runtime API35 27; Admin JVM 31×3=93, runtime 29.
+Новые 15 Driver cases фактически выполнены, включая обе формы/сохранение,
+cancelled epoch/rebind и background/Parcel. Это source до HTTP503 исправления.
+
+Выгружен artifact 14170790867 (754 bytes), digest совпал с GitHub. Все четыре
+файла .png по 50 bytes содержали лишь диагностический текст run-as об отсутствии
+пакета. Эти файлы отвергнуты как screenshots; визуальная проверка не объявляется
+выполненной. Причина: connected test удалил target APK до run-as extraction;
+adb stdout перенаправился в файл без проверки формата. CI success сам по себе
+оказался недостаточным доказательством визуального результата.
+
+Исправление: CLI-only android.injected.androidTest.leaveApksInstalledAfterRun=true
+для Driver test task на ephemeral CI emulator (параметр подтверждён в actual
+AGP9.4.1 BooleanOption); production app/settings не меняются. Добавлена проверка
+PNG signature/IHDR/native dimensions/chunk CRC/IEND перед upload. Validator
+локально отвергает фактически полученный ложный PNG. Финальный CI должен
+проверить HTTP503 fix и новые полноценные screenshots.
+
+
+## 2026-11-15 — Проверка G2 Driver и общая защита HTTP503: финальный code CI
+
+Android Draft PR #8: https://github.com/lobanov0710-blip/TransferDriver/pull/8
+Проверенный source 5cb6d60060c491e4d0768c90d1446beeacfd1e00, tree
+fae2d2d4f41923bdde0e7ebb2bb1a47ba85b8a7e. CI 43736924677 / job132881464115
+SUCCESS: Driver43 JVM×3=129 + API35 runtime27; Admin34 JVM×3=102 + runtime29.
+Итого231 JVM +56 runtime, без failed/skipped. Full lint3 variants обеих apps:
+Driver0errors/54 прежних warnings в каждом, новые формы0issues; Admin0issues.
+Локальная повторная сборка и те же6 JVM suites/6 lint suites прошли. Driver7+
+Admin5 security guards и4 backend registration contract scripts PASS.
+
+Нативный artifact14171191658 (544933bytes) checksum совпал:
+218740e98b81bb7106046c30666e5eb028d1c6f06ec5ab511c932ba549d548e1.
+Четыре actual API35 screenshots1080×2400 прошли signature/IHDR/chunk CRC/IEND
+и локальную повторную проверку. Предыдущий artifact с adb diagnostic text
+остался отвергнутым, его CI success не использован как визуальная приёмка.
+
+Собран Admin debug STAGING с прежним отдельным сертификатом (публичный SHA256
+ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b),
+взятым только из прежнего локального ignored signing store. APK SHA256
+43bfbb4daad747a53d231a2ffb3518ad3a5fd8e125d3a3712a519cbef85348d5.
+Driver debug APK SHA256 a299c3a7ba3de59d15bc74a041f3c2cfb3bb9ad0c24d68c6a1111e039b6b8157;
+сертификат отличается от Admin. APK подписи проверены apksigner37. Его новый
+формат V2 Signer потребовал исправить локальный разбор public digest; первая
+попытка receipt завершилась StopIteration, ключи не раскрывались/не менялись.
+Это локальные сборки того же source; CI самостоятельно собрал/проверил source,
+а не эти конкретные локальные APK bytes. Driver live E2E не выполнялся.
+
+Загруженный Firebase SDK config key проверен на отсутствие во всех tracked
+файлах (сам ключ не печатался). Документы ТЗ не изменены: blob
+7434dc0b1548b4f2c5382f12d6cc5399f93d0a84. OWNER подтвердил новый TOTP/вход;
+G1 остаётся на паузе, ADMIN_PHONE_TEST_ONLY не снимается. Реальные документы/
+биометрия, release signing, merge и production deploy не выполнялись.
+
+Первый fresh Impeccable reviewer завершился без результата из-за service usage
+limit; это не review pass. После команды владельца «далее» повторяется тот же
+safe review packet, без user secrets/входных ключей и без fork исходной беседы.
+Итог UI review и необходимые исправления ещё будут зафиксированы отдельно.
+
+
+### Independent native finish review — fix round 1
+
+После service quota interruption fresh reviewer повторно получил тот же safe
+packet и4 проверенных native captures, без fork исходной беседы и без секретов.
+Возврат: disposition fix;5 контрактных sections получены. Harness использовал
+generic fresh agent по fallback finish-reviewer reference Impeccable, штатный
+тип агента/launcher недоступен; независимость контекста сохранена.
+
+Два material UI дефекта: системная строка состояния имела недостаточный
+контраст в light/dark, а hint количества мест обрезал диапазон1–20 при font1.3.
+В sampled code новых material ошибок auth/mutations reviewer не обнаружил;
+это не независимый scan всего проекта и не proof отсутствия всех уязвимостей.
+
+Исправления одним batch: WindowInsetsControllerCompat задаёт foreground
+status/navigation bars по resolved DayNight; краткий label Пассажирских мест,
+диапазон От1до20 вынесен в постоянный Material helper. Две существующие native
+fixture cases теперь дополнительно проверяют bar appearances, реальный fontScale
+и измеренную ширину hint/постоянный helper. Production FLAG_SECURE сохраняется.
+PRODUCT.md фиксирует только факты утверждённого scope, не вводит новых решений
+и не создаёт новый дизайн. Требуется rebuild/recapture тех же4paths и verdict
+того же reviewer; исправления до recapture не объявляются принятыми.
+
+
+### Проверка UI fix round1: runtime failure и синхронизация fixture
+
+Source5448f31c755843b1a98a2f0ae3b35aa5d6e12339, CI43738660853/job132886782876
+завершился FAILURE на Driver connected test. Build/unit/lint этап прошёл;
+nativeSyntheticScreensDarkLargeFont не дождался safe UI state Статус анкеты
+за исходные8секунд. Проверки appearance/helper ещё не были достигнуты в этом
+case. Это не PASS и не подтверждение post-fix screenshots; предыдущие снимки
+не используются для приёмки новых UI правок.
+
+Анализ fixture: settings font_scale обновляется асинхронно, а прежний teardown
+вызывал finish и менял DayNight/font до фактического уничтожения Activity.
+Ссылка на старый экран могла очищаться при последующей configuration recreation.
+Устранена эта гонка условий: перед launch явно ожидается observed fontScale и
+main idle; перед изменением конфигурации в teardown ожидается isDestroyed.
+Ожидания по-прежнему bounded8s, assertions/cases не удалены, retry-until-green
+и ослабления условий нет. Причина failure предполагается по механизму fixture;
+новый runtime прогон обязан подтвердить результат, диагноз не выдаётся за
+независимый live trace.
+
+Дополнительно test-only ProxySelector запрещает любое немокированное сетевое
+обращение создаваемых registration clients (без вывода URI/headers), прежний
+selector восстанавливается в finally. Это защита тестовой среды от accidental
+запроса при recreation, не production transport hook. Production code/permissions/
+TLS/FLAG_SECURE с предыдущего source не менялись. Instrumentation APK повторно
+компилируется; окончательный CI/recapture/verdict ещё ожидаются.
+
+
+### Следующий runtime: Driver PASS, Admin dialog focus failure
+
+CI43739771085/job132890126120, source505454a52a257a986391e8999dd416f5afb31eab:
+Driver connected27 cases PASS после fixture synchronization/network denial;
+все4PNG1080×2400 прошли validator. Следующий Admin connected этап FAILURE:
+ModerationUiInstrumentationTest line61 получил RootViewWithoutFocusException
+на первом confirmation dialog (10s). Остальные material assertions не удаляются.
+Общий CI не объявляется успешным. Снимки были извлечены, но upload стоял под
+обычным success условием и после позднего Admin failure не выполнился; image
+bytes для post-fix review ещё не получены.
+
+Проверено по emulator logs: screen_off_timeout уже2147483647, device menu
+keyevent уже выполнен runner; гипотеза screen timeout не подтверждается.
+Не добавляются обходы app auth/permission/keyguard и не повышаются таймауты.
+В тесте Admin model-ready ранее не означал window-focused: programmatic click
+мог создать dialog до фокуса Activity, а isDialog matcher мог выбрать root
+без фокуса. Добавлены event-based ожидание фактического parent window focus
+(те же10s) и matcher реально focused dialog. Espresso click и все проверки
+uncertain action/reused key/partial correction остаются обязательными. Это
+исправление synchronization fixture, не изменение production UI/модерации.
+
+Workflow пишет marker только после успешного PNG validator; upload разрешён
+после позднего failure только при наличии этого marker и без cancellation.
+Содержимое upload по-прежнему только4 synthetic PNG. Это сохраняет evidence,
+не меняет failure status и не делает незавершённый test suite успешным.
+Admin instrumentation APK локально собран PASS (19s). Production исходники
+Driver/Admin после предыдущего UI fix не меняются. Новый полный CI ожидается.
