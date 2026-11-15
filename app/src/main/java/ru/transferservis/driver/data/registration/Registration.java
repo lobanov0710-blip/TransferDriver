@@ -22,6 +22,8 @@ public final class Registration {
     private static final DateTimeFormatter DISPLAY_DATE = DateTimeFormatter.ofPattern("dd.MM.uuuu", Locale.ROOT)
             .withResolverStyle(ResolverStyle.STRICT);
     public final String driverId, phone, fullName, birthDate, region, status;
+    public final String identityStatus;
+    public final Availability availability;
     public final long revision;
     public final List<Vehicle> vehicles;
 
@@ -34,6 +36,9 @@ public final class Registration {
         if (!birthDate.isEmpty()) try { LocalDate.parse(birthDate); } catch (RuntimeException e) { throw invalid(); }
         region = optional(profile, "region", 120);
         status = choice(profile, "registrationStatus", new String[]{"draft", "submitted", "under_review", "changes_required", "approved", "rejected"});
+        identityStatus = optional(profile, "identityStatus", 40);
+        availability = profile.has("availability") && !profile.get("availability").isJsonNull()
+                ? new Availability(profile.getAsJsonObject("availability")) : null;
         revision = revision(profile);
         if (rows.size() > 200) throw invalid();
         List<Vehicle> parsed = new ArrayList<>();
@@ -54,6 +59,18 @@ public final class Registration {
         } catch (RuntimeException malformed) { throw invalid(); }
     }
     public boolean editable() { return "draft".equals(status) || "changes_required".equals(status); }
+    public static final class Availability {
+        public final String state, activeVehicleId;
+        public final Long revision;
+        private Availability(JsonObject object) throws IOException {
+            state = choice(object, "state", new String[]{"off_line", "on_line"});
+            activeVehicleId = optional(object, "activeVehicleId", 120);
+            if (!activeVehicleId.isEmpty() && !activeVehicleId.matches("vehicle_[A-Za-z0-9_-]{8,100}")) throw invalid();
+            revision = object.has("revision") && !object.get("revision").isJsonNull() ? revision(object) : null;
+            if ("on_line".equals(state) && activeVehicleId.isEmpty()) throw invalid();
+        }
+        public boolean online() { return "on_line".equals(state); }
+    }
     public static final class Vehicle {
         public final String id, vin, plate, make, model, color, vehicleClass, baggage, usage, status;
         public final int capacity;

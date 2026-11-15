@@ -2863,3 +2863,53 @@ owner-reported acceptance, независимый live factor read не выпо
 Merge/production deploy не выполняются без отдельного решения владельца.
 Финальные commits меняют только документы/журналы и помечаются [skip ci]:
 проверки закреплены за exact code source выше, повтор unchanged code не нужен.
+
+
+## 2026-11-15 — G2 availability/manual assignment: следующий срез, без возобновления G1
+
+Владелец поручил «далее». По принятой последовательности после анкеты/автомобилей
+начата Driver availability в отдельной arch/g2-availability-assignment от
+проверенного registration checkpoint. ТЗ §§16–18 и D3: выбор одобренного авто
+перед on_line, нижний slider, Радар активен только по backend state, off_line
+перед сменой и запрет смены при активном назначении. Реальные Driver routes на
+OWNER-only STAGING не открываются; D4–D7/G1/merge/production решения не меняются.
+
+Driver реализован по существующим GET /v1/driver/me и PUT /v1/driver/availability:
+independent availability.revision, Idempotency-Key, исходный staff/access/refresh
+и lifecycle epoch; без auth refresh/HTTP replay/optimistic radar. Off_line
+сохраняет activeVehicleId, не очищает его при активной assignment. Нет approved
+авто/identity/revision — нет локального разрешения on_line; окончательный допуск
+и busy/photo checks серверные. Неизвестный результат требует explicit GET.
+Background удаляет snapshot/выбор и инвалидирует операции; поздний auth callback
+не начинает availability network вне STARTED lifecycle. Нативный main footer
+сворачивается online и размещён с учётом system bars/IME; keys/data не пишутся
+в SavedState/autofill/logs.
+
+Admin read-контракт ещё не выбран. Подготовлено
+ADMIN_ASSIGNMENT_READ_API_PROPOSAL_2026-11-15.md version2 и async вопрос A/B.
+Ошибка первоначального анализа: GET /orders НЕ запрещён OWNER/DISPATCHER из-за
+роли. core/adminAuthorization.js и AdminSession подтвердили legacy auth category
+admin с отдельными server operational role/permissions; неверное утверждение
+отозвано, предложение и вопрос исправлены ДО реализации API. Действительные
+пробелы: нет selection snapshot driver+vehicle; legacy orders extra PII и cutoff
+1000 без cursor. A:2 минимальных paginated GET; B:1 options GET + старый список
+с явными ограничениями. Пока решения нет, зависящие endpoints не реализуются;
+RAW ID/revision ручной ввод или новые moderation grants не используются как обход.
+Основание — AGENTS.md п.3, новые детали требуют явного решения владельца.
+
+Локально debug build/instrumentation compile/48 Driver JVM и lint PASS:
+0errors/54 прежних warnings. Driver7+Admin5 security guards PASS. Backend
+availability service/repository/actualSQLite(7cases) и assignment service/
+repository/migration —6 scripts PASS. Backend code/API/schema не менялись.
+Добавлены5 JVM availability boundary cases и11 native protocol/lifecycle/UI cases
+(включая настоящий Slider swipe и TalkBack setProgress). Runtime пока не запускался.
+Native main XML/panel тестируется в отдельном secure host с synthetic transport;
+это layout/component evidence, не live Main login/orders routing. Немокированная
+сеть запрещена test-only guard; никаких production test hooks/реальных данных.
+Screenshot fixture временно clear/restore FLAG_SECURE только в test APK.
+CI запланирован с8 fixed PNG paths/validator marker и regression обеих apps.
+
+При предыдущей попытке tooling прерван пользователем во время запуска compile:
+изменения теста сохранились, compile log не появился. После «Далее» состояние
+сверено, сборка запущена заново и завершилась PASS(42s). Это не отмена G2 и
+не утверждение pending Admin API. Окончательный runtime/visual verdict ожидаются.

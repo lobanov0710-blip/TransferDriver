@@ -1,0 +1,25 @@
+<resources>
+    <string name="availability_vehicle">Автомобиль для выхода на линию</string>
+    <string name="availability_slide">Сдвиньте, чтобы выйти на линию</string>
+    <string name="availability_radar">Радар активен</string>
+    <string name="availability_go_offline">Выйти с линии</string>
+    <string name="availability_reload">Обновить доступность</string>
+    <string name="availability_choose_vehicle">Выберите одобренный автомобиль</string>
+    <string name="availability_vehicle_row">%1$s %2$s · %3$s</string>
+    <string name="availability_loading">Проверяем доступность…</string>
+    <string name="availability_saving">Ожидаем подтверждение сервера…</string>
+    <string name="availability_offline">Вы не на линии</string>
+    <string name="availability_no_vehicle">Нет одобренного автомобиля. Проверьте статус в анкете.</string>
+    <string name="availability_approval">Выход на линию доступен после одобрения анкеты.</string>
+    <string name="availability_identity">Для выхода на линию требуется подтверждённая проверка личности.</string>
+    <string name="availability_missing">Данные доступности пока не готовы. Обновите их или обратитесь в поддержку.</string>
+    <string name="availability_session">Сессия изменилась или истекла. Проверьте вход на главном экране.</string>
+    <string name="availability_network">Не удалось проверить доступность. Обновите данные.</string>
+    <string name="availability_uncertain">Состояние не подтверждено. Изменение могло сохраниться. Обновите доступность; автоматически запрос не повторяем.</string>
+    <string name="availability_conflict">Состояние изменилось. Обновите доступность перед новой попыткой.</string>
+    <string name="availability_photo">Для этого автомобиля требуется фотоконтроль.</string>
+    <string name="availability_preconditions">Условия допуска или текущего назначения изменились. Обновите данные; при активном заказе менять автомобиль нельзя.</string>
+    <string name="availability_switch">Для смены автомобиля сначала выйдите с линии.</string>
+    <string name="availability_forbidden">Действие недоступно. Обновите данные и проверьте статус.</string>
+    <string name="availability_vehicle_blocked">Автомобиль недоступен для выхода на линию. Проверьте его статус.</string>
+</resources>

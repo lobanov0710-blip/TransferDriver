@@ -66,6 +66,7 @@ public class DriverMainActivity
     private OrdersViewModel ordersViewModel;
 
     private OrderAdapter orderAdapter;
+    private AvailabilityPanel availabilityPanel;
 
     private boolean refreshAfterResume =
             false;
@@ -97,6 +98,9 @@ public class DriverMainActivity
                         );
 
         initViews();
+        MainWindow.configure(this, findViewById(R.id.driverMainRoot));
+        availabilityPanel = new AvailabilityPanel(this, findViewById(R.id.availabilityPanel),
+                new ru.transferservis.driver.data.registration.RegistrationRepository(this));
 
         setupOrdersList();
 
@@ -815,6 +819,7 @@ public class DriverMainActivity
     }
 
     private void showSessionLoading() {
+        availabilityPanel.stop();
 
         swipeRefreshOrders.setRefreshing(
                 false
@@ -857,6 +862,7 @@ public class DriverMainActivity
     private void showAuthenticated(
             DriverSession session
     ) {
+        availabilityPanel.start();
 
         ensureNotificationPermission();
 

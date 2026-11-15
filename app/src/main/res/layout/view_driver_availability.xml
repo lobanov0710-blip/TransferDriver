@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/availabilityPanel" android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical" android:layout_marginTop="8dp" android:saveEnabled="false" android:visibility="gone">
+    <ProgressBar android:id="@+id/availabilityProgress" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent" android:layout_height="4dp" android:indeterminate="true" android:visibility="gone" />
+    <TextView android:id="@+id/availabilityMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textAppearance="?attr/textAppearanceBodyMedium" android:accessibilityLiveRegion="polite" android:saveEnabled="false" />
+    <LinearLayout android:id="@+id/availabilityOffline" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/availability_vehicle" android:labelFor="@id/availabilityVehicle" android:textAppearance="?attr/textAppearanceLabelLarge" />
+        <Spinner android:id="@+id/availabilityVehicle" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" />
+        <TextView android:id="@+id/availabilitySlideLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/availability_slide" android:labelFor="@id/availabilitySlider" android:textAppearance="?attr/textAppearanceBodyLarge" />
+        <com.google.android.material.slider.Slider android:id="@+id/availabilitySlider" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:valueFrom="0" android:valueTo="100" android:value="0" android:saveEnabled="false" android:contentDescription="@string/availability_slide" app:labelBehavior="gone" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/availabilityOnline" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:visibility="gone">
+        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/availability_radar" android:textAppearance="?attr/textAppearanceTitleMedium" />
+        <Button android:id="@+id/availabilityGoOffline" style="?attr/borderlessButtonStyle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/availability_go_offline" />
+    </LinearLayout>
+    <Button android:id="@+id/availabilityReload" style="?attr/borderlessButtonStyle" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/availability_reload" />
+</LinearLayout>

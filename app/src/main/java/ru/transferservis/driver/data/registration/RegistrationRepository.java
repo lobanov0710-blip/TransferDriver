@@ -61,6 +61,17 @@ public final class RegistrationRepository {
         return Registration.parse(request("GET", "v1/driver/me", null, session, scope), session.getStaffId());
     }
     public void saveProfile(long scope, JsonObject body) throws IOException { mutate("PUT", "v1/driver/registration", body, scope); }
+    public void availability(long scope, String vehicleId, String state, long revision, String key) throws IOException {
+        if (revision < 1 || !("on_line".equals(state) || "off_line".equals(state))
+                || ("on_line".equals(state) && (vehicleId == null || vehicleId.isEmpty()))
+                || (vehicleId != null && !vehicleId.matches("vehicle_[A-Za-z0-9_-]{8,100}"))
+                || key == null || !key.matches("availability-[0-9a-f-]{36}")) throw new IOException("Invalid availability operation");
+        JsonObject body = new JsonObject();
+        body.addProperty("activeVehicleId", vehicleId); body.addProperty("requestedState", state); body.addProperty("expectedRevision", revision);
+        JsonObject result = request("PUT", "v1/driver/availability", body, requireCurrent(scope), scope, key);
+        if (!result.has("ok") || !result.get("ok").isJsonPrimitive() || !result.get("ok").getAsJsonPrimitive().isBoolean()
+                || !result.get("ok").getAsBoolean()) throw new IOException("Invalid availability response");
+    }
     public void saveVehicle(long scope, String id, JsonObject body) throws IOException {
         if (id != null && !id.matches("vehicle_[0-9a-fA-F-]{36}")) throw new IOException("Invalid vehicle ID");
         mutate(id == null ? "POST" : "PATCH", "v1/driver/vehicles" + (id == null ? "" : "/" + id), body, scope);
@@ -74,10 +85,15 @@ public final class RegistrationRepository {
         if (!current(scope)) throw new Failure(401, "session_changed"); return bound;
     }
     private JsonObject request(String method, String path, JsonObject body, DriverSession session, long scope) throws IOException {
-        Request request = new Request.Builder().url(ApiEndpointPolicy.BASE_URL + path).tag(Long.class, scope)
+        return request(method, path, body, session, scope, null);
+    }
+    private JsonObject request(String method, String path, JsonObject body, DriverSession session, long scope, String key) throws IOException {
+        Request.Builder builder = new Request.Builder().url(ApiEndpointPolicy.BASE_URL + path).tag(Long.class, scope)
                 .header("Authorization", "Bearer " + session.getAccessToken()).header("Accept", "application/json")
                 .header("Cache-Control", "no-store")
-                .method(method, body == null ? null : RequestBody.create(MediaType.get("application/json; charset=utf-8"), body.toString())).build();
+                .method(method, body == null ? null : RequestBody.create(MediaType.get("application/json; charset=utf-8"), body.toString()));
+        if (key != null) builder.header("Idempotency-Key", key);
+        Request request = builder.build();
         // A queued request must still belong to the same session at dispatch time.
         requireCurrent(scope);
         try (Response response = client.newCall(request).execute()) {
