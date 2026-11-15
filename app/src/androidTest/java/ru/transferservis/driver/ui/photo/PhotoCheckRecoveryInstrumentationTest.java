@@ -136,6 +136,87 @@ public final class PhotoCheckRecoveryInstrumentationTest {
     }
 
     @Test
+    public void latePhotoListResponseCannotRestoreSupersededAssignedChecks() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        try {
+            PhotoCheckGatewayFactory.setTestGateway(gateway);
+            Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+            try (ActivityScenario<PhotoChecksActivity> scenario =
+                         ActivityScenario.launch(
+                                 new android.content.Intent(context, PhotoChecksActivity.class))) {
+                scenario.onActivity(activity -> {
+                    RecyclerView list = activity.findViewById(R.id.recyclerPhotoChecks);
+                    assertEquals(1, list.getAdapter().getItemCount());
+
+                    gateway.holdLoad = true;
+                    invokePhotoListRefresh(activity);
+                    DriverV1Repository.PhotoChecksCallback stale = gateway.pendingLoad;
+                    assertNotNull(stale);
+                    assertEquals(0, list.getAdapter().getItemCount());
+
+                    gateway.holdLoad = false;
+                    gateway.setUploaded("left");
+                    invokePhotoListRefresh(activity);
+                    assertEquals(1, list.getAdapter().getItemCount());
+                    assertEquals(View.VISIBLE, list.getVisibility());
+
+                    stale.onSuccess(Collections.emptyList());
+                    stale.onError(0, "Stale network error");
+                    assertEquals(1, list.getAdapter().getItemCount());
+                    assertEquals(View.VISIBLE, list.getVisibility());
+                    assertEquals(View.GONE,
+                            activity.findViewById(R.id.buttonPhotoChecksRetry).getVisibility());
+                });
+            }
+        } finally {
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    private static void invokePhotoListRefresh(PhotoChecksActivity activity) {
+        try {
+            Method method = PhotoChecksActivity.class.getDeclaredMethod("loadChecks");
+            method.setAccessible(true);
+            method.invoke(activity);
+        } catch (ReflectiveOperationException error) {
+            throw new AssertionError(error);
+        }
+    }
+
+    @Test
+    public void latePhotoDetailResponseCannotReenableAlreadyUploadedAngle() {
+        FakeGateway gateway = new FakeGateway();
+        gateway.setUploaded();
+        try (ActivityScenario<PhotoCheckActivity> scenario = launch(gateway)) {
+            scenario.onActivity(activity -> {
+                Button left = activity.findViewById(R.id.buttonPhotoLeft);
+                assertTrue(left.isEnabled());
+
+                gateway.holdLoad = true;
+                activity.findViewById(R.id.buttonPhotoCheckRefresh).performClick();
+                DriverV1Repository.PhotoChecksCallback stale = gateway.pendingLoad;
+                assertNotNull(stale);
+                assertFalse(left.isEnabled());
+
+                gateway.holdLoad = false;
+                gateway.setUploaded("left");
+                activity.findViewById(R.id.buttonPhotoCheckRefresh).performClick();
+                assertFalse(left.isEnabled());
+
+                FakeGateway oldServer = new FakeGateway();
+                oldServer.setUploaded();
+                stale.onSuccess(new ArrayList<>(oldServer.checks));
+                stale.onError(0, "Stale timeout");
+                assertFalse(left.isEnabled());
+                assertEquals(0, gateway.uploads);
+            });
+        } finally {
+            PhotoCheckGatewayFactory.setTestGateway(null);
+        }
+    }
+
+    @Test
     public void uploadedKindsComeFromServerAfterRecreation() {
         FakeGateway gateway = new FakeGateway();
         gateway.setUploaded("left", "front");
