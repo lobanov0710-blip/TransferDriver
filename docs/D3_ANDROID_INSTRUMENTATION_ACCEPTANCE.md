@@ -44,8 +44,8 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 | UI-08 | PARTIAL | Emulator: offline retry after Activity recreation reuses key/body/revision; server replay acceptance untested |
 | UI-09 | PARTIAL | Emulator: HTTP 409 refreshes case and next send uses new key/revision; server response contract not E2E |
 | UI-10 | PARTIAL | Emulator PASS: closed case and server-side closure discovered after 409 disable composer; real backend E2E pending |
-| UI-11 | NOT RUN | Assigned-only gate at runtime |
-| UI-12 | NOT RUN | Terminal done UI replay interaction |
+| UI-11 | PARTIAL (CI PENDING) | Synthetic Android UI: taken order verification gate disabled; backend assignment-phase and D4 gate E2E untested |
+| UI-12 | PARTIAL (CI PENDING) | Synthetic Android UI: in_progress done, in-flight disabled, timeout retry same revision; deterministic key contract in JVM; real HTTP replay untested |
 | UI-13 | PARTIAL | Login FLAG_SECURE + inheritance passed; real confirmation dialog runtime untested |
 
 No staging/production calls were made by these emulator checks. R2 remains
@@ -132,3 +132,41 @@ Do not claim UI runtime PASS from JVM unit tests or assembleDebug alone. No merg
 - UI-07 remains PARTIAL even if synthetic tests pass: real driver identity, backend ownership and HTTP retry must be independently verified.
 - UI-11, UI-12 remain NOT RUN at the Android UI layer; UI-02/04/05/06 and photo R2 upload remain PARTIAL/deferred.
 - No production deploy, R2 provisioning, D4 liveness, merge or remote migrations.
+
+## 2026-11-15 — UI-11/UI-12 and stale photo callback regression
+
+Code SHA `d35fc2fc333cecd9428b34be986104bae383fb25` on
+`fix/d3-ui-instrumentation-ci`.
+
+- UI-11: synthetic `taken` assigned order shows disabled verification
+  gate and has no enabled self-start/terminal action. This does not
+  approve or implement D4 liveness.
+- UI-12: synthetic `in_progress` order sends `done` with
+  `expectedRevision`; while request is pending the button is disabled;
+  after timeout an explicit retry keeps the same order/status/revision,
+  and `IdempotencyKeyFactory` has a deterministic JVM contract.
+  Synthetic server acknowledgement refreshes the order into `done`
+  and hides the terminal action. The fake does not intercept a real
+  HTTP Idempotency-Key header, so HTTP replay remains unverified.
+- Order details are hidden during assigned-only refresh; the previous
+  revision is invalidated until server revalidation. Disabled actions
+  cannot open confirmation programmatically.
+- Photo list/detail `getPhotoChecks` callbacks are guarded by request
+  generation. Stale success/error cannot re-enable already uploaded
+  angles or restore revoked list items. Existing buttons are disabled
+  and `currentCheck` cleared during refresh. Tests use synthetic
+  debug-only `PhotoCheckGateway`.
+- Previous Android CI [43584663155](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663155) and
+  [43584663103](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43584663103)
+  **FAIL** due to Java variable shadowing in `SupportCasesActivity`
+  (`dialog` lambda vs local `AlertDialog dialog`). Fixed at
+  `301c82d42bbe9f9f64a16c8cbb58eb10f16b957c`.
+- New CI [Android branch tests 43722312807](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312807) and
+  [D3 UI instrumentation 43722312783](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312783):
+  **PENDING** at time of writing. Do not mark these scenarios PASS until
+  CI results are verified.
+- UI-11 and UI-12 are **PARTIAL** against the full acceptance matrix:
+  real assigned-only authorization, production-equivalent backend
+  transition and end-to-end idempotency/audit remain untested.
+- No owner phone setup, credentials, production or STAGING calls, R2,
+  D4, merge, remote migration or deploy.
