@@ -63,10 +63,10 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 25 | Отсутствует; D5 | Passenger ↔ Driver order-chat, его архив и 30 календарных дней не реализованы как полный сценарий. Support chat — другой контур. |
 | 26 | Отсутствует; D5 | Нет полноценного VoIP/signaling/TURN/записи/архива. Таблица calls не закрывает требование; сроки и правовые условия требуют решения. |
 | 27 | Частично | Driver support cases/messages и backend admin lifecycle/retention есть; Admin-приложение, все каналы связи и реальный E2E не завершены. |
-| 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login/MFA, server profile и Admin moderation UI с пятью фильтрами, карточкой, поэлементными решениями и историей; финальный CI этого среза ожидается. Полный набор разделов Admin не завершён. |
+| 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login/MFA, server profile и Admin moderation UI с пятью фильтрами, карточкой, поэлементными решениями и историей; финальный CI/runtime этого среза PASS. Полный набор разделов Admin не завершён. |
 | 29 | Код MFA проверен; E2E не выполнен | Параметры/API TOTP MFA утверждены. Server challenge/enrollment/TOTP/recovery/evidence и Admin flow проверены локально и в CI/runtime. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
 | 30 | Частично | Серверные granular permissions и Admin read-only очередь dispatcher с drivers.read реализованы. Управление сотрудниками, остальные разделы и приёмка полного набора прав впереди. |
-| 31 | Частично | Добавлены пять фильтров очереди, карточка/история, review/возврат элементов и итоговое решение. Локальные проверки выполняются; CI/runtime ожидаются. Driver исправления и live E2E не завершены; реальная identity verification зависит от D4/D5. |
+| 31 | Частично | Добавлены пять фильтров очереди, карточка/история, review/возврат элементов и итоговое решение. Локальные проверки и CI/runtime PASS (Admin 93 JVM + 27 API 35 tests). Driver исправления и live E2E не завершены; реальная identity verification зависит от D4/D5. |
 | 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver/Admin UX и E2E не приняты. |
 | 33 | Частично | Assignment revision, reassign, audit и отзыв серверного доступа есть. GPS/order-chat/новая trip-selfie цепочка ещё не завершены. |
 | 34 | Частично | Реализованные mutations/доступ к private resources аудируются. Нет полного Admin audit/архивного UX и всех будущих событий GPS/VoIP/identity. |
@@ -134,3 +134,12 @@ SDK config и Firebase identifiers уже получены — повторно 
 не подтверждено. В этом аудите удалённая инфраструктура не перепроверялась.
 Миграции 0005–0017 уже применялись к STAGING 2026-11-07: перед возможным новым apply
 проверяется фактический pending set; повторный apply не запускается по старым заметкам.
+
+## Завершённый срез G2 от 2026-11-15
+
+Admin moderation source d469b42c / CI 43704273792 и backend 51d21da7 /
+CI 43702881770 — SUCCESS; результаты и ограничения в журнале, provenance в
+[ADMIN_MODERATION_BUILD_2026-11-15.json](ADMIN_MODERATION_BUILD_2026-11-15.json).
+Следующий шаг принятой рекомендации: Driver анкета/черновик/автомобили/VIN и
+исправления по замечаниям Admin; затем availability/manual assignment.
+Только разрешённые D1–D3 части и синтетические материалы до D4/D5/G1.
