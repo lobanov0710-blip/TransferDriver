@@ -1177,15 +1177,14 @@ public final class OrderDetailsActivity
         );
 
         /*
-         * Если данные уже были показаны,
-         * при тихом refresh экран не прячем.
+         * Assigned-only access must be revalidated on every refresh.
+         * Do not leave stale passenger data or terminal actions usable
+         * while a newer server response is pending.
          */
-        if (currentOrder == null) {
-
-            layoutDetailsContent.setVisibility(
-                    View.GONE
-            );
-        }
+        currentOrder = null;
+        currentTargetStatus = null;
+        buttonDetailsAction.setEnabled(false);
+        layoutDetailsContent.setVisibility(View.GONE);
     }
 
     private void showError(
