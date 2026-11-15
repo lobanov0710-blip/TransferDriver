@@ -40,12 +40,12 @@ Coverage against the **13-case matrix** (do not mark an entire case PASS from pa
 | UI-04 | PARTIAL | FileProvider scope passed; external camera URI grants untested |
 | UI-05 | PARTIAL | Emulator PASS: pending private file survives Activity recreation and explicit retry; live upload untested |
 | UI-06 | PARTIAL | Emulator PASS: synthetic timeout and uploadedKinds reconciliation; private R2 upload and real HTTP remain deferred |
-| UI-07 | PARTIAL (CI PENDING) | Synthetic support list and create/retry after Activity recreation; backend own-only HTTP E2E pending |
+| UI-07 | PARTIAL (synthetic emulator PASS) | Synthetic support list and create/retry after Activity recreation; backend own-only HTTP E2E pending |
 | UI-08 | PARTIAL | Emulator: offline retry after Activity recreation reuses key/body/revision; server replay acceptance untested |
 | UI-09 | PARTIAL | Emulator: HTTP 409 refreshes case and next send uses new key/revision; server response contract not E2E |
 | UI-10 | PARTIAL | Emulator PASS: closed case and server-side closure discovered after 409 disable composer; real backend E2E pending |
-| UI-11 | PARTIAL (CI PENDING) | Synthetic Android UI: taken order verification gate disabled; backend assignment-phase and D4 gate E2E untested |
-| UI-12 | PARTIAL (CI PENDING) | Synthetic Android UI: in_progress done, in-flight disabled, timeout retry same revision; deterministic key contract in JVM; real HTTP replay untested |
+| UI-11 | PARTIAL (synthetic emulator PASS) | Synthetic Android UI: taken order verification gate disabled; backend assignment-phase and D4 gate E2E untested |
+| UI-12 | PARTIAL (synthetic emulator PASS) | Synthetic Android UI: in_progress done, in-flight disabled, timeout retry same revision; deterministic key contract in JVM; real HTTP replay untested |
 | UI-13 | PARTIAL | Login FLAG_SECURE + inheritance passed; real confirmation dialog runtime untested |
 
 No staging/production calls were made by these emulator checks. R2 remains
@@ -161,12 +161,36 @@ Code SHA `d35fc2fc333cecd9428b34be986104bae383fb25` on
   **FAIL** due to Java variable shadowing in `SupportCasesActivity`
   (`dialog` lambda vs local `AlertDialog dialog`). Fixed at
   `301c82d42bbe9f9f64a16c8cbb58eb10f16b957c`.
-- New CI [Android branch tests 43722312807](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312807) and
-  [D3 UI instrumentation 43722312783](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312783):
-  **PENDING** at time of writing. Do not mark these scenarios PASS until
-  CI results are verified.
+- CI [Android branch tests 43722312807](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312807)
+  **PASS**; [D3 UI instrumentation 43722312783](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722312783)
+  **FAIL** (28/30 passed). Both failures were Espresso dialog root focus errors,
+  not production assertion failures. See verified retry below.
 - UI-11 and UI-12 are **PARTIAL** against the full acceptance matrix:
   real assigned-only authorization, production-equivalent backend
   transition and end-to-end idempotency/audit remain untested.
 - No owner phone setup, credentials, production or STAGING calls, R2,
   D4, merge, remote migration or deploy.
+
+## 2026-11-15 — UI-07, UI-11, UI-12 and stale photo callbacks: verified CI
+
+- Final code SHA `3a4dba477e34efab7f126eefa236ed2a077a1277`.
+- [Android branch tests 43722768440](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722768440):
+  **PASS** (JVM, debug and release Java compilation).
+- [D3 UI instrumentation 43722768431](https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722768431):
+  **PASS**, Android emulator `:app:connectedDebugAndroidTest`.
+- UI-07: synthetic support list fail-closed, superseded callbacks ignored,
+  create timeout/retry retains idempotency key across recreation — emulator PASS.
+- UI-11: synthetic taken assigned order cannot self-start or trigger done;
+  verification gate remains disabled — emulator PASS.
+- UI-12: synthetic in_progress done request disables concurrent user action;
+  timeout permits explicit replay with unchanged order/status/revision;
+  accepted done refresh hides action — emulator PASS. Stable
+  `IdempotencyKeyFactory` and Retrofit header contract are JVM-tested,
+  but actual HTTP header/replay is not tested by the fake gateway.
+- Photo list and detail: superseded success/error responses cannot restore
+  stale assignments or re-enable already uploaded angles — emulator PASS.
+- UI-07/UI-11/UI-12 remain **PARTIAL** against full E2E acceptance;
+  synthetic UI PASS is not evidence of real driver identity, server
+  authorization, HTTP replay, audit persistence, or D4 liveness.
+- No production/STAGING traffic, owner phone setup, R2, D4,
+  merge, remote migrations or deploy.
