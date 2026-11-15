@@ -203,9 +203,10 @@ jobs:
           profile: pixel_6
           disable-animations: true
           script: |
-            ./gradlew :app:connectedDebugAndroidTest --no-daemon --stacktrace
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
             mkdir -p registration-evidence
             for image in profile-light profile-dark-large vehicle-light vehicle-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
+            python3 tools/check_registration_evidence.py registration-evidence
             ./gradlew :app:installDebug --no-daemon --stacktrace
             ./gradlew :admin:connectedDebugAndroidTest --no-daemon --stacktrace
 

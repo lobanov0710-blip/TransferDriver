@@ -17,8 +17,12 @@ D1–D3 утверждены; D4–D7 остаются неутверждённ�
 
 G1 приостановлен. Владелец явно поручил начать G2. Рабочая ветка Admin —
 [arch/g2-transfer-admin](https://github.com/lobanov0710-blip/TransferDriver/tree/arch/g2-transfer-admin). Активная работа — отдельный
-Transfer Admin по D1–D3. Для OWNER выбран TOTP как направление подготовки
-отдельного предложения; параметры и API TOTP явно утверждены 2026-11-14; реализация начата.
+Transfer Admin по D1–D3. Параметры/API TOTP утверждены 2026-11-14, реализованы и
+проверены; 2026-11-15 владелец подтвердил подключение нового TOTP и вход на телефоне.
+Это приёмка OWNER phone login по сообщению владельца, не полного G1/G2.
+Далее выполняется ранее утверждённый Driver registration/vehicles в отдельной
+[ветке arch/g2-driver-registration](https://github.com/lobanov0710-blip/TransferDriver/tree/arch/g2-driver-registration),
+[Draft PR #8](https://github.com/lobanov0710-blip/TransferDriver/pull/8).
 G1 не возобновляется без решения владельца; D4–D7 не утверждены.
 
 ## Как читать статусы
@@ -38,8 +42,8 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 |---|---|---|
 | 1 | Частично | Backend определяет права и состояния. Полный контур четырёх систем, включая отдельный Admin, ещё не завершён. |
 | 2 | Код; E2E блокирован | Phone Auth, App Check и exchange → staff session реализованы. Настроить подпись/канал/App Check и подтвердить настоящий вход; он не даёт автоматический допуск. |
-| 3 | Частично | Backend draft/update/submit и completeness есть; мастера регистрации в Driver нет. Реальные документы/биометрия требуют D5. |
-| 4 | Частично | Серверные профильные поля есть; нужны UI ввода/исправления и сквозная проверка сохранения. |
+| 3 | Частично | Backend draft/update/submit и completeness есть; первый UI срез личных данных/автомобилей добавлен в PR #8, полный мастер ещё не готов. Реальные документы/биометрия требуют D5. |
+| 4 | Частично | Java/XML UI личных данных/read-only телефона и серверных статусов добавлен в G2 PR #8. Синтетические проверки не заменяют Driver live E2E; причины возврата не входят в GET me. |
 | 5 | Частично; D4/D5 | Типы passport_selfie и identity_reference_selfie, private upload/readiness предусмотрены. Полный capture/identity/consent flow не принят. |
 | 6 | Блокировано D4/D5 | Серверная модель есть; выбранного и интегрированного face/liveness provider нет. Административный review не заменяет автоматическую проверку. |
 | 7 | Частично; D4/D5 | Challenge и SQL binding/state guard есть; пути получения настоящего verified и trip-selfie UI нет. Галерея и локальный успех не допускаются. |
@@ -112,7 +116,9 @@ Admin full lint трёх variants — 0 issues. OSV scan 6 runtime configuration
 152 Maven components — 0 опубликованных advisories на момент проверки.
 Сводный отчёт: [OWNER_MFA_VERIFICATION_2026-11-15.json](OWNER_MFA_VERIFICATION_2026-11-15.json).
 Среда выполнения восстановлена 2026-11-15; полный build receipt и runtime inventory опубликованы отдельными документами.
-Это не полная приёмка G2: server changes не развёрнуты, live E2E не выполнен.
+Это историческая проверка указанного source, не полная приёмка G2. Позднее
+OWNER-only STAGING подготовлен на компьютере владельца; новый TOTP и вход
+подтверждены им 2026-11-15. Driver live E2E остаётся блокирован G1.
 Далее по G2 — оставшийся Driver registration/vehicle/availability UX и
 Admin moderation/assignment UX в рамках D1–D3. Ограничение execution environment снято после проверки команд, workspace и сохранности артефактов.
 
@@ -154,3 +160,17 @@ G1 остаётся на паузе. Сначала проверенный па�
 TOTP на том же телефоне: RAM-only IDs/исходный TTL, без seed/кодов в фоне,
 отмена незавершённых запросов — явно утверждено владельцем.
 [Процедура](OWNER_PHONE_STAGING_WINDOWS.md). Это не завершение G1/G2.
+
+
+## Текущий срез G2 после подтверждения OWNER phone login
+
+Первый Driver срез: profile draft/save и несколько автомобилей/create/edit/VIN,
+серверные статусы/версии. Контракт и ограничения —
+[DRIVER_REGISTRATION_SCOPE_2026-11-15.md](DRIVER_REGISTRATION_SCOPE_2026-11-15.md).
+Далее в утверждённой последовательности — availability/manual assignment.
+Срезы полного wizard, причин возврата элементов и загрузок не считаются
+завершёнными: действующий GET me не даёт причины, D4/D5 ещё не утверждены.
+ADMIN_PHONE_TEST_ONLY не снимается для тестирования Driver UI. Реальный Driver
+E2E не выполняется обходом паузы G1; локальные/CI проверки используют синтетику.
+Результаты нового source/CI и остающиеся предупреждения фиксируются в журнале
+и отдельном verification receipt после фактического выполнения проверок.

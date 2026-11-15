@@ -69,3 +69,10 @@ Driver live STAGING не проверяется: ADMIN_PHONE_TEST_ONLY оста�
 Driver routes изолированы по предыдущему решению. Синтетический Firebase CI
 config пригоден только для тестов, такой APK не выдаётся за рабочий live build.
 Релизная подпись, Play/App Check/R2 и остальные G1 пункты остаются отложенными.
+
+После аудита HTTP503 shared clients обеих apps помечают mutation bodies
+isOneShot=true: actual loopback HTTP тест воспроизвёл старый повтор и доказал
+одиночную отправку после исправления. No-retry flag сам по себе для 503
+Retry-After:0 недостаточен. Визуальное evidence принимается только после
+проверки реального PNG; target APK остаётся установлен только на ephemeral
+CI emulator до извлечения четырёх synthetic fixtures.

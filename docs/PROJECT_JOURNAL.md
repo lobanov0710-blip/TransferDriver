@@ -2635,3 +2635,47 @@ light/dark font1.3 создаются только test APK с synthetic account
 нет screenshot bypass. Извлекаются только четыре фиксированных PNG, без app
 storage/конфигурации/ключей. Ожидается runtime CI; его успех пока не заявляется.
 Границы/контракты: DRIVER_REGISTRATION_SCOPE_2026-11-15.md. G1 на паузе.
+
+
+### Дополнительный аудит: автоматический HTTP 503 replay
+
+Проверен bytecode actual locked OkHttp 4.12.0: ветка 503 Retry-After:0 не
+проверяет retryOnConnectionFailure. Реальный loopback HTTP fixture воспроизвёл
+две отправки обычного тела при retryOnConnectionFailure=false. Это не mock
+application interceptor, который обходит внутренний retry.
+
+Устранено в общих HTTP builders Driver и Admin: тело помечается isOneShot=true
+с делегированием contentType/contentLength/isDuplex/writeTo; HTTP-клиент
+прекращает follow-up до повторной отправки. HTTPS/origin policy, deadlines и
+серверные/API контракты не меняются. Новые зависимости не добавляются.
+Это исправление найденного дефекта безопасности, а не новое продуктовое решение.
+
+В обоих модулях actual HTTP regression сравнивает обычное тело (2 requests)
+и защищённое (1 request, no priorResponse); также проверяется применение
+защиты общим builder до транспорта для POST/PUT/PATCH. Локальные полные debug
+наборы теперь Driver 43 + Admin 34 JVM PASS; instrumentation compile, оба debug
+lint PASS. Driver lint 0 errors / 54 warnings, новые формы без замечаний; Admin
+0 issues. Исходный CI 43735703470 запущен до этого исправления; его результат
+не будет выдан за проверку окончательного source. Окончательный CI ожидается.
+
+
+### Runtime первого source и обнаруженная непригодность screenshot evidence
+
+CI 43735703470 / job 132877757100, source 6cc32fb745bae905541fd0325ca4cd42b9a71a65:
+SUCCESS. Driver JVM 40×3=120, runtime API35 27; Admin JVM 31×3=93, runtime 29.
+Новые 15 Driver cases фактически выполнены, включая обе формы/сохранение,
+cancelled epoch/rebind и background/Parcel. Это source до HTTP503 исправления.
+
+Выгружен artifact 14170790867 (754 bytes), digest совпал с GitHub. Все четыре
+файла .png по 50 bytes содержали лишь диагностический текст run-as об отсутствии
+пакета. Эти файлы отвергнуты как screenshots; визуальная проверка не объявляется
+выполненной. Причина: connected test удалил target APK до run-as extraction;
+adb stdout перенаправился в файл без проверки формата. CI success сам по себе
+оказался недостаточным доказательством визуального результата.
+
+Исправление: CLI-only android.injected.androidTest.leaveApksInstalledAfterRun=true
+для Driver test task на ephemeral CI emulator (параметр подтверждён в actual
+AGP9.4.1 BooleanOption); production app/settings не меняются. Добавлена проверка
+PNG signature/IHDR/native dimensions/chunk CRC/IEND перед upload. Validator
+локально отвергает фактически полученный ложный PNG. Финальный CI должен
+проверить HTTP503 fix и новые полноценные screenshots.

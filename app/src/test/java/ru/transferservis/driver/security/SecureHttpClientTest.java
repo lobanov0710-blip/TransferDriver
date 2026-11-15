@@ -45,4 +45,16 @@ public class SecureHttpClientTest {
             assertEquals("Untrusted API endpoint", expected.getMessage());
         }
     }
+
+    @Test public void mutationBodiesAreOneShotBeforeTransport() throws Exception {
+        okhttp3.OkHttpClient client=SecureHttpClient.newBuilder().addInterceptor(chain->{
+            assertTrue(chain.request().body().isOneShot());
+            return new okhttp3.Response.Builder().request(chain.request()).protocol(okhttp3.Protocol.HTTP_1_1)
+                    .code(503).message("Synthetic").header("Retry-After","0").body(okhttp3.ResponseBody.create(null,"")).build();
+        }).build();
+        for(String method:new String[]{"POST","PUT","PATCH"})try(okhttp3.Response response=client.newCall(new okhttp3.Request.Builder()
+                .url(ru.transferservis.driver.security.ApiEndpointPolicy.BASE_URL+"synthetic-mutation").method(method,okhttp3.RequestBody.create(null,"{}")).build()).execute()) {
+            assertEquals(503,response.code());
+        }
+    }
 }
