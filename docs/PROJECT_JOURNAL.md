@@ -1445,3 +1445,26 @@ Production/STAGING/R2/D4, merge и remote migrations не затронуты.
   Все новые тесты используют синтетические данные; owner phone
   setup не выполнялся, секреты/SQL не выводились. Production,
   STAGING, R2, D4, merge, remote migrations и deploy не затронуты.
+
+## 2026-11-15 — D3 emulator CI: secure dialog Espresso root fix
+
+- Android branch tests run `43722312807` — **PASS**,
+  включая debug/release compile и JVM tests на SHA `d35fc2fc33`.
+- D3 UI instrumentation run `43722312783` — **FAIL**:
+  30 tests, 2 failures, 0 errors. Все 10 photo-control tests
+  **PASS**; UI-11 taken gate и stale order refresh тоже **PASS**.
+  Два сбоя `RootViewWithoutFocusException` в Espresso:
+  `doneTimeoutAllowsExplicitSameRevisionRetryButNotConcurrentDuplicate`
+  и `supportCreateTimeoutRetriesSameCategoryAndKeyAfterRecreation`.
+  Activity root терял фокус, поскольку был открыт отдельный secure
+  AlertDialog. Это сбой тестового root matcher, не подтверждённый
+  дефект production UI.
+- В обоих инструментальных тестах диалоги выбираются через
+  `.inRoot(isDialog())`, вместо implicit default Activity root.
+  Коммиты `c5116050e176`, `3a4dba477e34`.
+- Повторные CI:
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722768440
+  https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43722768431
+  — **PENDING**, PASS ещё не подтверждён.
+- Ни один production/STAGING вызов, owner phone setup, R2, D4,
+  merge или deploy не выполнялся.
