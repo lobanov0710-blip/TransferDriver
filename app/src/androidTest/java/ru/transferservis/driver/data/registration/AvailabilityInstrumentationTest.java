@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.view.ViewCompat;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import com.google.android.material.slider.Slider;
@@ -117,7 +116,7 @@ public final class AvailabilityInstrumentationTest {
     private interface Condition{boolean ready();}
     private void await(Condition condition) throws Exception {long until=System.currentTimeMillis()+8000;while(System.currentTimeMillis()<until){boolean[] ok={false};instrumentation.runOnMainSync(()->ok[0]=condition.ready());if(ok[0])return;Thread.sleep(40);}fail("Expected safe availability state not reached");}
     private void message(String text) throws Exception {await(()->((TextView)main.findViewById(R.id.availabilityMessage)).getText().toString().contains(text));}
-    private void onlineAction(){instrumentation.runOnMainSync(()->{Slider slider=main.findViewById(R.id.availabilitySlider);Bundle arguments=new Bundle();arguments.putFloat(android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE,100);assertNotNull(ViewCompat.getAccessibilityNodeProvider(slider));assertTrue(ViewCompat.getAccessibilityNodeProvider(slider).performAction(0,android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(),arguments));});}
+    private void onlineAction(){instrumentation.runOnMainSync(()->{Slider slider=main.findViewById(R.id.availabilitySlider);Bundle arguments=new Bundle();arguments.putFloat(android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE,100);assertNotNull(slider.getAccessibilityNodeProvider());assertTrue(slider.getAccessibilityNodeProvider().performAction(0,android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(),arguments));});}
     private void click(int id){instrumentation.runOnMainSync(()->main.findViewById(id).performClick());}
     @Test public void requiresAuthoritativeProfileIdentityVehicleAndRevision() throws Exception {
         Server s=new Server();s.registration="draft";launch(s);message("после одобрения");instrumentation.runOnMainSync(()->assertFalse(main.findViewById(R.id.availabilitySlider).isEnabled()));assertEquals(0,s.puts.get());

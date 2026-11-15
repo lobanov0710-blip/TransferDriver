@@ -2913,3 +2913,36 @@ CI запланирован с8 fixed PNG paths/validator marker и regression �
 изменения теста сохранились, compile log не появился. После «Далее» состояние
 сверено, сборка запущена заново и завершилась PASS(42s). Это не отмена G2 и
 не утверждение pending Admin API. Окончательный runtime/visual verdict ожидаются.
+
+
+### Availability runtime1: неверный вызов accessibility provider в test fixture
+
+Source208ebfad4235f1ab5f29396347083c941bf2647c, CI43752677606/job132929903193:
+FAILURE на Driver connected.11 новых cases реально выполнены:4PASS (включая
+настоящий Slider swipe и выбор другого авто),7FAIL в общем onlineAction helper.
+Старые27 Driver cases PASS; Admin runtime ещё не запускался. Build/unit/lint
+этап прошёл. Никакой визуальный/полный runtime PASS пока не заявляется.
+
+По actual locked Material1.14/AndroidX core1.18 bytecode проверено: метод
+AccessibilityNodeProviderCompat.performAction у wrapper возвращает false,
+не делегируя обёрнутому framework provider. Test вызывал этот stub из
+ViewCompat.getAccessibilityNodeProvider; это неверная тестовая точка входа.
+Исправлено на slider.getAccessibilityNodeProvider().performAction, то есть
+реальный Android virtual-thumb ACTION_SET_PROGRESS. Assertions, ожидаемый
+backend state/допуск/одиночная отправка и реальный swipe case сохранены.
+Production app code не меняется; новый instrumentation compile/CI ожидаются.
+
+
+### Возобновление после tooling interruption; проверка через утверждённый CI
+
+После команды «Продолжаем» сверены git status/test helper/logs. Исправленный
+framework provider вызов сохранился, но предыдущая попытка compile log не
+создала: tooling была прервана до команды. Локальный повтор без дополнительных
+разрешений, с --offline, завершился до compilation: Gradle FileLockContentionHandler
+не смог определить usable wildcard IP. Это sandbox/network limitation служебного
+сокета, не ошибка Java и не успешная локальная компиляция. Sandbox/сетевые
+настройки не менялись. Следующая полная проверка — существующий авторизованный
+GitHub CI build/runtime pipeline; результат будет привязан к новому source.
+Локальная предыдущая variants сборка staging/release/unit/lint PASS(3m15s),
+но она предшествовала test-only correction. Admin read API всё ещё не выбран;
+команда продолжения не трактуется как новое утверждение A/B.
