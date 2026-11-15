@@ -84,6 +84,10 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <Button
+        android:id="@+id/buttonRegistration" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp" android:text="@string/registration_section" android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/layoutDriverTools"
         android:layout_width="match_parent"

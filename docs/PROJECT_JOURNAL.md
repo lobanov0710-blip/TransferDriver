@@ -2570,3 +2570,68 @@ Account id/password_hash/token_version/role/status сохраняются. PASS,
 приватно переписать: Admin очищает его в фоне, IDs сохраняет только до исходных
 5 минут. Значения ключей/OTP/bootstrap/recovery в чат не присылать. Фактический
 перевыпуск/phone login ожидаются от владельца. G1 остаётся на паузе.
+
+
+## 2026-11-15 — Владелец подтвердил новый TOTP и вход; продолжение G2
+
+Владелец подтвердил: после перевыпуска новый TOTP подключён, вход в Transfer
+Admin на телефоне выполнен. Это результат проверки владельцем; независимого
+чтения live factor/session или новой полной STAGING E2E проверки не проводилось.
+Значения seed/bootstrap/OTP/recovery не запрашиваются и не фиксируются.
+Задача восстановления OWNER phone login закрывается по подтверждению владельца.
+
+Продолжается ранее утверждённая последовательность G2: после Admin moderation
+— Driver registration/vehicles, затем availability/manual assignment. Для
+анкеты и автомобилей создана отдельная ветка arch/g2-driver-registration.
+Используются действующие D3 API, Java/XML, существующие Material-компоненты.
+Реальные документы/биометрия не собираются: D4–D7 не утверждены, G1 на паузе.
+Флаг ADMIN_PHONE_TEST_ONLY не снимается; Driver UI проверяется на синтетическом
+транспорте, а не обходом изоляции STAGING. Merge и production deploy не разрешены.
+
+В текущем GET /v1/driver/me есть profile/vehicles/status/revision, но нет
+причин возврата отдельных элементов. Не придумывать эти данные в UI; расширение
+контракта требует отдельной конкретизации. Первый срез: сохранение личных
+данных, read-only подтверждённый телефон, список/создание/изменение автомобилей,
+VIN, серверные статусы, optimistic revision conflict и защита от повтора mutation.
+Отправка документов и финальная подача всей регистрации в этот срез не входят.
+
+
+## 2026-11-15 — G2 Driver: первый срез анкеты и автомобилей, перед runtime CI
+
+Добавлены Java/XML формы с read-only подтверждённым телефоном, личными данными,
+несколькими автомобилями, VIN, статусами и independent expectedRevision.
+Серверные правила draft/changes_required и suspended/rejected сохраняются.
+Mutation transport без refresh/replay/redirect/cache использует существующий
+HTTPS allowlist и привязку staffId/access/refresh. При анализе lifecycle найден
+риск запуска ещё не начавшейся задачи после cancelAll: исправлен operation epoch,
+инвалидируемый onStop; старый scope не работает после rebind. Формы и серверные
+данные очищаются onStop, input не входит в autofill/SavedState. Неопределённый
+результат записи требует явный GET/reload перед следующим сохранением.
+
+Совместимость: API допускает null usageBasis старого автомобиля. Чтение этого
+случая разрешено, при сохранении обязателен явный выбор. Причины исправлений
+не возвращаются GET me и не выдумываются в UI. Финальный submit, документы,
+identity и availability не реализуются в этом первом срезе.
+
+Локально build debug/staging/release, unit tests трёх variants и lint трёх
+variants прошли на промежуточном source. После lifecycle/compatibility правок
+повторены debug unit/compile androidTest/lint: 40 JVM cases PASS (29 прежних +
+11 новых); instrumentation APK с 15 новыми cases компилируется, runtime ещё
+не запускался. Security guards: Driver 7 + Admin 5 PASS. Четыре действующих
+backend registration service/readiness/submit/migration contract scripts PASS.
+Новых dependencies/API/schema/Worker/deploy изменений нет.
+
+Начальный lint выявил 3 API28-only heading attributes и private back resource
+в новом UI: исправлено через ViewCompat и собственный vector. В новом срезе
+lint warnings/errors 0. Общий Driver debug lint: 0 errors / 54 прежних warnings
+(в том числе unused resources, available upgrades, старые UI/locale замечания).
+Они не объявляются исправленными или полноценным security clearance; dependency
+upgrade не выполняется вне текущего scope. Имеются безопасные build notices о
+metrics path/deprecated APIs/native strip, не failures.
+
+CI расширен полным Driver lint и обязательными runtime cases. Native screenshots
+light/dark font1.3 создаются только test APK с synthetic account/transport:
+временно clear FLAG_SECURE в test и restore/assert в finally; в production app
+нет screenshot bypass. Извлекаются только четыре фиксированных PNG, без app
+storage/конфигурации/ключей. Ожидается runtime CI; его успех пока не заявляется.
+Границы/контракты: DRIVER_REGISTRATION_SCOPE_2026-11-15.md. G1 на паузе.

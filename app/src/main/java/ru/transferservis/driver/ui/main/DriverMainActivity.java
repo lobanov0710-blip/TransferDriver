@@ -138,6 +138,9 @@ public class DriverMainActivity
                         )
         );
 
+        findViewById(R.id.buttonRegistration).setOnClickListener(view -> startActivity(
+                new Intent(this, ru.transferservis.driver.ui.registration.RegistrationActivity.class)));
+
         ensureSessionAndLoadOrders(
                 true
         );
@@ -833,6 +836,7 @@ public class DriverMainActivity
                 View.GONE
         );
 
+        findViewById(R.id.buttonRegistration).setVisibility(View.GONE);
         layoutDriverTools.setVisibility(
                 View.GONE
         );
@@ -860,6 +864,7 @@ public class DriverMainActivity
                 View.VISIBLE
         );
 
+        findViewById(R.id.buttonRegistration).setVisibility(View.VISIBLE);
         layoutDriverTools.setVisibility(
                 View.VISIBLE
         );
