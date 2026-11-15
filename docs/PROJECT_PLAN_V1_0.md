@@ -111,11 +111,10 @@ Driver 87 JVM + 12 runtime. Backend 1598dff3 / CI 43608125351 — 65 test script
 Admin full lint трёх variants — 0 issues. OSV scan 6 runtime configurations,
 152 Maven components — 0 опубликованных advisories на момент проверки.
 Сводный отчёт: [OWNER_MFA_VERIFICATION_2026-11-15.json](OWNER_MFA_VERIFICATION_2026-11-15.json).
-Полный локальный receipt/inventory ожидают доступной execution environment.
+Среда выполнения восстановлена 2026-11-15; полный build receipt и runtime inventory опубликованы отдельными документами.
 Это не полная приёмка G2: server changes не развёрнуты, live E2E не выполнен.
 Далее по G2 — оставшийся Driver registration/vehicle/availability UX и
-Admin moderation/assignment UX в рамках D1–D3; новые локальные сборки
-сейчас блокированы недоступностью execution environment.
+Admin moderation/assignment UX в рамках D1–D3. Ограничение execution environment снято после проверки команд, workspace и сохранности артефактов.
 
 ## Отложенные настройки G1 и решения будущих этапов
 

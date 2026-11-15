@@ -1,6 +1,6 @@
 {
   "date": "2026-11-15",
-  "status": "verified_source_ci_passed_local_receipt_publication_pending",
+  "status": "verified_source_ci_passed_full_local_receipts_recovered",
   "source": {
     "android": {
       "repository": "lobanov0710-blip/TransferDriver",
@@ -65,7 +65,7 @@
     ],
     "distinctMavenComponents": 152,
     "advisoryMatches": 0,
-    "fullInventoryPublication": "pending execution environment recovery",
+    "fullInventoryPublication": "docs/ADMIN_DRIVER_RUNTIME_AUDIT_2026-11-15.json",
     "limitations": "Public OSV advisories at check time, not a complete vulnerability or build-plugin audit."
   },
   "localArtifacts": {
@@ -77,11 +77,11 @@
       "bytes": 9018498,
       "sha256": "01a6198216124b122271685cc2a7f084249d6c96989089ca6b152033962529d7"
     },
-    "allArtifactHashesPublication": "pending execution environment recovery",
+    "allArtifactHashesPublication": "docs/ADMIN_MFA_BUILD_2026-11-14.json",
     "debugCertificateSha256": "ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b",
     "stagingAndReleaseUnsigned": true,
     "oldArtifactSetPreserved": true,
-    "currentLocalFileAvailability": "not verifiable while execution environment unavailable"
+    "currentLocalFileAvailability": "verified 2026-11-15: six files present, sizes and SHA-256 match"
   },
   "approval": {
     "totpParametersAndApiApproved": true,
@@ -97,9 +97,12 @@
     "realOwnerSeedCreated": false
   },
   "environment": {
-    "execution": "unavailable",
-    "cloudStatus": "running_connected_but_no_usable_execution_environment",
-    "localGitCheckpointPending": true
+    "execution": "available",
+    "cloudStatus": "running_connected",
+    "workspaceReadWrite": "PASS",
+    "artifactHashesVerified": 6,
+    "sourceHashesVerified": 35,
+    "localGitCheckpoint": "Tree equality is checked during publication; local checkpoint recorded separately."
   },
   "specGitBlob": "7434dc0b1548b4f2c5382f12d6cc5399f93d0a84"
 }
