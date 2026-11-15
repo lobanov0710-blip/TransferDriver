@@ -28,7 +28,8 @@
     <string name="registration_make_label">Марка</string>
     <string name="registration_model_label">Модель</string>
     <string name="registration_color_label">Цвет (необязательно)</string>
-    <string name="registration_capacity_label">Количество пассажирских мест · 1–20</string>
+    <string name="registration_capacity_label">Пассажирских мест</string>
+    <string name="registration_capacity_help">От 1 до 20</string>
     <string-array name="registration_class_choices"><item>Выберите класс</item><item>Комфорт</item><item>Бизнес</item><item>Минивэн</item></string-array>
     <string-array name="registration_baggage_choices"><item>Выберите объём багажа</item><item>Меньше стандартного</item><item>Стандартный</item><item>Большой</item></string-array>
     <string-array name="registration_usage_choices"><item>Выберите основание</item><item>Собственность</item><item>Аренда</item><item>Иное</item></string-array>

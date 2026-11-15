@@ -2679,3 +2679,66 @@ AGP9.4.1 BooleanOption); production app/settings не меняются. Доба
 PNG signature/IHDR/native dimensions/chunk CRC/IEND перед upload. Validator
 локально отвергает фактически полученный ложный PNG. Финальный CI должен
 проверить HTTP503 fix и новые полноценные screenshots.
+
+
+## 2026-11-15 — Проверка G2 Driver и общая защита HTTP503: финальный code CI
+
+Android Draft PR #8: https://github.com/lobanov0710-blip/TransferDriver/pull/8
+Проверенный source 5cb6d60060c491e4d0768c90d1446beeacfd1e00, tree
+fae2d2d4f41923bdde0e7ebb2bb1a47ba85b8a7e. CI 43736924677 / job132881464115
+SUCCESS: Driver43 JVM×3=129 + API35 runtime27; Admin34 JVM×3=102 + runtime29.
+Итого231 JVM +56 runtime, без failed/skipped. Full lint3 variants обеих apps:
+Driver0errors/54 прежних warnings в каждом, новые формы0issues; Admin0issues.
+Локальная повторная сборка и те же6 JVM suites/6 lint suites прошли. Driver7+
+Admin5 security guards и4 backend registration contract scripts PASS.
+
+Нативный artifact14171191658 (544933bytes) checksum совпал:
+218740e98b81bb7106046c30666e5eb028d1c6f06ec5ab511c932ba549d548e1.
+Четыре actual API35 screenshots1080×2400 прошли signature/IHDR/chunk CRC/IEND
+и локальную повторную проверку. Предыдущий artifact с adb diagnostic text
+остался отвергнутым, его CI success не использован как визуальная приёмка.
+
+Собран Admin debug STAGING с прежним отдельным сертификатом (публичный SHA256
+ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b),
+взятым только из прежнего локального ignored signing store. APK SHA256
+43bfbb4daad747a53d231a2ffb3518ad3a5fd8e125d3a3712a519cbef85348d5.
+Driver debug APK SHA256 a299c3a7ba3de59d15bc74a041f3c2cfb3bb9ad0c24d68c6a1111e039b6b8157;
+сертификат отличается от Admin. APK подписи проверены apksigner37. Его новый
+формат V2 Signer потребовал исправить локальный разбор public digest; первая
+попытка receipt завершилась StopIteration, ключи не раскрывались/не менялись.
+Это локальные сборки того же source; CI самостоятельно собрал/проверил source,
+а не эти конкретные локальные APK bytes. Driver live E2E не выполнялся.
+
+Загруженный Firebase SDK config key проверен на отсутствие во всех tracked
+файлах (сам ключ не печатался). Документы ТЗ не изменены: blob
+7434dc0b1548b4f2c5382f12d6cc5399f93d0a84. OWNER подтвердил новый TOTP/вход;
+G1 остаётся на паузе, ADMIN_PHONE_TEST_ONLY не снимается. Реальные документы/
+биометрия, release signing, merge и production deploy не выполнялись.
+
+Первый fresh Impeccable reviewer завершился без результата из-за service usage
+limit; это не review pass. После команды владельца «далее» повторяется тот же
+safe review packet, без user secrets/входных ключей и без fork исходной беседы.
+Итог UI review и необходимые исправления ещё будут зафиксированы отдельно.
+
+
+### Independent native finish review — fix round 1
+
+После service quota interruption fresh reviewer повторно получил тот же safe
+packet и4 проверенных native captures, без fork исходной беседы и без секретов.
+Возврат: disposition fix;5 контрактных sections получены. Harness использовал
+generic fresh agent по fallback finish-reviewer reference Impeccable, штатный
+тип агента/launcher недоступен; независимость контекста сохранена.
+
+Два material UI дефекта: системная строка состояния имела недостаточный
+контраст в light/dark, а hint количества мест обрезал диапазон1–20 при font1.3.
+В sampled code новых material ошибок auth/mutations reviewer не обнаружил;
+это не независимый scan всего проекта и не proof отсутствия всех уязвимостей.
+
+Исправления одним batch: WindowInsetsControllerCompat задаёт foreground
+status/navigation bars по resolved DayNight; краткий label Пассажирских мест,
+диапазон От1до20 вынесен в постоянный Material helper. Две существующие native
+fixture cases теперь дополнительно проверяют bar appearances, реальный fontScale
+и измеренную ширину hint/постоянный helper. Production FLAG_SECURE сохраняется.
+PRODUCT.md фиксирует только факты утверждённого scope, не вводит новых решений
+и не создаёт новый дизайн. Требуется rebuild/recapture тех же4paths и verdict
+того же reviewer; исправления до recapture не объявляются принятыми.

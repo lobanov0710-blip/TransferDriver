@@ -41,6 +41,11 @@ public final class RegistrationActivity extends SecureActivity {
         super.onCreate(state);
         setContentView(R.layout.activity_registration);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        boolean lightSurface = (getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK) != android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        androidx.core.view.WindowInsetsControllerCompat barsController = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        barsController.setAppearanceLightStatusBars(lightSurface);
+        barsController.setAppearanceLightNavigationBars(lightSurface);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.registrationRoot), (view, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             int bottom = Math.max(bars.bottom, insets.getInsets(WindowInsetsCompat.Type.ime()).bottom);

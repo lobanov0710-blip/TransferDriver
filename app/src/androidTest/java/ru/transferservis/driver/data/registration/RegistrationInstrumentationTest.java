@@ -176,8 +176,21 @@ public final class RegistrationInstrumentationTest {
     private void nativeScreens(boolean dark) throws Exception {
         shell("settings put system font_scale "+(dark?"1.3":"1.0"));
         instrumentation.runOnMainSync(()->AppCompatDelegate.setDefaultNightMode(dark?AppCompatDelegate.MODE_NIGHT_YES:AppCompatDelegate.MODE_NIGHT_NO));
-        launch(chain->response(chain,200,DRAFT));capture(dark?"profile-dark-large":"profile-light");
-        click(R.id.registrationAddVehicle);awaitText("Новый автомобиль");capture(dark?"vehicle-dark-large":"vehicle-light");
+        launch(chain->response(chain,200,DRAFT));
+        instrumentation.runOnMainSync(()->{
+            androidx.core.view.WindowInsetsControllerCompat bars=androidx.core.view.WindowCompat.getInsetsController(activity.getWindow(),activity.getWindow().getDecorView());
+            assertEquals(!dark,bars.isAppearanceLightStatusBars());assertEquals(!dark,bars.isAppearanceLightNavigationBars());
+            assertEquals(dark?1.3f:1.0f,activity.getResources().getConfiguration().fontScale,0.01f);
+        });
+        capture(dark?"profile-dark-large":"profile-light");
+        click(R.id.registrationAddVehicle);awaitText("Новый автомобиль");
+        instrumentation.runOnMainSync(()->{
+            com.google.android.material.textfield.TextInputLayout capacity=activity.findViewById(R.id.capacityLayout);
+            EditText field=activity.findViewById(R.id.capacityInput);
+            assertEquals("От 1 до 20",capacity.getHelperText().toString());
+            assertTrue(field.getPaint().measureText(capacity.getHint().toString())<=field.getWidth()-field.getPaddingLeft()-field.getPaddingRight());
+        });
+        capture(dark?"vehicle-dark-large":"vehicle-light");
     }
     private void capture(String name) throws Exception {
         // Test APK only, mock transport and synthetic account only. Production FLAG_SECURE is unchanged.
