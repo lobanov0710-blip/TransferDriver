@@ -10,6 +10,7 @@ import ru.transferservis.driver.data.model.OrderTransitionResponse;
 import ru.transferservis.driver.data.model.OrdersResponse;
 import ru.transferservis.driver.data.model.StaffOrderDto;
 import ru.transferservis.driver.data.repository.OrderRepository;
+import ru.transferservis.driver.data.repository.OrderDetailsGateway;
 import ru.transferservis.driver.ui.main.OrderActionResult;
 
 public final class OrderDetailsViewModel
@@ -18,7 +19,7 @@ public final class OrderDetailsViewModel
     private static final int ORDERS_LIMIT =
             200;
 
-    private final OrderRepository repository;
+    private final OrderDetailsGateway repository;
 
     private final MutableLiveData<Boolean> loading =
             new MutableLiveData<>(
@@ -41,7 +42,7 @@ public final class OrderDetailsViewModel
     public OrderDetailsViewModel() {
 
         repository =
-                new OrderRepository();
+                OrderDetailsGatewayFactory.create();
     }
 
     public LiveData<Boolean> getLoading() {
