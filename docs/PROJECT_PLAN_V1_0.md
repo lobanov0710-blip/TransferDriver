@@ -48,8 +48,8 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 6 | Блокировано D4/D5 | Серверная модель есть; выбранного и интегрированного face/liveness provider нет. Административный review не заменяет автоматическую проверку. |
 | 7 | Частично; D4/D5 | Challenge и SQL binding/state guard есть; пути получения настоящего verified и trip-selfie UI нет. Галерея и локальный успех не допускаются. |
 | 8 | Частично | Backend учитывает обе стороны ВУ; нет полного Driver upload/edit/review UX и E2E. |
-| 9 | Частично | Серверная модель нескольких автомобилей, VIN и revision есть; Driver UI автомобилей не реализован. |
-| 10 | Частично | СТС, usage_basis и условный rental_contract проверяются сервером; нужны UI и private-storage E2E. |
+| 9 | Частично | Добавлен Driver UI списка/создания/изменения нескольких автомобилей, обязательный VIN и independent revision/server status (PR #8). Документы/история/полная приёмка и live E2E ещё не завершены. |
+| 10 | Частично | Основание использования выбирается в Driver; СТС и условный rental_contract проверяются сервером. Их полный capture/upload UX и private-storage E2E не завершены, реальные материалы зависят от D5. |
 | 11 | Частично; D5/D6 | Дополнительные документы предусмотрены; юридический состав и применение в приоритете не утверждены. |
 | 12 | Частично | Семь типов фото и серверная полнота есть. Photo-control UI есть; это не мастер первоначальной регистрации и не trip-selfie. |
 | 13 | Частично; D6 | Фото багажника предусмотрено; окончательная шкала вместимости и интеграция в подбор не приняты. |
@@ -70,8 +70,8 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 28 | Код/первый срез G2 | Добавлен отдельный :admin, Java + XML, ru.transferservis.admin. Реализованы staff login/MFA, server profile и Admin moderation UI с пятью фильтрами, карточкой, поэлементными решениями и историей; финальный CI/runtime этого среза PASS. Полный набор разделов Admin не завершён. |
 | 29 | Код MFA проверен; E2E не выполнен | Параметры/API TOTP MFA утверждены. Server challenge/enrollment/TOTP/recovery/evidence и Admin flow проверены локально и в CI/runtime. Deploy/remote migration не выполнялись. Полный OWNER UX остаётся частью G2. |
 | 30 | Частично | Серверные granular permissions и Admin read-only очередь dispatcher с drivers.read реализованы. Управление сотрудниками, остальные разделы и приёмка полного набора прав впереди. |
-| 31 | Частично | Добавлены пять фильтров очереди, карточка/история, review/возврат элементов и итоговое решение. Локальные проверки и CI/runtime PASS (Admin 93 JVM + 27 API 35 tests). Driver исправления и live E2E не завершены; реальная identity verification зависит от D4/D5. |
-| 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver/Admin UX и E2E не приняты. |
+| 31 | Частично | Добавлены пять фильтров очереди, карточка/история, review/возврат элементов и итоговое решение. Admin UI проверен; актуальные source/CI и количества приведены в DRIVER_REGISTRATION_VERIFICATION_2026-11-15.json. Driver исправления и live E2E не завершены; реальная identity verification зависит от D4/D5. |
+| 32 | Частично | Backend статусы/модерация/сброс соответствующих одобрений есть; Driver показывает серверный статус каждого автомобиля и редактирует отдельную revision. Полная приёмка Driver/Admin UX и live E2E ещё не выполнена. |
 | 33 | Частично | Assignment revision, reassign, audit и отзыв серверного доступа есть. GPS/order-chat/новая trip-selfie цепочка ещё не завершены. |
 | 34 | Частично | Реализованные mutations/доступ к private resources аудируются. Нет полного Admin audit/архивного UX и всех будущих событий GPS/VoIP/identity. |
 | 35 | Частично | HTTPS/origin locks, Keystore AES-GCM AAD v2, private uploads, PII-free push/log guards есть. Полный будущий data lifecycle и E2E не проверены. |

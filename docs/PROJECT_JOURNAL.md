@@ -2742,3 +2742,30 @@ fixture cases теперь дополнительно проверяют bar app
 PRODUCT.md фиксирует только факты утверждённого scope, не вводит новых решений
 и не создаёт новый дизайн. Требуется rebuild/recapture тех же4paths и verdict
 того же reviewer; исправления до recapture не объявляются принятыми.
+
+
+### Проверка UI fix round1: runtime failure и синхронизация fixture
+
+Source5448f31c755843b1a98a2f0ae3b35aa5d6e12339, CI43738660853/job132886782876
+завершился FAILURE на Driver connected test. Build/unit/lint этап прошёл;
+nativeSyntheticScreensDarkLargeFont не дождался safe UI state Статус анкеты
+за исходные8секунд. Проверки appearance/helper ещё не были достигнуты в этом
+case. Это не PASS и не подтверждение post-fix screenshots; предыдущие снимки
+не используются для приёмки новых UI правок.
+
+Анализ fixture: settings font_scale обновляется асинхронно, а прежний teardown
+вызывал finish и менял DayNight/font до фактического уничтожения Activity.
+Ссылка на старый экран могла очищаться при последующей configuration recreation.
+Устранена эта гонка условий: перед launch явно ожидается observed fontScale и
+main idle; перед изменением конфигурации в teardown ожидается isDestroyed.
+Ожидания по-прежнему bounded8s, assertions/cases не удалены, retry-until-green
+и ослабления условий нет. Причина failure предполагается по механизму fixture;
+новый runtime прогон обязан подтвердить результат, диагноз не выдаётся за
+независимый live trace.
+
+Дополнительно test-only ProxySelector запрещает любое немокированное сетевое
+обращение создаваемых registration clients (без вывода URI/headers), прежний
+selector восстанавливается в finally. Это защита тестовой среды от accidental
+запроса при recreation, не production transport hook. Production code/permissions/
+TLS/FLAG_SECURE с предыдущего source не менялись. Instrumentation APK повторно
+компилируется; окончательный CI/recapture/verdict ещё ожидаются.

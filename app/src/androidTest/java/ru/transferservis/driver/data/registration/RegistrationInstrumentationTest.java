@@ -42,14 +42,30 @@ public final class RegistrationInstrumentationTest {
     private final Context context=instrumentation.getTargetContext();
     private SecureSessionStore store;
     private RegistrationActivity activity;
+    private java.net.ProxySelector previousProxy;
     private long scope;
     private static final String VEHICLE="vehicle_00000000-0000-4000-8000-000000000001";
     private static final String DRAFT="{\"ok\":true,\"profile\":{\"driverId\":\"synthetic-driver\",\"phone\":\"+70000000000\",\"fullName\":null,\"birthDate\":null,\"region\":null,\"registrationStatus\":\"draft\",\"revision\":1},\"vehicles\":[]}";
-    @Before public void before() {store=new SecureSessionStore(context);store.clear();}
+    @Before public void before() {
+        store=new SecureSessionStore(context);store.clear();
+        previousProxy=java.net.ProxySelector.getDefault();
+        java.net.ProxySelector.setDefault(new java.net.ProxySelector(){
+            @Override public java.util.List<java.net.Proxy> select(java.net.URI ignored){throw new AssertionError("Unmocked network forbidden in synthetic registration tests");}
+            @Override public void connectFailed(java.net.URI ignored,java.net.SocketAddress address,IOException error){ }
+        });
+    }
     @After public void after() throws Exception {
-        if(activity!=null)instrumentation.runOnMainSync(()->activity.finish());
-        store.clear(); instrumentation.runOnMainSync(()->AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
-        shell("settings put system font_scale 1.0");
+        try {
+            store.clear();
+            if(activity!=null){
+                instrumentation.runOnMainSync(()->activity.finish());
+                long deadline=System.currentTimeMillis()+8000;
+                while(!activity.isDestroyed()&&System.currentTimeMillis()<deadline){instrumentation.waitForIdleSync();Thread.sleep(40);}
+                assertTrue("Previous fixture Activity must be destroyed before configuration changes",activity.isDestroyed());
+            }
+            instrumentation.runOnMainSync(()->AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM));
+            shell("settings put system font_scale 1.0");awaitFontScale(1.0f);
+        }finally{java.net.ProxySelector.setDefault(previousProxy);}
     }
     private DriverSession session(String id,String suffix) {
         long expiry=System.currentTimeMillis()+3_600_000L;
@@ -175,6 +191,7 @@ public final class RegistrationInstrumentationTest {
     @Test public void nativeSyntheticScreensDarkLargeFont() throws Exception {nativeScreens(true);}
     private void nativeScreens(boolean dark) throws Exception {
         shell("settings put system font_scale "+(dark?"1.3":"1.0"));
+        awaitFontScale(dark?1.3f:1.0f);
         instrumentation.runOnMainSync(()->AppCompatDelegate.setDefaultNightMode(dark?AppCompatDelegate.MODE_NIGHT_YES:AppCompatDelegate.MODE_NIGHT_NO));
         launch(chain->response(chain,200,DRAFT));
         instrumentation.runOnMainSync(()->{
@@ -191,6 +208,15 @@ public final class RegistrationInstrumentationTest {
             assertTrue(field.getPaint().measureText(capacity.getHint().toString())<=field.getWidth()-field.getPaddingLeft()-field.getPaddingRight());
         });
         capture(dark?"vehicle-dark-large":"vehicle-light");
+    }
+    private void awaitFontScale(float expected) throws Exception {
+        long deadline=System.currentTimeMillis()+8000;
+        while(System.currentTimeMillis()<deadline){
+            instrumentation.waitForIdleSync();
+            if(Math.abs(context.getResources().getConfiguration().fontScale-expected)<0.01f){instrumentation.waitForIdleSync();return;}
+            Thread.sleep(40);
+        }
+        fail("Fixture font configuration did not settle before Activity launch");
     }
     private void capture(String name) throws Exception {
         // Test APK only, mock transport and synthetic account only. Production FLAG_SECURE is unchanged.
