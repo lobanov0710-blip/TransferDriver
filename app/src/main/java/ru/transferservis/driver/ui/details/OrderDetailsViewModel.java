@@ -95,6 +95,10 @@ public final class OrderDetailsViewModel
             return;
         }
 
+        // The previous revision must not authorize a terminal mutation
+        // until the assigned-only backend response has been revalidated.
+        currentOrderRevision = null;
+
         loading.setValue(
                 true
         );
