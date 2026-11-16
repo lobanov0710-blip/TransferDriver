@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-16",
+  "scope": "G2 Android Admin manual assign/reassign; approved variant A, D1-D3",
+  "repository": "lobanov0710-blip/TransferDriver",
+  "branch": "arch/g2-admin-assignment-ui",
+  "pullRequest": 10,
+  "parentBranch": "arch/g2-availability-assignment",
+  "sourceCommit": "86ae9b46fe6b7918eb28cf00b822a34f26f3b52c",
+  "sourceTree": "0ae36dab6748f49ddc73080a755d8d57b590d518",
+  "ci": {
+    "runId": 43877768185,
+    "jobId": 133335205029,
+    "status": "success",
+    "checksVerifiedForThisSource": true,
+    "url": "https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43877768185",
+    "suites": [
+      {
+        "suite": "JVM_TESTS",
+        "count": 48
+      },
+      {
+        "suite": "STAGING_JVM_TESTS",
+        "count": 48
+      },
+      {
+        "suite": "RELEASE_JVM_TESTS",
+        "count": 48
+      },
+      {
+        "suite": "ANDROID_TESTS",
+        "count": 38
+      },
+      {
+        "suite": "ADMIN_DEBUG_JVM_TESTS",
+        "count": 49
+      },
+      {
+        "suite": "ADMIN_STAGING_JVM_TESTS",
+        "count": 49
+      },
+      {
+        "suite": "ADMIN_RELEASE_JVM_TESTS",
+        "count": 49
+      },
+      {
+        "suite": "ADMIN_ANDROID_TESTS",
+        "count": 46
+      }
+    ],
+    "jvmExecutions": 291,
+    "androidRuntimeCases": 84,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "buildVariants": [
+      "Driver debug/staging/release",
+      "Admin debug/staging/release"
+    ],
+    "lintVariants": 6,
+    "stagingBundles": true,
+    "debugTestApks": true,
+    "securityGuards": true,
+    "endpointLocks": true,
+    "playIntegrityPolicy": true,
+    "adminSigningAndUidIsolation": true
+  },
+  "previousRuns": [
+    {
+      "runId": 43874308929,
+      "sourceCommit": "21f4cdcb248d9106fdd58a363b07ee91d290c2a4",
+      "status": "cancelled",
+      "reason": "Superseded by order-identification fix; not runtime proof"
+    },
+    {
+      "runId": 43875519388,
+      "sourceCommit": "1a26fb5950eab915f05230e306b05c60fb6d6041",
+      "sourceTree": "cefec0f0c65786d32955f2c9caafaf5a8e508e04",
+      "status": "success",
+      "jvmExecutions": 291,
+      "driverAndroid": 38,
+      "adminAndroid": 46,
+      "reviewDisposition": "fix",
+      "finding": "Use existing MaterialAlertDialogBuilder for confirmation",
+      "evidenceArtifact": {
+        "id": 14230248538,
+        "name": "registration-synthetic-native-evidence",
+        "size_in_bytes": 2041463,
+        "url": "https://api.github.com/repos/lobanov0710-blip/TransferDriver/actions/artifacts/14230248538",
+        "archive_download_url": "https://api.github.com/repos/lobanov0710-blip/TransferDriver/actions/artifacts/14230248538/zip",
+        "expired": false,
+        "created_at": "2026-11-16T13:35:02Z",
+        "expires_at": "2026-11-23T13:35:01Z",
+        "updated_at": "2026-11-16T13:35:02Z",
+        "digest": "sha256:6c89ffee6fbaf0400685469cd6fc3ad96e3c39520c6663a074301533049ef5d1",
+        "workflow_run": {
+          "id": 43875519388,
+          "repository_id": 1421902310,
+          "head_repository_id": 1421902310,
+          "head_branch": "arch/g2-admin-assignment-ui",
+          "head_sha": "1a26fb5950eab915f05230e306b05c60fb6d6041"
+        }
+      },
+      "nativeScreenshots": [
+        {
+          "file": "assignment-confirm-dark-large.png",
+          "sha256": "64bedeb961737e74fe56a4778fab64c320c9d62bb4827c74a5934bf475b3f2df",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-confirm-light.png",
+          "sha256": "176b0e8a1e074facf36fa0b5de0dc35a21c8ee14e4db7edce284fffa0705e7b5",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-form-dark-large.png",
+          "sha256": "3a8376553fe908d9a8baf8771bb5f6ebb88d5ea6b75e52453e81c66996564593",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-form-light.png",
+          "sha256": "afd6deca7e8fc440f31299bf33ee6879626e5de6135d42946db1e72d7e1c3a01",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-options-dark-large.png",
+          "sha256": "312c5913c991d21a85203b10483ba269b73eeeacfa80321dffdbbb9e47a76657",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-options-light.png",
+          "sha256": "2f9a1285cbb12fc99c37991086c465437cc291062b11d6f79e356a55765c2639",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-orders-dark-large.png",
+          "sha256": "04eb7c25e95dde2bba00f9bceef7957ea0c37489fe43d5cdec685e1c2692f30d",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-orders-light.png",
+          "sha256": "c10565845af0830285cf0ab104b85d73c5265f0b2b71557014502778d4fe5c7d",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-uncertain-dark-large.png",
+          "sha256": "2a16da6376f6d36dc251d8fcb195ec861b081b9bac97d6657fefa790f9540dbc",
+          "width": 1080,
+          "height": 2400
+        },
+        {
+          "file": "assignment-uncertain-light.png",
+          "sha256": "60c8badafb57aaee51cd17b837e187a6b8a76b8079a0ff86e47008677a3b0518",
+          "width": 1080,
+          "height": 2400
+        }
+      ]
+    }
+  ],
+  "localVerification": {
+    "pureJvmTests": 15,
+    "aaptResourceCompilation": true,
+    "resourceReferencesChecked": 252,
+    "adminSecurityGuards": 5,
+    "driverSecurityGuards": 7,
+    "limitation": "Direct javac/JUnit with Android SDK and cached verified debug BuildConfig; not local Gradle/APK/runtime proof. Local Gradle service socket sandbox blocked; actual Android build is CI."
+  },
+  "uiReview": {
+    "initialDisposition": "fix",
+    "materialFix": "Replace legacy confirmation builder with existing Material3 component",
+    "verdict": "ship",
+    "scope": "Native phone UI captures and primary code only",
+    "genericRoleFallback": true,
+    "launcherFallbackDisclosed": true,
+    "nativeDetectorSkipped": true,
+    "ordinaryExtensionNoDesignWorldChange": true,
+    "fixScore": "resolved",
+    "verdictScope": "Scored Material3 confirmation correction only; no introduced visual regressions observed in supplied captures",
+    "reviewer": "/root/assignment_finish_reviewer",
+    "documentation": "completed",
+    "documenter": "/root/assignment_documenter",
+    "record": "ADMIN_ASSIGNMENT_UI_REVIEW_2026-11-16.md",
+    "documenterVerifiedCaptures": 10
+  },
+  "limits": [
+    "Synthetic HTTP + actual Android Activity/Keystore on API35 x86_64 Pixel6; not live backend or physical-device acceptance",
+    "G1 paused; D4-D7 pending",
+    "ADMIN_PHONE_TEST_ONLY unchanged; operational routes remain 404 on OWNER-only STAGING",
+    "No merge, deployment, remote migrations, real documents/biometrics or live assignments",
+    "API26-29/tablet/TalkBack/runtime outside API35 not verified",
+    "Historical Driver lint warnings not declared eliminated; successful lint is not a zero-warning assertion",
+    "CI debug APK uses ephemeral independent signing key; phone upgrade compatibility not asserted"
+  ],
+  "backendContract": {
+    "pullRequest": "lobanov0710-blip/uber-v3#30",
+    "verifiedCodeCommit": "dda85d2937f385cc7b0cccbc88d4282d50481485",
+    "verifiedRun": 43854087967,
+    "changedByThisUiSlice": false
+  },
+  "nativeScreenshots": [
+    {
+      "file": "assignment-confirm-dark-large.png",
+      "sha256": "47fcfce6d018b537dbc8e0167d35fc4ab0e902a6bcb4b662f90df40dc6dcff48",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-confirm-light.png",
+      "sha256": "5d02d1f44f75920b5635408b0e97a0c74412d225e655b2a1c4178266e69d3943",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-form-dark-large.png",
+      "sha256": "da126581e58ab70ee36b38aa0e9dc3b7edd1bc168cb25d73644326411805c48a",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-form-light.png",
+      "sha256": "f2ceb8ae81f82c319ec2f49c549289a418e93a254bba2be19ff6ca6eaee19c44",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-options-dark-large.png",
+      "sha256": "e3c5fd859d0ec41334aaee2f55a1e5ef105f930d4bcd26f84ef4a11b9d24a5f7",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-options-light.png",
+      "sha256": "27392edb6e40f91e581a4c0fecf1a0104a749b156e851c18bd6a7932d3cdced2",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-orders-dark-large.png",
+      "sha256": "0d6342f4781b801393d1e2c1b83339c9d6a5d985fb32005a28fa87f725a1e822",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-orders-light.png",
+      "sha256": "d5aeb9af8c681288185364167faa69b28e95e82c2fe5b1af09c4050298c8c4b3",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-uncertain-dark-large.png",
+      "sha256": "668528f52d92a899bf9a7dfb0298f1d90bc775ddbe67e29d5864137fe4ecce99",
+      "width": 1080,
+      "height": 2400
+    },
+    {
+      "file": "assignment-uncertain-light.png",
+      "sha256": "d6ffa470c82c0b0f80b1bc925d830a370d5819cc561184b4cb1cc6831d9a02eb",
+      "width": 1080,
+      "height": 2400
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 14231790908,
+      "name": "registration-synthetic-native-evidence",
+      "size_in_bytes": 2040854,
+      "url": "https://api.github.com/repos/lobanov0710-blip/TransferDriver/actions/artifacts/14231790908",
+      "archive_download_url": "https://api.github.com/repos/lobanov0710-blip/TransferDriver/actions/artifacts/14231790908/zip",
+      "expired": false,
+      "created_at": "2026-11-16T13:50:11Z",
+      "expires_at": "2026-11-23T13:50:10Z",
+      "updated_at": "2026-11-16T13:50:11Z",
+      "digest": "sha256:4b7ad2b8b071127e7007007256b6cc10cbaace73ba9b00afff9384d75ea72760",
+      "workflow_run": {
+        "id": 43877768185,
+        "repository_id": 1421902310,
+        "head_repository_id": 1421902310,
+        "head_branch": "arch/g2-admin-assignment-ui",
+        "head_sha": "86ae9b46fe6b7918eb28cf00b822a34f26f3b52c"
+      }
+    },
+    {
+      "id": 14231448349,
+      "name": "admin-assignment-debug-apk",
+      "size_in_bytes": 6533049,
+      "url": "https://api.github.com/repos/lobanov0710-blip/TransferDriver/actions/artifacts/14231448349",
+      "archive_download_url": "https://api.github.com/repos/lobanov0710-blip/TransferDriver/actions/artifacts/14231448349/zip",
+      "expired": false,
+      "created_at": "2026-11-16T13:50:13Z",
+      "expires_at": "2026-11-23T13:50:12Z",
+      "updated_at": "2026-11-16T13:50:13Z",
+      "digest": "sha256:88eae95ab3cdf0174a8e3ac5a9dd7ae1817158b06e5f3f0e9fc758aac97b053c",
+      "workflow_run": {
+        "id": 43877768185,
+        "repository_id": 1421902310,
+        "head_repository_id": 1421902310,
+        "head_branch": "arch/g2-admin-assignment-ui",
+        "head_sha": "86ae9b46fe6b7918eb28cf00b822a34f26f3b52c"
+      }
+    }
+  ],
+  "debugApk": {
+    "package": "ru.transferservis.admin",
+    "minSdk": 26,
+    "targetSdk": 37,
+    "sha256": "cc72db7148f9b75a3f6158e4795bd42c53bc0fe4ed294803ba0ae44c5de9854b",
+    "certificateSha256": "4c76bbb6d83813caf8fa9062278bcf8f91260bf7e7601416f4ade0e5e9b5a63a",
+    "signatureVerified": true,
+    "ephemeralCiDebugKey": true,
+    "phoneUpgradeCompatibilityVerified": false
+  }
+}

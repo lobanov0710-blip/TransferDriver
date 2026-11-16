@@ -50,8 +50,10 @@ Capture временно clear/restore FLAG_SECURE только в test APK; с�
 неизменённые устойчивые native framebuffers, PNG signatures/CRC/digests проверяются.
 
 CI проверяет оба приложения/варианты и старые security regressions. Свежие
-finish reviewer и documenter по Impeccable §7 завершат native UI record после
-реальных captures. Launcher fallback раскрыт; detector для native не применяется.
+finish reviewer и documenter по Impeccable §7 работают по реальным captures;
+результаты и границы сохранены в [UI record](ADMIN_ASSIGNMENT_UI_REVIEW_2026-11-16.md)
+и [verification receipt](ADMIN_ASSIGNMENT_UI_VERIFICATION_2026-11-16.json).
+Launcher/generic-role fallback раскрыт; detector для native не применяется.
 
 G1paused, D4–D7pending. Backend и ADMIN_PHONE_TEST_ONLY whitelist не меняются;
 новые operational routes на текущем OWNER-only STAGING остаются закрыты.
