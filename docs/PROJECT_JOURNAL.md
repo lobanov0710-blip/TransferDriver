@@ -3035,3 +3035,29 @@ Fixture перед снимком проверяет window focus и platform ap
 captures будут заменены по тем же путям и возвращены тому же reviewer для scoring
 единственного замечания. Новый source/full CI и actual screenshots обязательны.
 G1paused, Admin A/Bpending; deploy/merge/backend code/schema не меняются.
+
+
+### Availability visual fix round1: CI PASS, scoring PARTIAL
+
+Source800065ead78621e62b10a0ad78e083a4635d8a00/treea3a842095e7bd7807c44583087a2fc489245e209,
+CI43778224200/job133009304957 SUCCESS:246 JVM+67 runtime, full6 lint/builds и
+security/endpoint/signing/UID guards PASS. Artifact14187751524,876930bytes,
+SHA256d02ea094bb90c75f914b485f715c76edf72458822ad8e9a4770bf41e8905ddf3;
+8 PNG validated,4 availability replacements inspected. Same reviewer scoring:
+PARTIAL, disposition fix. Light status icons и dark navigation handle исправлены;
+на первом dark offline capture Wi-Fi/notification icons остаются black, в
+следующем online — white. Единственное замечание contrast остаётся открытым,
+UI ship не заявляется. Platform appearance/focus assertions прошли, однако
+они и accessibility idle не доказывают завершённый render всех SystemUI layers.
+
+Round2 меняет только screenshot synchronization: перед сохранением требуется
+не менее1s одинаковых actual native framebuffers (poll200ms, bounded8s).
+Никакого ожидания желаемого цвета, recolor/crop/image generation, принудительных
+OS/theme/demo icon settings либо изменения server offline state нет. Если
+неверный цвет устойчив, он попадёт в PNG и reviewer сможет снова отклонить.
+Точная причина SystemUI частичного tint по PNG не доказана; это проверка
+устойчивого состояния compositor, не утверждение об исправленном production баге.
+Production Java/XML остаются source800065e; окна/FLAG_SECURE/security guards
+не ослабляются. Новый CI,4 замены по тем же путям, same-reviewer scoring требуются.
+Если второй verdict оставит замечание, по Impeccable §7 будет предъявлен владельцу
+открытый результат и выбор дальнейшего раунда; бесконечный polish не выполняется.

@@ -183,8 +183,23 @@ public final class AvailabilityInstrumentationTest {
             int mask=android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
             await(()->host.hasWindowFocus() && (host.getWindow().getInsetsController().getSystemBarsAppearance() & mask)==(light?mask:0));
             instrumentation.waitForIdleSync();instrumentation.getUiAutomation().waitForIdle(500,5000);
-            Bitmap bitmap=instrumentation.getUiAutomation().takeScreenshot();assertNotNull(bitmap);File dir=new File(context.getFilesDir(),"registration-evidence");assertTrue(dir.isDirectory()||dir.mkdirs());try(FileOutputStream out=new FileOutputStream(new File(dir,name+".png"))){assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,out));}finally{bitmap.recycle();}}
+            Bitmap bitmap=stableScreenshot();File dir=new File(context.getFilesDir(),"registration-evidence");assertTrue(dir.isDirectory()||dir.mkdirs());try(FileOutputStream out=new FileOutputStream(new File(dir,name+".png"))){assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,out));}finally{bitmap.recycle();}}
         finally{instrumentation.runOnMainSync(()->host.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE));}
+    }
+    // Accessibility idle does not guarantee that SystemUI/compositor tint frames have settled.
+    // Compare real unmodified native frames; persistent wrong colors are still captured and fail review.
+    private Bitmap stableScreenshot() throws Exception {
+        Bitmap previous=instrumentation.getUiAutomation().takeScreenshot();assertNotNull(previous);
+        long deadline=System.currentTimeMillis()+8000,stableSince=System.currentTimeMillis();
+        try{
+            while(System.currentTimeMillis()<deadline){
+                Thread.sleep(200);Bitmap next=instrumentation.getUiAutomation().takeScreenshot();assertNotNull(next);
+                if(!next.sameAs(previous))stableSince=System.currentTimeMillis();
+                previous.recycle();previous=next;
+                if(System.currentTimeMillis()-stableSince>=1000){Bitmap result=previous;previous=null;return result;}
+            }
+            throw new AssertionError("Native framebuffer did not settle");
+        }finally{if(previous!=null)previous.recycle();}
     }
     private void awaitFont(float expected) throws Exception {long until=System.currentTimeMillis()+8000;while(System.currentTimeMillis()<until){instrumentation.waitForIdleSync();if(Math.abs(context.getResources().getConfiguration().fontScale-expected)<0.01f)return;Thread.sleep(40);}fail("Fixture font configuration did not settle");}
     private void shell(String cmd) throws Exception {try(java.io.InputStream in=new ParcelFileDescriptor.AutoCloseInputStream(instrumentation.getUiAutomation().executeShellCommand(cmd))){byte[] b=new byte[512];while(in.read(b)!=-1){ }}}
