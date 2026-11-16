@@ -3808,3 +3808,16 @@ BodyLarge типографика для selected/dropdown. В форме и по
 краткая make/model/plate/ID summary; полные даты/статусы остаются в read screens.
 Native test проверяет перенос длинного immediate label. Это изменение UI требует
 нового Android CI и кадров конечного source; предыдущий run не заменяет их.
+
+
+## Исправлено UX-сообщение при истечении MFA в открытой форме — 2026-11-16
+
+Независимый finish reviewer подтвердил P3: после истечения local MFA create()
+останавливал команду, но общий validation catch показывал photo_required
+вместо permission и оставлял форму. Обхода проверки/POST/утечки не было.
+prepare теперь отдельно проверяет текущий access.canManagePhotoChecks перед
+валидацией полей; закрывает старый выбор, очищает причину/снимки и показывает
+существующее permission сообщение. Добавлен native regression с истёкшим
+server MFA profile, заполненной корректной причиной,0 POST и очищенной формой.
+Итого15 новых native cases (6 repository+9 Activity); новый source требует
+свежего CI, предыдущий native run не объявляется проверкой этого изменения.

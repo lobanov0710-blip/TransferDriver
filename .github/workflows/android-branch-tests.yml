@@ -311,6 +311,7 @@ jobs:
                       'photoPagingDoesNotAutoSelectAndReadOnlyGrantCannotCreate',
                       'photoSameAccountReloginInvalidatesConfirmationAndPreservesNextSession',
                       'photoBackgroundClearsReasonSnapshotsAndSavedViewState',
+                      'photoExpiredMfaClosesFormWithoutInvalidReasonMessage',
                       'nativePhotoControlLight',
                       'nativePhotoControlDarkLargeFont',
                       'nativeAssignmentLight',

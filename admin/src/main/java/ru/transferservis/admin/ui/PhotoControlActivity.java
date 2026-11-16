@@ -72,6 +72,7 @@ public final class PhotoControlActivity extends AppCompatActivity {
     private void page(boolean next){if(busy||uncertain!=null)return;if(stage==VEHICLES&&vehicles!=null){String cursor=next?vehicles.nextCursor:vehicleHistory.peekLast();if(cursor!=null)loadVehicles(cursor,next?1:-1);}
         else if(stage==CHECKS&&checks!=null){String cursor=next?checks.nextCursor:checkHistory.peekLast();if(cursor!=null)loadChecks(checks.vehicle,cursor,next?1:-1);}}
     private void prepare(){if(busy||uncertain!=null||checks==null)return;
+        if(access==null||!access.canManagePhotoChecks()){failed(null,false);return;}
         int kind=((Spinner)findViewById(R.id.photoKind)).getSelectedItemPosition(),mode=((Spinner)findViewById(R.id.photoMode)).getSelectedItemPosition();
         try{PhotoCheckAction action=PhotoCheckAction.create(access,scope,checks,kind==1?"complaint":kind==2?"manual":"",mode==1?"after_current_trip":mode==2?"immediate":"",((EditText)findViewById(R.id.photoReason)).getText().toString());confirm(action);}
         catch(IOException invalid){((EditText)findViewById(R.id.photoReason)).setError(getString(R.string.photo_required));}}
@@ -91,8 +92,8 @@ public final class PhotoControlActivity extends AppCompatActivity {
             else{uncertain=action;message=R.string.photo_uncertain;}render();});}});
     }
     private boolean active(int ticket){return started&&ticket==generation&&!isFinishing();}
-    private void failed(Throwable failure,boolean changed){busy=false;vehicles=null;checks=null;selected=null;stage=VEHICLES;clearReason();if(changed||closesSelection(failure)){uncertain=null;access=null;if(confirmation!=null){confirmation.dismiss();confirmation=null;}}
-        if(changed){scope=0;repository.cancel();}message=changed?R.string.photo_session:error(failure);render();}
+    private void failed(Throwable failure,boolean changed){busy=false;vehicles=null;checks=null;selected=null;stage=VEHICLES;clearReason();if(changed||failure==null||closesSelection(failure)){uncertain=null;access=null;if(confirmation!=null){confirmation.dismiss();confirmation=null;}}
+        if(changed){scope=0;repository.cancel();}message=changed?R.string.photo_session:failure==null?R.string.photo_permission:error(failure);render();}
     private boolean closesSelection(Throwable f){if(!(f instanceof AdminApiClient.Failure))return false;int s=((AdminApiClient.Failure)f).status;return s==401||s==403||s==404||s==409;}
     private int error(Throwable f){if(f instanceof AdminApiClient.Failure){switch(((AdminApiClient.Failure)f).status){case 401:return R.string.photo_session;case 403:return R.string.photo_permission;case 404:return R.string.photo_not_found;case 409:return R.string.photo_conflict;case 422:return R.string.photo_blocked;default:break;}}return R.string.photo_failed;}
     private void back(){if(busy||uncertain!=null||stage==VEHICLES){finish();return;}if(stage==FORM&&selected!=null){loadChecks(selected,checkCursor,0);return;}loadVehicles(vehicleCursor,0);}

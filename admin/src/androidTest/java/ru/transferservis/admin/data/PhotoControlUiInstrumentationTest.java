@@ -87,6 +87,13 @@ public final class PhotoControlUiInstrumentationTest {
         server.holdPath="/v1/admin/vehicles/"+PhotoControlServer.CAR+"/photo-checks";server.entered=new CountDownLatch(1);server.release=new CountDownLatch(1);click(R.id.photoConfirm);confirmDialog();assertTrue(server.entered.await(8,TimeUnit.SECONDS));scenario.moveToState(Lifecycle.State.CREATED);server.release.countDown();instrumentation.waitForIdleSync();
         instrumentation.runOnMainSync(()->{assertEquals("",((EditText)screen.findViewById(R.id.photoReason)).getText().toString());assertEquals(0,rows().getChildCount());assertFalse(screen.findViewById(R.id.photoForm).isShown());assertTrue((screen.getWindow().getAttributes().flags&WindowManager.LayoutParams.FLAG_SECURE)!=0);});
     }
+    @Test public void photoExpiredMfaClosesFormWithoutInvalidReasonMessage()throws Exception {
+        PhotoControlServer server=new PhotoControlServer();server.owner=true;launch(server);chooseForm();fields();reason("Valid synthetic reason");
+        com.google.gson.JsonObject expired=server.profile();expired.getAsJsonObject("admin").getAsJsonObject("mfa").addProperty("expiresAt",System.currentTimeMillis()-1);
+        AdminAccess denied=AdminAccess.fromResponse(expired,PhotoControlServer.ACTOR);assertNotNull(denied);assertFalse(denied.canManagePhotoChecks());
+        Field access=PhotoControlActivity.class.getDeclaredField("access");access.setAccessible(true);instrumentation.runOnMainSync(()->{try{access.set(screen,denied);}catch(IllegalAccessException e){throw new AssertionError(e);}});
+        click(R.id.photoConfirm);await(()->message().contains("прав"));assertEquals(0,server.commands.get());instrumentation.runOnMainSync(()->{assertFalse(screen.findViewById(R.id.photoForm).isShown());assertEquals("",((EditText)screen.findViewById(R.id.photoReason)).getText().toString());assertEquals(0,rows().getChildCount());});
+    }
     @Test public void nativePhotoControlLight()throws Exception {captures(false);}
     @Test public void nativePhotoControlDarkLargeFont()throws Exception {captures(true);}
     private void captures(boolean dark)throws Exception {
