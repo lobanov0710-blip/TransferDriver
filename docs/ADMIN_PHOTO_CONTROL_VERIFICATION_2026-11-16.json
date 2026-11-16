@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-16",
+  "status": "approved-component-synthetic-slice-verified",
+  "approval": {
+    "statement": "Утверждают каталог и список",
+    "proposalCommit": "6f4e3caf0ce283bbcca086ccf9b9e18f48935796"
+  },
+  "backend": {
+    "sourceCommit": "080d4b49bb902d782efe2615d92bf05fa3d64dc6",
+    "sourceTree": "245d64159221583438201d2d51804064d8d45a60",
+    "workflowRun": 43947136962,
+    "workflowJob": 133579673172,
+    "conclusion": "success",
+    "npmTestScripts": 69,
+    "newSqliteHttpCases": 12,
+    "nativeWorkerD1Workflows": 6,
+    "protectedCliScenarios": 5,
+    "migrations": 18,
+    "preflightCases": 12,
+    "dependencyVulnerabilities": 0
+  },
+  "android": {
+    "sourceCommit": "a0308bec394cd28d821f52bbcfdc05e5e09f4be7",
+    "sourceTree": "d6de5082865d0932c2e754bffb2fd78dc179b951",
+    "workflowRun": 43950844261,
+    "workflowJob": 133592621453,
+    "conclusion": "success",
+    "sourceSha256": {
+      "admin/src/main/java/ru/transferservis/admin/data/PhotoControl.java": "c0f56c00678f76468d50da20d3b9bfa586c74227d8a6922d1987665edfdbb23c",
+      "admin/src/main/java/ru/transferservis/admin/data/PhotoCheckAction.java": "34c7d70a1268c426af2d777c8155ce961cf25f07b5f6d519f5bb35c2210b55ab",
+      "admin/src/main/java/ru/transferservis/admin/data/PhotoControlRepository.java": "46a0503370094f6bbf1ca5892e612ac194ccf57f8affb762067e1fb9929fdd4f",
+      "admin/src/main/java/ru/transferservis/admin/ui/PhotoControlActivity.java": "898faa097c14ffdad6a1e13e82e49238c2d5826c48c20c9565519714ea8245c5",
+      "admin/src/main/res/layout/activity_photo_control.xml": "d364d9a2dd7a4e325d027dd7eb7fb5adeef928d57030ff7e5dc17aedcee6a657",
+      "admin/src/main/res/layout/photo_spinner_item.xml": "9b2173802bff148f28d0f97ae13decffbc2880a0d904fb9c4370e5dceb8d0200",
+      "admin/src/main/res/layout/photo_spinner_dropdown_item.xml": "073ff31069b5918496b134c054db1bda82092f5403436ddb1fbad1de5f5018aa",
+      "admin/src/main/res/values/photo_control.xml": "18ef3c102d4ba6d576cfe26bae3348f377b15f938ed74f49e35ddaf22df7ca56",
+      "admin/src/test/java/ru/transferservis/admin/data/PhotoControlContractTest.java": "7515baa481889af2290f7ad20395540a235c0deacdf386a175d240e105fb1e80",
+      "admin/src/androidTest/java/ru/transferservis/admin/data/PhotoControlRepositoryInstrumentationTest.java": "34c95314e36048ad7a45cab0e1348a6f4c4912af34691a3b7f2689d72db3f81f",
+      "admin/src/androidTest/java/ru/transferservis/admin/data/PhotoControlUiInstrumentationTest.java": "e85bc8f536187b8c4f265b743e210aa4c59752b9675eac4ec82e17e1bbd9096a"
+    },
+    "jvmExecutions": 318,
+    "jvmCasesPerVariant": {
+      "driver": 48,
+      "admin": 58
+    },
+    "jvmVariants": [
+      "debug",
+      "staging",
+      "release"
+    ],
+    "nativeCases": {
+      "driver": 38,
+      "admin": 61,
+      "total": 99
+    },
+    "newJvmCasesPerVariant": 9,
+    "newNativeCases": 15,
+    "buildAndLintVariants": 6,
+    "securityAndVariantGuards": "pass",
+    "artifacts": {
+      "sourceCommit": "a0308bec394cd28d821f52bbcfdc05e5e09f4be7",
+      "sourceTree": "d6de5082865d0932c2e754bffb2fd78dc179b951",
+      "workflowRun": 43950844261,
+      "workflowJob": 133592621453,
+      "nativeArtifactId": 14267604781,
+      "nativeArtifactZipSha256": "fcb44603c2c5841dfa96599c6002b9ca12854aa0c02f8564cc816d0f5d8fbc07",
+      "totalPng": 28,
+      "photoControlPng": [
+        {
+          "name": "photo-checks-dark-large.png",
+          "sha256": "2680413721913b18bd73f05a63f305d2cacdc333c0d97eedfd655108e88d439e"
+        },
+        {
+          "name": "photo-checks-light.png",
+          "sha256": "07b8cec89810fe199fcbd9ab8e41fa652f338361c334f232eeb58fd766ad2b45"
+        },
+        {
+          "name": "photo-confirm-dark-large.png",
+          "sha256": "2267c9b7833de8f8843ba4012968e2367798cb4bde370c1440a6f40413a83039"
+        },
+        {
+          "name": "photo-confirm-light.png",
+          "sha256": "53be6f186aad17f317b8350a2e2d9b0c1d6602be9f7eb34c4a64efa9801bee3a"
+        },
+        {
+          "name": "photo-form-dark-large.png",
+          "sha256": "f92c7d5ef60bcfb791542e5aa12daa949fbef57a1e0e816830ae5dbd4f3ff591"
+        },
+        {
+          "name": "photo-form-light.png",
+          "sha256": "56ea0d179511655443e2594cd093a67f32bd55ce85127119377c4b909a999320"
+        },
+        {
+          "name": "photo-uncertain-dark-large.png",
+          "sha256": "2ae7ee9c93d74a9d5d6987df3310050fc523c1bdc34ae8a0de6b2987db226cde"
+        },
+        {
+          "name": "photo-uncertain-light.png",
+          "sha256": "e3e58559b4422c270a53eeb6649ad6f518944b018a0ca96c1ca96b67b0b966db"
+        },
+        {
+          "name": "photo-vehicles-dark-large.png",
+          "sha256": "a1f390f3f089afda67ce04c7127642b275aaffe7218a96c4e7856852219e64a3"
+        },
+        {
+          "name": "photo-vehicles-light.png",
+          "sha256": "c3d021712490687189a394dabbaf60428249082908b7aed51a66d87526b9eebd"
+        }
+      ],
+      "apkArtifactId": 14270860090,
+      "apkArtifactZipSha256": "6db3bda25634da4aa45fd94ffdd6a684e60efeac1e778cabdbaaa02ec336aa95",
+      "apk": [
+        {
+          "name": "admin-debug.apk",
+          "bytes": 7857671,
+          "sha256": "72fee62d8fe2477cf2578b0c248f964b2509b5c7a9109f5e01bc555a9ceb0a52"
+        }
+      ]
+    }
+  },
+  "independentReview": {
+    "status": "ship-for-approved-component-synthetic-slice-no-blockers",
+    "findings": [
+      {
+        "issue": "System spinner template is single-line/fixed height for long restriction modes",
+        "fix": "Native multiline/wrap-content/min48 selected and dropdown templates",
+        "state": "closed-source-and-final-runtime-evidence"
+      },
+      {
+        "issue": "Expired MFA during form prepare displayed invalid-field error instead of permission error",
+        "fix": "Separate current-access guard closes and clears form before validation or POST",
+        "state": "closed-source-and-final-runtime-evidence"
+      }
+    ],
+    "actualPngReviewed": 10,
+    "frameHashesIndependentlyMatchedCiLogs": true,
+    "limits": "Does not establish full G2, live/phone/release acceptance or authorize merge/deploy."
+  },
+  "boundaries": {
+    "g1Paused": true,
+    "d4ThroughD7Pending": true,
+    "ownerPhoneWhitelistExpanded": false,
+    "classifierActivated": false,
+    "privateMaterialsFetched": false,
+    "schemaChanged": false,
+    "mergePerformed": false,
+    "deployPerformed": false
+  },
+  "limits": [
+    "Component/synthetic verification only; no physical-phone/live backend E2E.",
+    "CI debug signing identity is ephemeral; installed-phone APK upgrade compatibility not verified.",
+    "Existing Driver lint warnings are not claimed fixed."
+  ]
+}
