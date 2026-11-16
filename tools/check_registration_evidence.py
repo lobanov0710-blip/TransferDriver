@@ -7,7 +7,9 @@ import sys
 import zlib
 
 directory = Path(sys.argv[1])
-for name in ("profile-light", "profile-dark-large", "vehicle-light", "vehicle-dark-large"):
+for name in ("profile-light", "profile-dark-large", "vehicle-light", "vehicle-dark-large",
+             "availability-offline-light", "availability-online-light",
+             "availability-offline-dark-large", "availability-online-dark-large"):
     data = (directory / (name + ".png")).read_bytes()
     assert data[:8] == b"\x89PNG\r\n\x1a\n", name + ": not a PNG"
     assert len(data) <= 12_000_000, name + ": image too large"

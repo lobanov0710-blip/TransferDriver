@@ -1,0 +1,251 @@
+{
+  "date": "2026-11-16",
+  "scope": "G2 Driver availability: lower-main vehicle selector, explicit on_line/off_line and server-authoritative radar; Admin read API remains unapproved",
+  "remoteSourceCommit": "e3c6f0c3bde6ac77c5527e4e69c7f65fecd07e69",
+  "localSourceTree": "9425fc9174e786c7c2055158d52288a8c501b1d2",
+  "draftPr": "https://github.com/lobanov0710-blip/TransferDriver/pull/9",
+  "specBlob": "7434dc0b1548b4f2c5382f12d6cc5399f93d0a84",
+  "policy": {
+    "G1": "paused",
+    "decisions": "D1-D3 only",
+    "adminReadApi": "version2 A/B pending explicit owner choice",
+    "stagingRestriction": "ADMIN_PHONE_TEST_ONLY unchanged",
+    "merge": false,
+    "productionDeploy": false,
+    "backendCodeOrSchemaChanged": false,
+    "newDependencies": false
+  },
+  "priorVerifiedCi": {
+    "source": "12fd1c216d7284f783f28f527820d5ff0d93eafa",
+    "tree": "4f6e65daeb5a9f825239d413d442820f1eaa9320",
+    "runId": 43776899566,
+    "jobId": 133005125151,
+    "conclusion": "success",
+    "jvmExecutions": 246,
+    "driverRuntime": 38,
+    "adminRuntime": 29,
+    "artifactId": 14186633067,
+    "archiveBytes": 876738,
+    "archiveSha256": "eb14a3425dc519a2e33a956e7b8d90e35ddaf1e1aebc71c34be623e57242c951",
+    "uiDisposition": "fix: initial system-bar contrast"
+  },
+  "intermediateFailures": [
+    {
+      "runId": 43752677606,
+      "source": "208ebfad4235f1ab5f29396347083c941bf2647c",
+      "newCasesPassed": 4,
+      "newCasesFailed": 7,
+      "cause": "Fixture called AndroidX core1.18 compatibility wrapper stub rather than framework virtual-node provider; fixed to actual framework action, real swipe preserved"
+    },
+    {
+      "runId": 43774408323,
+      "source": "87b0acb949b31acffd3aa83b7e8e143ed1f01045",
+      "newCasesPassed": 10,
+      "newCasesFailed": 1,
+      "cause": "Manual callActivityOnStop did not reproduce lifecycle observer transition; fixture uses ActivityScenario.moveToState(CREATED)"
+    },
+    {
+      "runId": 43775678761,
+      "source": "f15aa56a0af983bd8330544ef955af8f1fe600f9",
+      "newCasesPassed": 10,
+      "newCasesFailed": 1,
+      "cause": "AOSP AbsSpinner getCount retains cached scalar after null adapter; assert real adapter/selectedItem/selectedView clearance instead"
+    }
+  ],
+  "securityFixes": [
+    "Availability subtree excluded from Autofill using noExcludeDescendants",
+    "No automatic refresh/replay or optimistic radar; session/access/refresh/epoch checks, strict response bounds, current revision and per-intent Idempotency-Key",
+    "Snapshot/vehicle choice cleared and pending work canceled on background",
+    "API30+ explicit platform system-bar appearance; API26-29 compat preserved"
+  ],
+  "historicalLocalChecks": {
+    "driverJvmPerVariant": 48,
+    "driverVariants": [
+      "debug",
+      "staging",
+      "release"
+    ],
+    "driverLintErrorsPerVariant": 0,
+    "driverLintWarningsPerVariant": 54,
+    "newAvailabilityLintIssues": 0,
+    "note": "These local build/lint results precede current native-capture and window correction. Current local compilation blocked before Java by sandbox Gradle service socket; current CI is authoritative.",
+    "driverSecurityGuards": 7,
+    "adminSecurityGuards": 5,
+    "unchangedBackendContractScripts": 6,
+    "actualAvailabilitySqliteCases": 7
+  },
+  "technicalResponseBounds": {
+    "successBytes": 1048576,
+    "errorBytes": 4096,
+    "parsedVehicles": 200
+  },
+  "limitations": [
+    "Synthetic mock transport; component/layout native evidence in secure RegistrationActivity host using actual main XML/panel",
+    "Full Main authentication/order routing not covered by this fixture",
+    "Live Driver E2E, physical-device and tablet verification not performed; native runtime covers API35 phone only",
+    "CI Firebase config is synthetic and is not a usable live SDK configuration",
+    "D4-D7 unapproved; no real documents/biometrics or new identity provider",
+    "54 historical Driver lint warnings are not claimed resolved; full CI lint success does not emit a new warning count",
+    "UI scoring verdict applies only to listed contrast finding; no whole-project security clearance",
+    "No merge/deploy, release key or new user-installable Driver APK issued by this checkpoint"
+  ],
+  "documentationOnlyFinalCommit": "Final docs/journals update does not change tested application, tests or workflow; CI remains pinned to exact code source. Docs-only commits use [skip ci].",
+  "productionSourceTrees": {
+    "app": "cad37e46bc1200df7a850bf5cec0a1d02847d814",
+    "admin": "5e612dfc4e515aaf46ecdd99814548d8a44dd817"
+  },
+  "ci": {
+    "runId": 43779524059,
+    "jobId": 133013316916,
+    "url": "https://github.com/lobanov0710-blip/TransferDriver/actions/runs/43779524059",
+    "conclusion": "success",
+    "driverJvmPerVariant": 48,
+    "adminJvmPerVariant": 34,
+    "variants": [
+      "debug",
+      "staging",
+      "release"
+    ],
+    "jvmExecutions": 246,
+    "driverRuntime": 38,
+    "adminRuntime": 29,
+    "runtimeTotal": 67,
+    "newDriverJvmCases": 5,
+    "newDriverRuntimeCases": 11,
+    "failed": 0,
+    "skipped": 0,
+    "fullLintSuites": 6,
+    "builds": "debug/staging/release APKs, staging AABs, instrumentation APKs for both applications",
+    "securityGuards": "Driver7/Admin5",
+    "endpointLocks": "pass",
+    "appCheckPolicy": "Play Integrity only; debug provider absent",
+    "packageSigningUidIsolation": "pass"
+  },
+  "firstVisualFixCi": {
+    "source": "800065ead78621e62b10a0ad78e083a4635d8a00",
+    "tree": "a3a842095e7bd7807c44583087a2fc489245e209",
+    "runId": 43778224200,
+    "jobId": 133009304957,
+    "conclusion": "success",
+    "jvmExecutions": 246,
+    "runtimeTotal": 67,
+    "artifactId": 14187751524,
+    "archiveBytes": 876930,
+    "archiveSha256": "d02ea094bb90c75f914b485f715c76edf72458822ad8e9a4770bf41e8905ddf3",
+    "scoringDisposition": "fix",
+    "scoring": "partial: dark offline Wifi/notification icon contrast remained"
+  },
+  "nativeEvidence": {
+    "artifactId": 14188321054,
+    "archiveBytes": 882728,
+    "archiveSha256": "921c49e9470bd5e16faec27130e6d996366f765482f6c873db5c601c839deb0f",
+    "archiveFile": "/workspace/artifacts/transfer-driver-availability-2026-11-15/native-evidence-round2.zip",
+    "sourceCommit": "e3c6f0c3bde6ac77c5527e4e69c7f65fecd07e69",
+    "device": "API35 Pixel6 phone emulator",
+    "validation": [
+      "archive digest",
+      "fixed eight-name ZIP set",
+      "PNG signature",
+      "IHDR1080x2400",
+      "chunk CRC",
+      "IEND",
+      "actual native captures"
+    ],
+    "screenshots": [
+      {
+        "file": "availability-offline-dark-large.png",
+        "sha256": "6246d5a9bd0b13fcb4e55391d976c0107dc8b553894b0ad06bf21c75f047b55c",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.3,
+        "theme": "dark"
+      },
+      {
+        "file": "availability-offline-light.png",
+        "sha256": "57c5f1ce77b2bf89200e4a6e49e669cc24904bf8fd0ba707682e9b055ec0232d",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1,
+        "theme": "light"
+      },
+      {
+        "file": "availability-online-dark-large.png",
+        "sha256": "97a2edac53ae19561d1a07bf342affc6a72f129f58a3f30f7f5c18c3f3255e21",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.3,
+        "theme": "dark"
+      },
+      {
+        "file": "availability-online-light.png",
+        "sha256": "0e69dea24cd52ff9e3c4aa883fb514f723f56aabc7e6e7dff501853a361e7444",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1,
+        "theme": "light"
+      },
+      {
+        "file": "profile-dark-large.png",
+        "sha256": "6143481c488a728b7db145f0e632f131cde2f549cc89b5d1ae7be2746babdbdc",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.3,
+        "theme": "dark"
+      },
+      {
+        "file": "profile-light.png",
+        "sha256": "e9ac62781e0797cce2ce8f1023c571d571ff36333d150b3e29a90ab5bbca86e1",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1,
+        "theme": "light"
+      },
+      {
+        "file": "vehicle-dark-large.png",
+        "sha256": "75089646cb9aa1e86f6ea1d951454202a75ac07204072cb5eade90369a95e432",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1.3,
+        "theme": "dark"
+      },
+      {
+        "file": "vehicle-light.png",
+        "sha256": "8edeca1c3971b44eace4b73054ce545def4400b3f3e97a42144bc4625fabd92d",
+        "width": 1080,
+        "height": 2400,
+        "fontScale": 1,
+        "theme": "light"
+      }
+    ],
+    "visuallyReviewedAvailabilityFiles": [
+      "availability-offline-dark-large.png",
+      "availability-offline-light.png",
+      "availability-online-dark-large.png",
+      "availability-online-light.png"
+    ],
+    "secureFlag": "Temporarily clear/restore in synthetic test capture only; production FLAG_SECURE remains"
+  },
+  "uiReview": {
+    "workflow": "Impeccable ordinary native extension",
+    "launcher": "unavailable; existing context fallback disclosed",
+    "reviewer": "fresh generic agent using fallback finish-reviewer contract, no inherited conversation",
+    "documenter": "fresh generic role using documenter contract",
+    "nativeDetector": "not applicable to Java/XML",
+    "initialDisposition": "fix",
+    "finding": "Initial system-bar contrast",
+    "firstScoring": {
+      "round": 1,
+      "disposition": "fix",
+      "score": "partial",
+      "remaining": "dark offline Wifi/notification icons unreadable"
+    },
+    "finalScoring": {
+      "round": 2,
+      "disposition": "ship",
+      "score": "resolved",
+      "observedBatchRegressions": 0,
+      "scope": "Only scored system-bar contrast finding across supplied four actual API35 component/host recaptures"
+    },
+    "record": "docs/DRIVER_AVAILABILITY_UI_REVIEW_2026-11-16.md"
+  }
+}

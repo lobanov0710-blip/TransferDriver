@@ -205,7 +205,7 @@ jobs:
           script: |
             ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
             mkdir -p registration-evidence
-            for image in profile-light profile-dark-large vehicle-light vehicle-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
+            for image in profile-light profile-dark-large vehicle-light vehicle-dark-large availability-offline-light availability-online-light availability-offline-dark-large availability-online-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
             python3 tools/check_registration_evidence.py registration-evidence
             touch registration-evidence/.validated
             ./gradlew :app:installDebug --no-daemon --stacktrace
@@ -249,6 +249,14 @@ jobs:
                       'backgroundClearsUnsavedInputAndSecureCaptureFlagRemains',
                       'nativeSyntheticScreensLight',
                       'nativeSyntheticScreensDarkLargeFont',
+                      'requiresAuthoritativeProfileIdentityVehicleAndRevision',
+                      'onlineWaitsForServerAndOfflineKeepsVehicleWithIndependentRevision',
+                      'lostAcknowledgementIsNotRetriedAndReloadResolvesServerState',
+                      'delayedUnauthorizedPreservesNextLoginAndNeverReplaysAvailability',
+                      'backgroundClearsVehicleAndInvalidatesPendingOperation',
+                      'realSliderGestureUsesChosenVehicleAndOnlineHidesSwitch',
+                      'nativeAvailabilityLight',
+                      'nativeAvailabilityDarkLargeFont',
                   ):
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               if name == 'ADMIN_ANDROID':
