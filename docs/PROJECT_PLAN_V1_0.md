@@ -4,7 +4,7 @@
 > отклонения запрещены. Неутверждённые варианты предлагаются владельцу без выбора за него.
 > [Обязательное правило работы](../AGENTS.md).
 
-Актуализация: 2026-11-15. Основание — [утверждённое ТЗ](TRANSFER_DRIVER_TECHNICAL_SPEC_V1_0.md),
+Актуализация: 2026-11-16. Основание — [утверждённое ТЗ](TRANSFER_DRIVER_TECHNICAL_SPEC_V1_0.md),
 [решения D1–D7](TECHNICAL_DECISIONS_V1_0_PROPOSED.md), журналы и фактический код.
 Это сводный рабочий план существующего объёма, а не изменение ТЗ или новое утверждение.
 D1–D3 утверждены; D4–D7 остаются неутверждёнными.
@@ -55,7 +55,7 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 13 | Частично; D6 | Фото багажника предусмотрено; окончательная шкала вместимости и интеграция в подбор не приняты. |
 | 14 | Код; E2E блокирован | Backend monthly due/grace 24h/eligibility и Driver photo-control UI реализованы. Нужны private R2, cron/deployment и сквозные проверки. |
 | 15 | Код/частично | Серверные внеплановые проверки и ограничения есть; отдельного Admin UI и приёмки обоих режимов на тестовой среде нет. |
-| 16 | Частично | Backend activeVehicleId/off_line/active-assignment guards есть; выбора автомобиля и смены в Driver UI нет. |
+| 16 | Код UI/backend проверен на synthetic API35 | Выбор approved активного автомобиля и on_line/off_line реализованы в PR#9; смена закрыта на линии. CI43779524059 и последующие regression runs PASS. Live Driver E2E остаётся на паузе G1. |
 | 17 | Код UI/backend проверен на synthetic API35 | PR #9: нижний slider, выбор approved авто, authoritative radar/offline, revision/idempotency/lifecycle. Sourcee3c6f0c/CI43779524059:246 JVM+67 runtime PASS; scoring ship только для исправленного контраста по четырём captures. Live Driver E2E ожидает G1. |
 | 18 | Частично | Назначение driver+vehicle и assigned-only Driver list есть; self-take не используется. Native Admin UI назначения реализован в Draft PR#10; synthetic Activity/contract checkpoint проверен CI43877768185. Live E2E отдельно. |
 | 19 | Отсутствует; D6 | Серверные guards назначения не являются рекомендательной системой. Нужны утверждённые правила, объяснимый список кандидатов и UI. |
@@ -261,3 +261,21 @@ ADMIN_PHONE_TEST_ONLY не расширён. Backend только journal-sync, 
 Merge/deploy и расширение телефонного operational scope отдельно утверждаются.
 CI debug APK имеет ephemeral CI identity; совместимость обновления телефонного
 приложения не проверена. Исторические Driver lint warnings не объявлены устранёнными.
+
+## Следующий выбор внутри G2 — подготовлен, не утверждён 2026-11-16
+
+После manual assignment выполнена сверка оставшихся Admin функций с D3.
+[Предложение фотоконтроля](G2_PHOTO_CONTROL_NEXT_SLICE_PROPOSAL_2026-11-16.md)
+содержит два конкретных объёма: каталог автомобилей/список проверок с двумя
+новыми minimal GET либо ограниченное создание из существующей карточки
+регистрации. Рекомендуется первый, но владелец его ещё не выбрал. Прежнее
+утверждение read API A назначений не распространяется на эти новые GET.
+
+Существующие create/read/review photo-check endpoints проверены чтением кода;
+две actual SQLite/service suites перепроверены локально:5+6=11 PASS, из них2
+support regressions. [Readiness receipt](G2_PHOTO_CONTROL_READINESS_2026-11-16.json)
+фиксирует source hashes и пределы: не Android/native Worker/HTTP E2E.
+Исполняемый код и действующий телефонный scope не изменены. Реализация
+зависит от явного выбора владельца по AGENTS.md п.3; G3/D4/D5 и G1 не запущены.
+Строка16 матрицы исправлена по уже подтверждённому PR#9: Driver выбор активного
+автомобиля существует; это исправление документации, не новая функция.

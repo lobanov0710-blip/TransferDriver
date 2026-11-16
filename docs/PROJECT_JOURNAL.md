@@ -3313,3 +3313,44 @@ remote migrations, реальные документы/биометрия/наз
 CI debug APK подписан ephemeral CI key; совместимость обновления телефона не
 проверена. Артефакты14231790908/14231448349 хранятся до2026-11-23; receipt
 содержит checksums/provenance. Lint PASS не означает ноль исторических warnings.
+
+## Продолжение плана после назначений — readiness фотоконтроля, 2026-11-16
+
+Поручение владельца: «Далее по плану». До изменений прочитаны AGENTS.md,
+ТЗ §§14–15/28–30, D1–D3/D4–D7, актуальные план и хвосты обоих журналов.
+GitHub heads сверены: Android ff628f71a561841a5d0ae80fef3ea2b6ba2de549,
+backend506d7523c61e86cfb703a9a0eaffae5d36787294. Предыдущий native assignment
+checkpoint завершён; синтетический PASS не закрывает весь G2.
+
+Проверена готовность следующего возможного Admin среза §15. В router/service
+есть POST create, GET известной photo-check и POST review; каталог всех авто
+и GET коллекции проверок отсутствуют (коллекция сейчас POST-only).
+RegistrationReview содержит server vehicle ID/revision, поэтому возможен
+ограниченный сценарий из карточки, но он не заменяет самостоятельный каталог.
+Order-scoped assignment-options не переиспользуется как каталог фотоконтроля,
+дополнительные moderation permissions ради этого не назначаются.
+
+Подготовлены docs/G2_PHOTO_CONTROL_NEXT_SLICE_PROPOSAL_2026-11-16.md и
+G2_PHOTO_CONTROL_READINESS_2026-11-16.json. Два конкретных варианта:
+каталог+список с двумя minimal paginated GET (рекомендуется) либо ограниченное
+создание из карточки без новых GET. Ни один не выбран/не реализован. Нужен
+отдельный выбор объёма/новых контрактов по AGENTS.md п.3; прежнее утверждение
+назначений A не распространяется на предложение фотоконтроля.
+
+Независимая проверка existing backend выполнена Node24.22.1 локально:
+photoControlSupport.sqlite.test.mjs5 PASS (включая2 support cases),
+photoControlLifecycle.sqlite.test.mjs6 PASS. Итого11,failures/skipped/cancelled0,
+на actual SQLite synthetic fixtures. Пределы: не новые GET, не Android,
+не native Worker, не HTTP/MFA E2E, не exhaustive проверка обоих restriction
+modes. Source hashes и log digests сохранены в readiness receipt. Новых тестов
+ради документации не добавлялось; новый APK/полная CI сборка не требовались
+и не объявляются выполненными. Обнаруженный пробел чтения не выдаётся за
+доказанную уязвимость. Правила grace24h и два режима ТЗ не изменялись.
+
+Работа ведётся в отдельной docs ветке arch/g2-admin-photo-control-proposal,
+base arch/g2-admin-assignment-ui. План получил pending proposal и исправление
+устаревшей строки16: выбор активного автомобиля уже реализован в PR#9.
+ТЗ, production code, dependencies, migrations и телефонный whitelist не менялись.
+G1paused/D4–D7pending; реальные фото/документы/биометрия/удалённые ресурсы не
+использовались, merge/deploy не выполнялись. Зависимая реализация ожидает
+явного решения владельца; подготовка и проверка предложения завершены.
