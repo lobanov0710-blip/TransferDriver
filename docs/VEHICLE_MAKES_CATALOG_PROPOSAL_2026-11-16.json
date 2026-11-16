@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "version": "2026-11-16-draft-1",
-  "status": "pending-full-list-approval",
-  "scope": "Vehicle make reference proposal only; no model catalogue or admission whitelist",
+  "version": "2026-11-16-approved-composition-1",
+  "status": "approved-composition",
+  "scope": "Approved composition of 140 vehicle makes; implementation, search behavior, models and photo-control APIs are separate decisions",
   "requestedMakes": [
     "haval",
     "chery"
@@ -968,5 +968,15 @@
     "grantAdmissionByMake": false
   },
   "implementationChanged": false,
-  "photoControlApiApprovalImplied": false
+  "photoControlApiApprovalImplied": false,
+  "approval": {
+    "date": "2026-11-16",
+    "source": "explicit-owner-message",
+    "statement": "Состав справочника утверждают.",
+    "scope": "composition-of-140-makes",
+    "approvedSourceCommit": "b5fa627ab31f5c8da65788d60e788f9ea1d824c5",
+    "compositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46"
+  },
+  "searchAliasesApproval": "not-included-in-composition-decision",
+  "proposedBehaviorApproval": "not-included-in-composition-decision"
 }
