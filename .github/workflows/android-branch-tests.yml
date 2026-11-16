@@ -292,6 +292,7 @@ jobs:
                       'delayedReadCannotExposeOldAccountOrEraseItsNextLogin',
                       'command401And503HaveNoAutomaticRefreshOrReplay',
                       'explicitConfirmationRequiresReasonAndUsesCurrentOrderRevision',
+                      'identicalRoutesRemainDistinguishableBeforeSelectionAndConfirmation',
                       'uncertainUiOnlyRetriesOriginalBodyAndKeyAfterExplicitConfirmation',
                       'realLifecycleClearsReasonSnapshotsAndCancelsPendingOperation',
                       'reassignChoosesAnotherVehicleAndUsesOrderRevision',

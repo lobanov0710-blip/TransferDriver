@@ -74,6 +74,11 @@ public final class AssignmentUiInstrumentationTest {
         AssignmentServer server=new AssignmentServer();server.failure=409;launch(server);choosePair();reason("Synthetic reason");click(R.id.assignmentConfirm);confirmDialog();await(()->message().contains("изменилось"));assertEquals(1,server.commands.get());assertFalse(screen.findViewById(R.id.assignmentRetry).isShown());
         server.failure=0;click(R.id.assignmentReload);await(()->rows().getChildCount()>0);choosePair();server.canAssign=false;reason("Synthetic permission reason");click(R.id.assignmentConfirm);confirmDialog();await(()->message().contains("прав"));assertEquals(1,server.commands.get());
     }
+    @Test public void identicalRoutesRemainDistinguishableBeforeSelectionAndConfirmation()throws Exception {
+        AssignmentServer server=new AssignmentServer();server.duplicateRoute=true;launch(server);
+        instrumentation.runOnMainSync(()->{assertEquals(2,rows().getChildCount());String first=((Button)rows().getChildAt(0)).getText().toString(),second=((Button)rows().getChildAt(1)).getText().toString();assertTrue(first.contains(AssignmentServer.ORDER));assertTrue(second.contains("order_native002"));assertNotEquals(first,second);});
+        choosePair();instrumentation.runOnMainSync(()->assertTrue(((TextView)screen.findViewById(R.id.assignmentSummary)).getText().toString().contains(AssignmentServer.ORDER)));assertEquals(0,server.commands.get());
+    }
     @Test public void pagingIsExplicitAndNeverSilentlyChoosesFirstOrderOrCandidate()throws Exception {
         AssignmentServer server=new AssignmentServer();server.paginate=true;launch(server);assertEquals(1,server.orders.get());assertFalse(screen.findViewById(R.id.assignmentForm).isShown());
         click(R.id.assignmentNext);await(()->server.orders.get()==2&&screen.findViewById(R.id.assignmentProgress).getVisibility()==View.GONE);click(R.id.assignmentPrevious);await(()->server.orders.get()==3&&screen.findViewById(R.id.assignmentProgress).getVisibility()==View.GONE);

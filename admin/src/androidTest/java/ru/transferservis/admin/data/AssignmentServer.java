@@ -11,7 +11,7 @@ import okhttp3.*;
 final class AssignmentServer implements Interceptor {
     static final String ACTOR="staff_operator001",ORDER="order_native001",CAR="vehicle_native001",CAR2="vehicle_native002",DRIVER="staff_native001";
     final AtomicInteger orders=new AtomicInteger(),commands=new AtomicInteger(),commits=new AtomicInteger(),me=new AtomicInteger();
-    boolean phoneScope,owner,mfa=true,canAssign=true,secondBlocked=true,paginate,lostAck;
+    boolean phoneScope,owner,mfa=true,canAssign=true,secondBlocked=true,paginate,lostAck,duplicateRoute;
     int failure;long revision=7;String state="new",assignedVehicle=CAR,lastKey="",lastBody="",lastPath="";
     JsonObject cachedAck;CountDownLatch entered,release;String holdPath="";
     static AdminSession session(String suffix){long until=System.currentTimeMillis()+3600000;return new AdminSession(ACTOR,"Synthetic Operator","synthetic-"+suffix,until,"refresh-"+suffix,until);}
@@ -37,6 +37,7 @@ final class AssignmentServer implements Interceptor {
         if(path.equals("/v1/admin/orders")){orders.incrementAndGet();org.junit.Assert.assertEquals("20",chain.request().url().queryParameter("limit"));
             JsonObject body=object("{\"ok\":true,\"orders\":[],\"nextCursor\":null}");String status=chain.request().url().queryParameter("status");
             if(status==null||status.equals(state))body.getAsJsonArray("orders").add(order(chain.request().url().queryParameter("cursor")==null?ORDER:"order_native002"));
+            if(duplicateRoute)body.getAsJsonArray("orders").add(order("order_native002"));
             if(paginate&&chain.request().url().queryParameter("cursor")==null)body.addProperty("nextCursor","page_native2");return reply(chain,200,body);}
         if(path.endsWith("/assignment-options"))return reply(chain,200,options());
         org.junit.Assert.assertTrue(path.endsWith("/assign")||path.endsWith("/reassign"));org.junit.Assert.assertTrue(chain.request().body().isOneShot());commands.incrementAndGet();lastPath=path;

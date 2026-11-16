@@ -8,7 +8,7 @@
     <string name="assignment_form_title">Проверьте выбор</string>
     <string name="assignment_empty_orders">Заказов по этому фильтру нет.</string>
     <string name="assignment_empty_options">Для этого заказа нет связок водитель–автомобиль.</string>
-    <string name="assignment_order_row">%1$s → %2$s\n%3$s · %4$s\n%5$s</string>
+    <string name="assignment_order_row">%1$s → %2$s\n%3$s · %4$s\n%5$s\nЗаказ: %6$s</string>
     <string name="assignment_option_row">%1$s\n%2$s %3$s · %4$s\n%5$s</string>
     <string name="assignment_unknown">Не указано</string>
     <string name="assignment_comfort">Комфорт</string><string name="assignment_business">Бизнес</string><string name="assignment_minivan">Минивэн</string>
