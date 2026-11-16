@@ -3205,3 +3205,44 @@ AAPT2 скомпилировал ресурсы; проверены 252 ссыл
 Первый CI43874308929 успел подтвердить build/lint всех6 variants и policy checks;
 его runtime ещё выполнялся. Для изменённого исходника требуется новый полный CI,
 старый run не является доказательством исправления.
+
+CI43874308929 завершён как cancelled механизмом branch concurrency после
+публикации исправления идентификации заказов. Runtime этого run не объявляется
+PASS. Текущий source1a26fb5950eab915f05230e306b05c60fb6d6041, tree
+cefec0f0c65786d32955f2c9caafaf5a8e508e04, CI43875519388 — RUNNING.
+Draft PR#10: https://github.com/lobanov0710-blip/TransferDriver/pull/10,
+base arch/g2-availability-assignment; merge/deploy не выполнялись.
+
+Обновлённый CI43875519388 прошёл полный build/lint6 variants и policy gates;
+API35 instrumentation ещё выполняется. PRODUCT.md отражает реализованный
+срез и его границы; live/hardware/G2 acceptance не заявлены.
+Служебные ошибки публикации: connector отклонил encoded branch URL400,
+head безопасно прочитан через fetch_commit; большой read JSON был усечён,
+разбор остановился до записи. Публикация повторена меньшими пакетами с точным
+сравнением local/remote Git tree. Секретные конфиги и ключи не публиковались.
+
+CI43875519388 / job133327445986 — SUCCESS; source
+1a26fb5950eab915f05230e306b05c60fb6d6041, tree
+cefec0f0c65786d32955f2c9caafaf5a8e508e04. Фактические отчёты:
+Driver48 JVM×3, Admin49 JVM×3 =291 выполнений; API35 Driver38+Admin46 =84
+runtime cases; без failures/errors/skipped. Все6 build/lint вариантов,
+bundleStaging, security guards, endpoint/AppCheck/signing/UID policy PASS.
+Получены18 actual native PNG; проверены ZIP SHA256, PNG signatures/CRC/IEND,
+1080×2400 и SHA256. Десять Admin кадров лично открыты до передачи reviewer:
+orders/options/form/confirmation/uncertain в light и dark/font1.3.
+Это actual Activity с synthetic HTTP/Keystore, не live backend/phone acceptance.
+Скачанный CI APK: package ru.transferservis.admin, min26/target37; подпись
+проверена apksigner. Это ephemeral CI debug key; совместимость обновления
+телефонной установки не заявлена. Локальный metadata check сначала ожидал
+старое имя sdkVersion; AAPT2 37 выводит minSdkVersion. Проверка исправлена,
+фактический minSdk26 подтверждён; изменения приложения для этого не потребовались.
+
+Impeccable fresh finish reviewer /root/assignment_finish_reviewer, generic-role
+fallback без истории, проверил все10 native кадров и первичные Java/XML.
+Disposition FIX: единственное material замечание — square legacy AppCompat
+confirmation вместо Material3 dialog. Остальные проверенные элементы matrix
+match/adaptation; это не security clearance и не hardware/TalkBack/tablet review.
+Исправлен только builder на уже имеющийся MaterialAlertDialogBuilder;
+secure-window/obscured-touch/body/key/confirmation/cancel поведение сохранено.
+Требуются новый полный CI, recaptures по тем же путям и scoring того же reviewer.
+Новый визуальный мир/dependencies/DESIGN.md не вводятся; native detector не запускался.

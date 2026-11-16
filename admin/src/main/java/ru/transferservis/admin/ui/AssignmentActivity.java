@@ -20,6 +20,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -108,7 +109,7 @@ public final class AssignmentActivity extends AppCompatActivity {
     private void confirm(AssignmentAction action){
         if(busy||!started)return;if(!repository.current(action.scope)){failed(null,true);return;}
         ((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(findViewById(R.id.assignmentReason).getWindowToken(),0);
-        confirmation=new AlertDialog.Builder(this).setTitle(action.reassign?R.string.assignment_reassign_title:R.string.assignment_confirm_title)
+        confirmation=new MaterialAlertDialogBuilder(this).setTitle(action.reassign?R.string.assignment_reassign_title:R.string.assignment_confirm_title)
             .setMessage(orderText(action.order)+"\n\n"+optionText(action.option)+"\n\n"+getString(R.string.assignment_confirm_reason,action.reason)
                     +(action.reassign?"\n\n"+getString(R.string.assignment_replace_notice):""))
             .setNegativeButton(R.string.assignment_no,null).setPositiveButton(R.string.assignment_yes,(dialog,which)->{
