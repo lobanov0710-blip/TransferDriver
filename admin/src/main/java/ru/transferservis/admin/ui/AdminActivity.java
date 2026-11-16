@@ -39,6 +39,7 @@ public final class AdminActivity extends AppCompatActivity {
             model.login(login.getText().toString(), secret);
         });
         findViewById(R.id.retry).setOnClickListener(v -> model.restore());
+        findViewById(R.id.assignments).setOnClickListener(v -> startActivity(new android.content.Intent(this, AssignmentActivity.class)));
         findViewById(R.id.queue).setOnClickListener(v -> model.queue(new String[]{"","submitted","under_review","changes_required","approved","rejected"}[filter.getSelectedItemPosition()]));
         findViewById(R.id.logout).setOnClickListener(v -> { login.setText(""); password.setText(""); model.logout(); });
         findViewById(R.id.verifyTotp).setOnClickListener(v -> model.verify(take(R.id.totpCode), false));
@@ -74,6 +75,8 @@ public final class AdminActivity extends AppCompatActivity {
         security.setText(!authenticated ? "" : getString(state.access.ownerPhoneTest?R.string.owner_phone_test_notice:state.access.isOwner() ? (state.access.hasVerifiedMfa() ? R.string.owner_mfa_verified : R.string.owner_security_pending) : R.string.server_permissions));
         Button queue = findViewById(R.id.queue);
         queue.setEnabled(authenticated && state.access.canReadRegistrations() && !state.loading);
+        findViewById(R.id.assignments).setVisibility(authenticated && state.access.canReadOrders() ? View.VISIBLE : View.GONE);
+        findViewById(R.id.assignments).setEnabled(authenticated && state.access.canReadOrders() && !state.loading);
         TextView registrations = findViewById(R.id.registrations);
         LinearLayout rows=findViewById(R.id.queueItems);rows.removeAllViews();
         for (RegistrationRow row : state.registrations) {

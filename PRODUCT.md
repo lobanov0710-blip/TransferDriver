@@ -24,8 +24,13 @@ GET me/PUT availability, revision и Idempotency-Key.
 [Границы](docs/DRIVER_AVAILABILITY_SCOPE_2026-11-15.md). Проверенный synthetic checkpoint и его ограничения
 зафиксированы в [receipt](docs/DRIVER_AVAILABILITY_VERIFICATION_2026-11-16.json). Admin manual assignment read API version2, вариант A,
 явно утверждён владельцем 2026-11-16. Два GET реализованы и проверены в backend
-[PR#30](https://github.com/lobanov0710-blip/uber-v3/pull/30); отдельный Admin UI
-назначения остаётся следующим плановым срезом.
+[PR#30](https://github.com/lobanov0710-blip/uber-v3/pull/30). Отдельный Admin UI
+ручного назначения реализован в [Draft PR#10](https://github.com/lobanov0710-blip/TransferDriver/pull/10):
+явный выбор заказа и driver+vehicle, причина, подтверждение, order revision и
+прежний ключ при явном повторе неопределённого результата.
+[Границы среза](docs/ADMIN_ASSIGNMENT_UI_SCOPE_2026-11-16.md) сохраняют
+операционные маршруты закрытыми на OWNER-only STAGING; реализация не означает
+live приёмку, разрешение merge/deploy или завершение всего G2.
 
 G1 приостановлен. Реальные документы/биометрия и решения D4–D7 не утверждены.
 Полный мастер и финальная подача регистрации в этом срезе не реализованы.

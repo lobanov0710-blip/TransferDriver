@@ -49,6 +49,8 @@ public final class AdminAccess {
     public boolean can(String permission) {
         return isOwner()?hasVerifiedMfa()&&permissions.contains("*"):"dispatcher".equals(role)&&permissions.contains(permission);
     }
+    public boolean canReadOrders(){return !ownerPhoneTest&&can("orders.read");}
+    public boolean canAssign(boolean reassign){return canReadOrders()&&can("drivers.read")&&can("vehicles.read")&&can(reassign?"orders.reassign":"orders.assign");}
     public boolean canReadReview(){return can("drivers.verify_documents")||can("drivers.verify_identity")||can("vehicles.verify");}
     public boolean canStartReview(){return can("drivers.verify_documents")||can("drivers.verify_identity");}
     public boolean canFinalizeReview(){return can("drivers.verify_documents")&&can("drivers.verify_identity")&&can("vehicles.verify");}

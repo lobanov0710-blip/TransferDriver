@@ -57,7 +57,7 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 15 | Код/частично | Серверные внеплановые проверки и ограничения есть; отдельного Admin UI и приёмки обоих режимов на тестовой среде нет. |
 | 16 | Частично | Backend activeVehicleId/off_line/active-assignment guards есть; выбора автомобиля и смены в Driver UI нет. |
 | 17 | Код UI/backend проверен на synthetic API35 | PR #9: нижний slider, выбор approved авто, authoritative radar/offline, revision/idempotency/lifecycle. Sourcee3c6f0c/CI43779524059:246 JVM+67 runtime PASS; scoring ship только для исправленного контраста по четырём captures. Live Driver E2E ожидает G1. |
-| 18 | Частично | Назначение driver+vehicle и assigned-only Driver list есть; self-take не используется. Нужен отдельный Admin UI назначения и E2E. |
+| 18 | Частично | Назначение driver+vehicle и assigned-only Driver list есть; self-take не используется. Native Admin UI назначения реализован в Draft PR#10; synthetic Activity/contract checkpoint проверен CI43877768185. Live E2E отдельно. |
 | 19 | Отсутствует; D6 | Серверные guards назначения не являются рекомендательной системой. Нужны утверждённые правила, объяснимый список кандидатов и UI. |
 | 20 | Не завершено; D6 | Полные фильтры обязательных/предпочтительных пожеланий в пользовательском подборе не подтверждены; требуется отдельная приёмка. |
 | 21 | Частично; D4 | Backend phases и запрет движения без verified есть; Driver phase API/UI отсутствует. Terminal mutations реализованы отдельно и не заменяют phase flow. |
@@ -237,3 +237,27 @@ OWNER MFA, PIIfree read audit и active-account guard в atomic mutations гот
 человеком, revision/idempotency и обработка неопределённого результата. Этот UI
 данным backend checkpoint не объявляется готовым. G1paused/D4–D7pending,
 ADMIN_PHONE_TEST_ONLY whitelist неизменён. Merge/deploy отдельно.
+
+## Native Admin manual assignment — проверенный срез, 2026-11-16
+
+[Draft PR#10](https://github.com/lobanov0710-blip/TransferDriver/pull/10)
+реализует следующий разрешённый срез после backend A: order list/options,
+явные order+driver/vehicle, обязательную причину/подтверждение, reassign,
+order revision, неизменяемый intent/key при явном повторе и session guards.
+Одинаковые маршруты различаются полным orderId. OnStop очищает operational
+state; owner_phone scope не получает entry/reads/mutations.
+
+Source86ae9b46fe6b7918eb28cf00b822a34f26f3b52c,
+CI43877768185 SUCCESS:291 JVM executions (48×3 Driver/49×3 Admin),84 API35
+native (38/46),6 build/lint, bundles/debug test APKs, security/endpoint/AppCheck/
+signing/UID gates.10 actual Admin PNG light/dark1.3 проверены после Material3
+correction; тот же reviewer закрыл единственное замечание RESOLVED, disposition
+ship только для scored confirmation correction. Receipt/UI record сохраняют
+историю первоначального FIX и границы evidence.
+
+Это synthetic Activity/component checkpoint, не live backend/hardware/TalkBack/
+tablet приёмка и не закрытие всего G2. G1paused, D4–D7pending; whitelist
+ADMIN_PHONE_TEST_ONLY не расширён. Backend только journal-sync, без нового кода.
+Merge/deploy и расширение телефонного operational scope отдельно утверждаются.
+CI debug APK имеет ephemeral CI identity; совместимость обновления телефонного
+приложения не проверена. Исторические Driver lint warnings не объявлены устранёнными.

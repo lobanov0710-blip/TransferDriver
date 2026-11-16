@@ -3166,3 +3166,150 @@ Admin UI ручного назначения — следующий планов
 не объявляется готовым; новый APK не выпускался. Merge/deploy требуют отдельного
 решения. Финальные docs/journal commits [skip ci] не меняют проверенный код;
 результаты относятся к exact code source выше.
+
+
+### 2026-11-16 — Начат утверждённый Admin assignment UI
+
+После «Далее» начат следующий срез в отдельной arch/g2-admin-assignment-ui
+от Android checkpoint с утверждением A; backend PR#30/CI43854087967 уже PASS.
+Реализуются только утверждённые GET + существующие assign/reassign: native
+Material3 Java/XML, выбор заказа/driver+vehicle, обязательная причина и
+подтверждение человеком, cursor pagination и исходный Idempotency-Key.
+Новая private Activity не exported, FLAG_SECURE, Autofill/saved-state excluded,
+foreground-only snapshots/reason/uncertain action; onStop cancel/clear. Отдельный
+клиент не refresh/replay, привязан к account/access/refresh/scope и guard до
+HTTP dispatch. Каждый read/POST заново получает server me/permissions/MFA.
+OWNER phone scope не открывает operational UI/API. Backend/whitelist не меняются.
+
+Impeccable ordinary extension: launcher отсутствует, fallback раскрыт, прочитаны
+PRODUCT/native incumbent/new-work/craft-floor/Android guidance. Редизайн, новые
+палитра/шрифты/dependencies и concept tournament не вводятся: flow задан ТЗ/D3/A.
+Новый экран пока не проверен сборкой/runtime; тесты/native captures и fresh
+finish reviewer/documenter обязательны. G1paused/D4–D7pending/merge+deploy отдельно.
+
+Локальная проверка G2 Admin assignment UI: 15 JVM-тестов контракта/транспорта
+прошли на текущих исходниках (включая проверку ACK и прежнего ключа повтора).
+Компиляция выполнена прямым javac/JUnit с Android SDK и ранее проверенным
+публичным debug BuildConfig; это не сборка APK и не проверка вариантов Android.
+AAPT2 скомпилировал ресурсы; проверены 252 ссылки R.string/R.id без пропусков.
+Ранее выполненные security guards: Admin 5 и Driver 7 — PASS.
+Локальный Gradle недоступен из-за запрета service socket в sandbox; повторных
+обходов/ослабления sandbox нет. Полная сборка, lint, варианты и runtime
+проверяются отдельным GitHub Actions run; результат ещё не объявлен.
+
+Обнаружена UI-неоднозначность до финального review: разные заказы с одинаковыми
+маршрутом/датой/тарифом не различались человеком по подписи строки.
+Исправлено: полный opaque orderId из утверждённого read DTO показан в списке,
+выборе и подтверждении; новых полей/endpoint/персональных данных нет.
+Добавлен native regression с двумя одинаковыми маршрутами, без auto-selection.
+Первый CI43874308929 успел подтвердить build/lint всех6 variants и policy checks;
+его runtime ещё выполнялся. Для изменённого исходника требуется новый полный CI,
+старый run не является доказательством исправления.
+
+CI43874308929 завершён как cancelled механизмом branch concurrency после
+публикации исправления идентификации заказов. Runtime этого run не объявляется
+PASS. Текущий source1a26fb5950eab915f05230e306b05c60fb6d6041, tree
+cefec0f0c65786d32955f2c9caafaf5a8e508e04, CI43875519388 — RUNNING.
+Draft PR#10: https://github.com/lobanov0710-blip/TransferDriver/pull/10,
+base arch/g2-availability-assignment; merge/deploy не выполнялись.
+
+Обновлённый CI43875519388 прошёл полный build/lint6 variants и policy gates;
+API35 instrumentation ещё выполняется. PRODUCT.md отражает реализованный
+срез и его границы; live/hardware/G2 acceptance не заявлены.
+Служебные ошибки публикации: connector отклонил encoded branch URL400,
+head безопасно прочитан через fetch_commit; большой read JSON был усечён,
+разбор остановился до записи. Публикация повторена меньшими пакетами с точным
+сравнением local/remote Git tree. Секретные конфиги и ключи не публиковались.
+
+CI43875519388 / job133327445986 — SUCCESS; source
+1a26fb5950eab915f05230e306b05c60fb6d6041, tree
+cefec0f0c65786d32955f2c9caafaf5a8e508e04. Фактические отчёты:
+Driver48 JVM×3, Admin49 JVM×3 =291 выполнений; API35 Driver38+Admin46 =84
+runtime cases; без failures/errors/skipped. Все6 build/lint вариантов,
+bundleStaging, security guards, endpoint/AppCheck/signing/UID policy PASS.
+Получены18 actual native PNG; проверены ZIP SHA256, PNG signatures/CRC/IEND,
+1080×2400 и SHA256. Десять Admin кадров лично открыты до передачи reviewer:
+orders/options/form/confirmation/uncertain в light и dark/font1.3.
+Это actual Activity с synthetic HTTP/Keystore, не live backend/phone acceptance.
+Скачанный CI APK: package ru.transferservis.admin, min26/target37; подпись
+проверена apksigner. Это ephemeral CI debug key; совместимость обновления
+телефонной установки не заявлена. Локальный metadata check сначала ожидал
+старое имя sdkVersion; AAPT2 37 выводит minSdkVersion. Проверка исправлена,
+фактический minSdk26 подтверждён; изменения приложения для этого не потребовались.
+
+Impeccable fresh finish reviewer /root/assignment_finish_reviewer, generic-role
+fallback без истории, проверил все10 native кадров и первичные Java/XML.
+Disposition FIX: единственное material замечание — square legacy AppCompat
+confirmation вместо Material3 dialog. Остальные проверенные элементы matrix
+match/adaptation; это не security clearance и не hardware/TalkBack/tablet review.
+Исправлен только builder на уже имеющийся MaterialAlertDialogBuilder;
+secure-window/obscured-touch/body/key/confirmation/cancel поведение сохранено.
+Требуются новый полный CI, recaptures по тем же путям и scoring того же reviewer.
+Новый визуальный мир/dependencies/DESIGN.md не вводятся; native detector не запускался.
+
+Текущий Material3 correction: source86ae9b46fe6b7918eb28cf00b822a34f26f3b52c,
+tree0ae36dab6748f49ddc73080a755d8d57b590d518, CI43877768185/job133335205029.
+Промежуточный checkpoint синхронизирован append-only в canonical журналы
+Android ec8eafff7cb04211ecec306328ee8cf3976c344b и backend
+c8d4fdf6f609f9a6e88f1027661868d047c4890b, backend рабочая ветка
+c67ea497a33c6faa18490fe690c7f5a1df8c4f2e. На canonical/work backend менялся
+только журнал; diff проверен на единственный файл и отсутствие удалений,
+ref с expected SHA. Ни исполняемый backend код, ни STAGING не изменены.
+
+Финальный CI43877768185/job133335205029 — SUCCESS для Material3 correction,
+source86ae9b46fe6b7918eb28cf00b822a34f26f3b52c,
+tree0ae36dab6748f49ddc73080a755d8d57b590d518. Заново выполнены291 JVM
+(Driver48×3/Admin49×3),84 API35 native (38/46), все6 build/lint, bundles,
+security/endpoint/AppCheck/signing/UID checks; failures/errors/skipped0.
+Повторно получены18PNG, проверены ZIP SHA256 и PNG headers/CRC/IEND; все10
+Admin captures повторно открыты по прежним путям. Light/font1.0 и dark/font1.3,
+1080×2400; изменённое окно реально показывает Material3 shape/tonal surface.
+Тот же reviewer: единственное замечание RESOLVED, introduced visual regressions
+не наблюдал; disposition SHIP только для scored confirmation correction.
+Это не новый полный security/UI/live/hardware аудит. Fresh documenter следует.
+
+Финальный CI debug APK проверен: package ru.transferservis.admin, min26/target37,
+apksigner signature PASS, SHA256
+cc72db7148f9b75a3f6158e4795bd42c53bc0fe4ed294803ba0ae44c5de9854b.
+Ключ ephemeral CI, совместимость обновления на телефоне не заявлена.
+Artifact14231790908 (18PNG) и14231448349 (APK) относятся к точному source86ae;
+срок хранения7 дней указан в verification receipt. Секреты в artifacts отсутствуют:
+использованы synthetic данные, CI SDK config и отдельная CI debug identity.
+GitHub не отдавал незавершённый job log (404 BlobNotFound); после завершения
+журнал получен и проверен. Служебный JS metadata helper исправлен без URL global;
+временные download URLs не печатались. Ошибка формата apply_patch для JSON
+receipt остановилась до записи; заменена одной атомарной Update File операцией.
+
+
+## G2 Admin manual assignment — финальный synthetic checkpoint, 2026-11-16
+
+Android Draft PR#10 https://github.com/lobanov0710-blip/TransferDriver/pull/10,
+source86ae9b46fe6b7918eb28cf00b822a34f26f3b52c,
+tree0ae36dab6748f49ddc73080a755d8d57b590d518,
+CI43877768185/job133335205029 SUCCESS. Заново291 JVM executions
+(Driver48×3/Admin49×3),84 API35 runtime (Driver38/Admin46), все6 build/lint,
+bundles/debug test APKs, security/endpoint/AppCheck/signing/UID gates;
+failures/errors/skipped0. Предыдущие RUNNING и reviewer FIX — история.
+
+Устранены UI-неоднозначность одинаковых маршрутов (полный orderId) и
+legacy confirmation (существующий Material3 builder).18 actual native PNG
+проверены по ZIP digest/PNG CRC/IEND/dimensions/SHA256;10 Admin кадров лично
+открыты. Тот же independent reviewer закрыл единственное material замечание
+RESOLVED, disposition SHIP только для scored confirmation correction, без
+наблюдённых introduced visual regressions. Fresh documenter отдельно прочитал
+код/контекст и все10 кадров, проверил hashes; UI record завершён. Generic-role
+fallback раскрыт, native detector не применялся, DESIGN/system files не менялись.
+
+Receipt: https://github.com/lobanov0710-blip/TransferDriver/blob/arch/g2-admin-assignment-ui/docs/ADMIN_ASSIGNMENT_UI_VERIFICATION_2026-11-16.json
+UI record: https://github.com/lobanov0710-blip/TransferDriver/blob/arch/g2-admin-assignment-ui/docs/ADMIN_ASSIGNMENT_UI_REVIEW_2026-11-16.md
+План и PRODUCT отражают реализованный срез и границы. Финальная публикация —
+только документы [skip ci]; исполняемый код остаётся точно проверенным source86ae.
+
+Это synthetic Activity/Keystore/HTTP evidence, не live backend/hardware/tablet/
+TalkBack acceptance и не завершение всего G2. G1paused, D4–D7pending. Backend
+кроме журнала не менялся; ADMIN_PHONE_TEST_ONLY whitelist не расширён,
+operational routes остаются404 на телефонном OWNER-only STAGING. Merge/deploy,
+remote migrations, реальные документы/биометрия/назначения не выполнялись.
+CI debug APK подписан ephemeral CI key; совместимость обновления телефона не
+проверена. Артефакты14231790908/14231448349 хранятся до2026-11-23; receipt
+содержит checksums/provenance. Lint PASS не означает ноль исторических warnings.
