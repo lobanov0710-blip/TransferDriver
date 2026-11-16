@@ -30,6 +30,16 @@ public final class AdminApiClient {
         OkHttpClient.Builder builder=AdminEndpointPolicy.clientBuilder();if(guard!=null)builder.addInterceptor(guard);if(transport!=null)builder.addInterceptor(transport);client=builder.build();
     }
     JsonObject assignmentMe(String token,long scope)throws IOException {return request("GET","v1/admin/me",null,token,null,scope);}
+    JsonObject photoVehicles(String token,String status,String cursor,long scope)throws IOException {
+        if(status==null||(!status.isEmpty()&&!PhotoControl.STATUSES.contains(status)))throw new IOException("Invalid filter");
+        String next=Assignments.cursor(cursor);return request("GET","v1/admin/vehicles?limit=20"+(status.isEmpty()?"":"&status="+status)+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);
+    }
+    JsonObject photoChecks(String token,String vehicle,String cursor,long scope)throws IOException {
+        String next=Assignments.cursor(cursor);return request("GET","v1/admin/vehicles/"+Assignments.vehicleId(vehicle)+"/photo-checks?limit=20"+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);
+    }
+    JsonObject photoCommand(String token,PhotoCheckAction action)throws IOException {
+        return request("POST","v1/admin/vehicles/"+Assignments.vehicleId(action.vehicle.id)+"/photo-checks",action.body(),token,action.key,action.scope);
+    }
     JsonObject assignmentOrders(String token,String status,String cursor,long scope)throws IOException {
         if(!java.util.Arrays.asList("","new","taken","in_progress").contains(status))throw new IOException("Invalid filter");
         String next=Assignments.cursor(cursor);return request("GET","v1/admin/orders?limit=20"+(status.isEmpty()?"":"&status="+status)+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);

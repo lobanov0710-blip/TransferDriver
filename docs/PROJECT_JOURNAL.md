@@ -3722,3 +3722,152 @@ server IDs/revisions и не подменяется справочником м�
 D4–D7pending; APK/runtime/merge/deploy/remote migrations не выполнялись.
 Следующий зависимый шаг — явный выбор владельца из уже подготовленных вариантов;
 до него реализация новых GET/UI не начата согласно AGENTS п.3.
+
+
+## Утверждён следующий G2 срез: каталог автомобилей и список фотопроверок — 2026-11-16
+
+На вопрос об утверждении варианта «Каталог и список проверок» по подготовленному
+предложению владелец ответил «Утверждают каталог и список». Утверждён вариант
+с2 GET по G2_PHOTO_CONTROL_NEXT_SLICE_PROPOSAL_2026-11-16.md, source
+6f4e3caf0ce283bbcca086ccf9b9e18f48935796: метаданные/permissions/MFA/audit/
+scoped cursor/параметры/UX назначения и проверки. Отдельный повтор не требуется.
+Созданы изолированные arch/g2-admin-photo-control-read (backend) и
+arch/g2-admin-photo-control-ui (Android). Merge/deploy не выполняются.
+
+Backend: добавлены GET /v1/admin/vehicles и GET /v1/admin/vehicles/{id}/photo-checks.
+Проекция исключает VIN/телефоны/имена/причины/photos/storage keys; чтение
+проверяет актуальные vehicles.read (+vehicles.verify для списка проверок),
+OWNER server MFA, строгие параметры/IDs/безопасные integer. Keyset limit1–50,
+cursor scoped к фильтру/vehicle, audit без произвольного текста; ошибка audit
+не выдаёт проекцию. Две SELECT для vehicleRevision/check page выполняются batch.
+OWNER-only staging остаётся404. Действующие mutations сохраняются.
+
+Новые9 SQLite/HTTP тестов PASS, миграции18 PASS, D3 preflight12 PASS.
+Первый прогон новых tests выявил неполную SQLite D1 test adapter реализацию:
+batch SELECT не возвращал rows, и проверка requestId ошибочно применялась к
+старому staff/login. Адаптер дополнен чтением SELECT в той же транзакции,
+проверка requestId ограничена v1; повтор9/9 PASS. Новый native workerd/D1
+workflow добавлен для CI на реальном D1 adapter. Первые поиски упомянули
+отсутствующие scripts Android и migration/adminAssignmentService имена;
+пути уточнены через существующее дерево. Большой первый read был усечён,
+зависимые фрагменты прочитаны отдельно.
+
+Полный npm test локально дошёл до ownerMfaControlPlaneCli, где sandbox
+spawnSync возвращает EPERM с пустыми потоками (подтверждено безопасным --help).
+Эти checks не объявляются PASS и не ослабляются/не пропускаются; полный
+прогон и native Worker/D1 выполняются в GitHub CI. Локальная Android/Gradle
+socket граница известна ранее; сборка/lint/runtime выполняются через штатный CI.
+Данные131/142 не меняются; G1paused/D4–D7pending, phone whitelist неизменён.
+Реальные фото/private R2/biometrics/remote migrations/merge/deploy не выполнялись.
+
+
+## Admin фотоконтроль: реализация UI и сценариев безопасности — 2026-11-16
+
+Добавлены защищённые PhotoControlActivity (Java/XML/Material3 DayNight), каталог
+с6 status filters, scoped paging, явно выбираемый автомобиль и список checks,
+форма только complaint/manual с явным restriction mode и причиной1–500,
+подтверждение конкретного vehicle/revision/последствий. Системные даты только
+из server metadata; фотографии/причины других проверок не загружаются.
+Никакого клиента monthly scheduling/approval/фиктивного passed.
+
+PhotoControlRepository перед каждой GET/POST заново читает server me/grants/MFA
+и проверяет исходную Keystore-сессию до/после transport. Phone test scope
+не открывает раздел. Snapshot revision связывает список проверок с выбором;
+изменение revision закрывает старый выбор. ACK проверяет vehicleId/kind/mode/
+результат/revision и vehicleRevision+1. После ACK перечитывается список.
+Сетевой неопределённый ответ хранит только исходный RAM intent: явный повтор
+после нового подтверждения использует прежние account/scope/body/key/revision.
+Обновление само не повторяет mutation.401/403/409 закрывают выбор. onStop
+отменяет запросы и очищает причины/selection/intent/snapshots; диск, clipboard,
+raw logging, autofill и IME personalization не используются. FLAG_SECURE
+защищает экран и подтверждение; touch obscuring protection сохранён.
+
+Добавлены9 JVM cases,6 actual Keystore/transport instrumentation cases и8
+Activity cases, включая10 synthetic native PNG light/dark+font1.3. Сценарии
+пока не объявлены PASS до CI. Workflow требует их исполнения и проверяет
+PNG provenance. Existing owner-phone home test дополнен запретом новой кнопки.
+Статические privacy/config guards распространены на новый XML/Activity.
+
+При сверке двух серверных режимов воспроизведён старый дефект immediate phase
+advance; исправление внесено в backend SQL отдельным commit080d4b49bb902d782efe2615d92bf05fa3d64dc6.
+Проверено12 новых SQLite/HTTP cases, в том числе два режима и atomic race.
+Native D1 harness также проверяет оба режима; нужен итоговый CI этого source.
+Код классификатора131/142 не активирован; G1paused/D4–D7pending, OWNER-only
+phone scope не расширялся, реальные материалы/merge/deploy не выполнялись.
+
+
+## UI finish review: длинные режимы получили перенос строк — 2026-11-16
+
+Независимый reviewer исходногоa460273f не обнаружил source-level session/permission
+blocker, но потребовал проверить длинные режимы. Проверен SDK layout:
+simple_spinner_dropdown_item задаёт singleLine=true/fixed height/marquee.
+Системный однострочный шаблон применялся к selected view, что ограничивало
+видимость полного последствия режима. Выбран минимальный fix: native TextView/
+CheckedTextView wrap-content, singleLine=false, min48dp и существующая Material3
+BodyLarge типографика для selected/dropdown. В форме и подтверждении оставлена
+краткая make/model/plate/ID summary; полные даты/статусы остаются в read screens.
+Native test проверяет перенос длинного immediate label. Это изменение UI требует
+нового Android CI и кадров конечного source; предыдущий run не заменяет их.
+
+
+## Исправлено UX-сообщение при истечении MFA в открытой форме — 2026-11-16
+
+Независимый finish reviewer подтвердил P3: после истечения local MFA create()
+останавливал команду, но общий validation catch показывал photo_required
+вместо permission и оставлял форму. Обхода проверки/POST/утечки не было.
+prepare теперь отдельно проверяет текущий access.canManagePhotoChecks перед
+валидацией полей; закрывает старый выбор, очищает причину/снимки и показывает
+существующее permission сообщение. Добавлен native regression с истёкшим
+server MFA profile, заполненной корректной причиной,0 POST и очищенной формой.
+Итого15 новых native cases (6 repository+9 Activity); новый source требует
+свежего CI, предыдущий native run не объявляется проверкой этого изменения.
+
+
+## G2 каталог и список фотопроверок: проверенный component/synthetic срез — 2026-11-16
+
+Утверждение «Утверждают каталог и список» реализовано в Draft PR12 (Android)
+и PR32 (backend): безопасные metadata GET, каталог/история/явное создание
+manual/complaint с подтверждением режима и причины, актуальными правами/MFA,
+контролем ревизий и сессии, без автоматического повторения mutation.
+
+Backend code080d4b49bb902d782efe2615d92bf05fa3d64dc6,
+tree245d64159221583438201d2d51804064d8d45a60,
+CI43947136962/job133579673172 SUCCESS:69 npm test scripts,
+12 новых SQLite/HTTP cases,18 migrations/12 preflight,6 native Worker/D1
+workflows,5 protected CLI scenarios, dependency audit0 и bundle dry-run PASS.
+Исправлен воспроизведённый прежний immediate bypass перехода активной поездки;
+atomic SQL также проверен при race. after_current_trip сохраняет текущую поездку.
+
+Android codea0308bec394cd28d821f52bbcfdc05e5e09f4be7,
+treed6de5082865d0932c2e754bffb2fd78dc179b951,
+CI43950844261/job133592621453 SUCCESS:318 JVM executions (48×3 Driver,
+58×3 Admin),99 native cases (38 Driver/61 Admin),6 build/lint variants и
+security/config/variant gates PASS. Новые9 JVM cases ×3 и15 native cases.
+Предыдущие Android runs43948185690/43949225817 отменены после исправлений,
+не считаются финальным PASS. Локальные sandbox socket/spawn EPERM ограничения
+не обходились; полноценные native/CLI проверки выполнены штатным CI.
+
+Артефакты точного Android source загружены, ZIP CRC/path/size и GitHub SHA256
+проверены: native artifact14267604781 содержит28 PNG, APK artifact14270860090.
+Все10 новых native кадров просмотрены независимыми documenter/reviewer,
+их SHA256 независимо совпали с CI logs. Светлая тема и dark/font1.3 читаемы;
+полные режимы перенесены, подтверждение содержит автомобиль/основание/режим/
+причину/действия. Reviewer: SHIP только для утверждённого component/synthetic
+среза, подтверждённых blockers нет. Spinner finding закрыт кодом/кадрами;
+MFA UX finding закрыт guard/очисткой и выполненным native regression.
+Сокращение toolbar title при font1.3 не скрывает операционную информацию.
+
+Receipt ADMIN_PHOTO_CONTROL_VERIFICATION_2026-11-16.json фиксирует проверенный
+code SHA/tree отдельно от последующих docs-only commits. Исторические pending
+записи и readiness11 не являются актуальным статусом реализации.
+G1paused/D4–D7pending; OWNER-only operational whitelist не расширен (404/hidden).
+Нет merge/deploy/remote migrations/реальных материалов/R2/биометрии/live phone
+E2E или полного закрытия G2. CI debug подпись временная; обновление уже
+установленного телефонного APK не проверялось. Прежние Driver lint warnings
+не объявлены исправленными. Утверждённые131 правила/142 марки не менялись и
+не активировались в runtime. Следующий зависимый шаг не выбирается за владельца.
+
+При подготовке docs-only публикации первый локальный JSON payload был
+отклонён парсером из-за предупреждения оболочки перед JSON. Изменений remote
+на этом шаге не было. Повтор с login=false дал корректный payload; создаваемые
+GitHub trees побайтно совпали с локальным staged tree. Код/проверки не изменены.

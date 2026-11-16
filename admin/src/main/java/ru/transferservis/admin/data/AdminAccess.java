@@ -50,6 +50,8 @@ public final class AdminAccess {
         return isOwner()?hasVerifiedMfa()&&permissions.contains("*"):"dispatcher".equals(role)&&permissions.contains(permission);
     }
     public boolean canReadOrders(){return !ownerPhoneTest&&can("orders.read");}
+    public boolean canReadVehicles(){return !ownerPhoneTest&&can("vehicles.read");}
+    public boolean canManagePhotoChecks(){return canReadVehicles()&&can("vehicles.verify");}
     public boolean canAssign(boolean reassign){return canReadOrders()&&can("drivers.read")&&can("vehicles.read")&&can(reassign?"orders.reassign":"orders.assign");}
     public boolean canReadReview(){return can("drivers.verify_documents")||can("drivers.verify_identity")||can("vehicles.verify");}
     public boolean canStartReview(){return can("drivers.verify_documents")||can("drivers.verify_identity");}

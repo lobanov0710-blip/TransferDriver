@@ -65,3 +65,20 @@ aliases/нормализации/существующих регистрацио
 относится к модельному правилу; проверка конкретного автомобиля и серверная
 модерация обязательны. Подключение к runtime и новые GET фотоконтроля этим
 утверждением не разрешены; merge/deploy не выполнялись.
+
+
+Владелец 2026-11-16 явно утвердил «Каталог и список проверок» для следующего
+G2 фотоконтроля по предложению source6f4e3caf0ce283bbcca086ccf9b9e18f48935796.
+Разрешены два предложенных metadata GET и Admin UI создания проверки; выбор
+варианта повторно не запрашивать. Реальные материалы/допуск/OWNER-only phone
+scope не расширяются. Следовать утверждённым permissions/MFA/audit/no-store/
+scoped pagination и foreground-only/no replay правилам предложения.
+
+
+Проверенный итог 2026-11-16: утверждённый component/synthetic срез реализован,
+backend CI43947136962 и Android CI43950844261 SUCCESS; независимый finish
+review без blockers. Точные code SHA/tree,318 JVM/99 native,69 backend scripts,
+12 новых SQLite/HTTP tests и provenance28/10PNG/APK сохранены в
+[verification receipt](docs/ADMIN_PHOTO_CONTROL_VERIFICATION_2026-11-16.json).
+Это не полная приёмка G2/live phone/release; G1paused, OWNER-only scope,
+D4–D7pending и запрет merge/deploy без отдельного решения сохраняются.
