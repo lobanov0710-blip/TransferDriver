@@ -2997,3 +2997,41 @@ null adapter, null selectedItem, null selectedView, CREATED/GONE/FLAG_SECURE,
 ранее найденную privacy XML правку; build/unit/lint/runtime будут проверены CI.
 Локальная Gradle compilation остаётся ограничена sandbox service socket;
 повторные запросы сетевых разрешений не используются для обхода ограничения.
+
+
+### 2026-11-16 — Availability CI PASS и независимый UI review: fix
+
+Source12fd1c216d7284f783f28f527820d5ff0d93eafa/tree4f6e65daeb5a9f825239d413d442820f1eaa9320,
+CI43776899566/job133005125151 SUCCESS. Реально выполнены246 JVM (Driver48×3,
+Admin34×3) и67 API35 runtime (Driver38, Admin29), skipped/failures отсутствуют.
+Полные6 lint suites/builds/endpoints/AppCheck/package/signing/UID/security guards
+PASS. Это включает XML Autofill fix и все11 новых availability native cases.
+Local7+5 security guards PASS. Локальный текущий compile не заявляется из-за
+sandbox service socket; CI — фактическая проверка текущего кода.54 старых Driver
+lint warnings известны из предшествовавших локальных6 suites, не объявляются
+устранёнными; CI lint PASS сам по себе не даёт новый warning count.
+
+Artifact14186633067,876738bytes, SHA256
+eb14a3425dc519a2e33a956e7b8d90e35ddaf1e1aebc71c34be623e57242c951:
+8 actual native PNG1080×2400 проверены signature/IHDR/CRC/IEND и archive digest,
+просмотрены. Это component/layout evidence в secure host с synthetic transport,
+не live Main auth/orders routing. FLAG_SECURE clear/restore — только test APK.
+
+По требованию Impeccable new-work §7 запущен независимый fresh reviewer без
+истории. Harness не позволяет выбрать shipped agent type: generic agent использовал
+fallback finish-reviewer contract, native platform/craft-floor,5 sections.
+Disposition fix: панель fits offline/online light/dark/font1.3; initial system
+bars имеют неверный контраст (offline-light status white, offline-dark nav black),
+в online captures контраст правильный. Это window/host integration finding,
+не clipping нового компонента; полная UI acceptance пока не заявляется.
+
+Проверен locked AndroidX core1.18 bytecode Impl30.setAppearanceLight: wrapper с
+Window пишет legacy decorView flags, а wrapper без Window вызывает platform
+setSystemBarsAppearance. ДляAPI30+ MainWindow теперь явно использует platform
+appearance, API26–29 сохраняет compat path. Это исправляет прямую настройку
+контраста; точная причина compositor timing по одним PNG не установлена.
+Fixture перед снимком проверяет window focus и platform appearance mask, затем
+ждёт UI idle вместо произвольного250ms; состояние не подменяет. Все4 native
+captures будут заменены по тем же путям и возвращены тому же reviewer для scoring
+единственного замечания. Новый source/full CI и actual screenshots обязательны.
+G1paused, Admin A/Bpending; deploy/merge/backend code/schema не меняются.

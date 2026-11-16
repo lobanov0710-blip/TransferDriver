@@ -178,7 +178,12 @@ public final class AvailabilityInstrumentationTest {
     }
     private void capture(String name) throws Exception {
         instrumentation.runOnMainSync(()->{View footer=main.findViewById(R.id.availabilityPanel);assertTrue(footer.getBottom()<=main.getHeight()-main.getPaddingBottom());assertTrue((host.getWindow().getAttributes().flags&WindowManager.LayoutParams.FLAG_SECURE)!=0);host.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);});
-        try{Thread.sleep(250);Bitmap bitmap=instrumentation.getUiAutomation().takeScreenshot();assertNotNull(bitmap);File dir=new File(context.getFilesDir(),"registration-evidence");assertTrue(dir.isDirectory()||dir.mkdirs());try(FileOutputStream out=new FileOutputStream(new File(dir,name+".png"))){assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,out));}finally{bitmap.recycle();}}
+        try{
+            boolean light=(host.getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK)!=android.content.res.Configuration.UI_MODE_NIGHT_YES;
+            int mask=android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+            await(()->host.hasWindowFocus() && (host.getWindow().getInsetsController().getSystemBarsAppearance() & mask)==(light?mask:0));
+            instrumentation.waitForIdleSync();instrumentation.getUiAutomation().waitForIdle(500,5000);
+            Bitmap bitmap=instrumentation.getUiAutomation().takeScreenshot();assertNotNull(bitmap);File dir=new File(context.getFilesDir(),"registration-evidence");assertTrue(dir.isDirectory()||dir.mkdirs());try(FileOutputStream out=new FileOutputStream(new File(dir,name+".png"))){assertTrue(bitmap.compress(Bitmap.CompressFormat.PNG,100,out));}finally{bitmap.recycle();}}
         finally{instrumentation.runOnMainSync(()->host.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE));}
     }
     private void awaitFont(float expected) throws Exception {long until=System.currentTimeMillis()+8000;while(System.currentTimeMillis()<until){instrumentation.waitForIdleSync();if(Math.abs(context.getResources().getConfiguration().fontScale-expected)<0.01f)return;Thread.sleep(40);}fail("Fixture font configuration did not settle");}
