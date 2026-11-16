@@ -17,12 +17,12 @@ vehicles → availability/manual assignment. OWNER сообщил об успе�
 статусы/версии. [Контракты и границы](docs/DRIVER_REGISTRATION_SCOPE_2026-11-15.md).
 Backend определяет доступ и допуск; клиент не назначает одобрение или verified.
 
-Следующий независимый Driver срез: нижний slider выбора on_line после выбора
+Текущий независимый Driver срез: нижний slider выбора on_line после выбора
 одобренного автомобиля, compact Радар активен по authoritative server state,
 off_line с сохранением текущего автомобиля. Используются существующие D3
 GET me/PUT availability, revision и Idempotency-Key.
-[Границы](docs/DRIVER_AVAILABILITY_SCOPE_2026-11-15.md). Runtime/visual acceptance
-фиксируется отдельно после проверок. Admin manual assignment read API пока
+[Границы](docs/DRIVER_AVAILABILITY_SCOPE_2026-11-15.md). Проверенный synthetic checkpoint и его ограничения
+зафиксированы в [receipt](docs/DRIVER_AVAILABILITY_VERIFICATION_2026-11-16.json). Admin manual assignment read API пока
 только предложен (version2, A/B), явного выбора владельца нет; новые endpoints
 не реализуются до решения.
 

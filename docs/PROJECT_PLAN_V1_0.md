@@ -56,7 +56,7 @@ backend 905c6ebe86907056f0d8be8f6f6edaff07b135e4.
 | 14 | Код; E2E блокирован | Backend monthly due/grace 24h/eligibility и Driver photo-control UI реализованы. Нужны private R2, cron/deployment и сквозные проверки. |
 | 15 | Код/частично | Серверные внеплановые проверки и ограничения есть; отдельного Admin UI и приёмки обоих режимов на тестовой среде нет. |
 | 16 | Частично | Backend activeVehicleId/off_line/active-assignment guards есть; выбора автомобиля и смены в Driver UI нет. |
-| 17 | Частично | Серверный допуск availability реализован. Нижний slider «На линии» / «Радар активен» и привязка к server state отсутствуют. |
+| 17 | Код UI/backend проверен на synthetic API35 | PR #9: нижний slider, выбор approved авто, authoritative radar/offline, revision/idempotency/lifecycle. Sourcee3c6f0c/CI43779524059:246 JVM+67 runtime PASS; scoring ship только для исправленного контраста по четырём captures. Live Driver E2E ожидает G1. |
 | 18 | Частично | Назначение driver+vehicle и assigned-only Driver list есть; self-take не используется. Нужен отдельный Admin UI назначения и E2E. |
 | 19 | Отсутствует; D6 | Серверные guards назначения не являются рекомендательной системой. Нужны утверждённые правила, объяснимый список кандидатов и UI. |
 | 20 | Не завершено; D6 | Полные фильтры обязательных/предпочтительных пожеланий в пользовательском подборе не подтверждены; требуется отдельная приёмка. |
@@ -192,7 +192,7 @@ scoring verdict ship относится только к перечисленны
 Начат в отдельной arch/g2-availability-assignment (Draft PR#9), без возобновления
 G1. Driver GET me/PUT availability уже предусмотрены D3: нижний slider и active
 vehicle, no optimistic on_line, independent revision, idempotency и lifecycle
-binding. Runtime/visual проверка ещё ожидаются; прежний checkpoint остаётся
+binding. На момент начала среза runtime/visual ожидались; прежний checkpoint остаётся
 историческим результатом своего source.
 
 Admin read API предложен, не утверждён:
@@ -200,3 +200,22 @@ Admin read API предложен, не утверждён:
 OWNER/DISPATCHER сохраняют auth category admin; первоначальное противоположное
 утверждение исправлено в анализе и журнале. Зависимые endpoints не реализуются
 без явного решения владельца. Синтетические проверки продолжаются независимо.
+
+
+## Проверенный availability checkpoint — 2026-11-16
+
+Source e3c6f0c3bde6ac77c5527e4e69c7f65fecd07e69, CI43779524059 SUCCESS:
+246 JVM (48×3 Driver,34×3 Admin),67 API35 runtime (38/29), full6 lint/builds,
+security/endpoint/AppCheck/signing/UID checks PASS. По actual native recaptures
+same reviewer оценил исходное замечание system-bar contrast RESOLVED, disposition
+ship только для этого исправления. Первый scoring был partial и сохранён в истории.
+[Receipt](DRIVER_AVAILABILITY_VERIFICATION_2026-11-16.json) и
+[UI record](DRIVER_AVAILABILITY_UI_REVIEW_2026-11-16.md) содержат provenance/limits.
+
+Этот checkpoint закрывает synthetic component/layout проверку availability,
+не live Driver E2E/physical device/full Main auth/orders routing и не весь G2.
+G1paused, D4–D7pending. Следующий зависимый Admin manual assignment требует
+явного выбора A/B из version2 read API proposal; общий «Продолжаем» не заменяет
+этот выбор по AGENTS.md п.3. Новые endpoints/permissions/whitelist не включены.
+Исторические54 Driver lint warnings не объявляются устранёнными; полный CI lint
+PASS не выдаётся за новый warning count. Merge и production deploy отдельно.
