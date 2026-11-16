@@ -3419,3 +3419,48 @@ G1paused/D4–D7pending, merge/deploy не выполнялись. Реализ�
 Служебный JS скрипт публикации сначала остановился на SyntaxError до выполнения
 любых вложенных инструментов/записей. Синтаксис исправлен; утверждённый состав
 не менялся, ref обновляется только после проверки полного Git tree.
+
+## Исключение Эконома и поиск классификатора по репозиториям — 2026-11-16
+
+Владелец указал исключить Эконом, поскольку этот тариф исключён в сервисе.
+На вопрос об источнике модели/года/тарифа ответил: «нужно поискать по репозиторию».
+Указание Эконома принято без повторного утверждения. Сначала выполнены read-only
+поиски кода, файлов данных, документов, веток и доступной истории обоих repo.
+
+Проверены текущие снимки всех60 доступных GitHub branches (14TransferDriver,
+46uber-v3), recursive trees без truncation,821 уникальное текстовое содержимое
+(376/445):776 прочитаны из локальных Git blobs, недостающие45 через GitHub.
+CSV/XLS/XLSX/ODS/PDF/DOC/DOCX/архивов с таблицей в этих снимках нет.
+Локальная reachable history:215+536 commits и538+736 text blobs. Девять
+Granta совпадений — variable grantA в push test, не модели. Именованные
+кандидаты каталогов — только ранее подготовленные нами файлы справочника марок.
+GitHub default-branch search эконом/econom/каталог/solaris/vehicleClass также
+не дал классификатора; econom найден только в negative pricing/orders/router tests.
+Утверждённая таблица марка→модель→год/комплектация→тариф в этом объёме не найдена.
+Полная удалённая ancestry всех веток, private D1/R2 и внешние документы не
+проверялись; отсутствие таблицы вне указанного объёма не утверждается.
+
+Найдено фактически: pricing.js, normalizeVehicle, migration0005 и Android
+Registration.CLASSES/registration_class_choices содержат только Комфорт/Бизнес/
+Минивэн. Existing pricing suite27 checks PASS; driverRegistrationService suite
+PASS (одна отчётная группа, не число assertions). Прямой probe getTariffs/
+normalizeTariff/calculatePrice подтвердил3 тарифа и отказ для econom/economy/
+ECONOMY/Эконом. Это не автоматическая классификация конкретных автомобилей.
+Source/log hashes и60 heads — VEHICLE_TARIFF_CLASSIFICATION_SEARCH_2026-11-16.json;
+объяснение результатов — одноимённый Markdown. Ошибочные wildcard пути в первых
+rg вызовах не имели файлов; последующие полные Git/tree/content scans выполнены
+по существующим источникам. Секреты/provider/SQL output в отчёты не включались.
+
+Справочник140 марок уточнён: tariffPolicy исключает Эконом, разрешает только
+comfort/business/minivan, referenceMayNotServeAsVehicleAllowlist=true,
+vehicleModelEligibilityApproved=false. Сами makes/groups и прежний composition
+approval сохранены: в исходном списке вообще нет моделей или связи с тарифами.
+Удалять марки целиком по предположению нельзя; конкретные допустимые модели
+должны быть определены отдельной утверждённой таблицей. Ограничение Эконома
+внесено в PRODUCT/план/справочник; новых бизнес-критериев/годов отсечения нет.
+
+Изменялись документы, не executable code/API/schema/dependencies/реальные записи.
+Новый APK/native Worker/Android runtime не запускались и не заявляются PASS.
+G1paused/D4–D7pending, phone whitelist неизменён, merge/deploy не выполнялись.
+Готовый фильтр эконом-моделей и пересмотренный список допущенных авто не
+объявляются реализованными: источник модельных правил в repo не найден.

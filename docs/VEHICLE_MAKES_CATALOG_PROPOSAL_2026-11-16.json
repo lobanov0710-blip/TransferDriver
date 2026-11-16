@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "version": "2026-11-16-approved-composition-1",
+  "version": "2026-11-16-approved-composition-2-tariff-scope",
   "status": "approved-composition",
-  "scope": "Approved composition of 140 vehicle makes; implementation, search behavior, models and photo-control APIs are separate decisions",
+  "scope": "Approved reference composition of 140 makes; vehicle eligibility requires model-level rules for comfort/business/minivan; economy excluded",
   "requestedMakes": [
     "haval",
     "chery"
@@ -978,5 +978,26 @@
     "compositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46"
   },
   "searchAliasesApproval": "not-included-in-composition-decision",
-  "proposedBehaviorApproval": "not-included-in-composition-decision"
+  "proposedBehaviorApproval": "not-included-in-composition-decision",
+  "tariffPolicy": {
+    "status": "owner-confirmed-exclusion",
+    "date": "2026-11-16",
+    "ownerInstruction": "Эконом нужно исключить, так как этот тариф у нас исключен.",
+    "allowedVehicleClasses": [
+      "comfort",
+      "business",
+      "minivan"
+    ],
+    "excludedTariffNames": [
+      "econom",
+      "economy",
+      "Эконом"
+    ],
+    "classMayNotBeInferredFromMake": true,
+    "referenceMayNotServeAsVehicleAllowlist": true,
+    "vehicleModelEligibilityApproved": false,
+    "approvedModelClassMappingFound": false,
+    "modelRulesStatus": "pending-approved-model-classifier",
+    "repositorySearchReceipt": "VEHICLE_TARIFF_CLASSIFICATION_SEARCH_2026-11-16.json"
+  }
 }
