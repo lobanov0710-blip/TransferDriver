@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "version": "2026-11-16-approved-composition-2-tariff-scope",
+  "version": "2026-11-16-approved-composition-3-belgee-tenet",
   "status": "approved-composition",
-  "scope": "Approved reference composition of 140 makes; vehicle eligibility requires model-level rules for comfort/business/minivan; economy excluded",
+  "scope": "Approved reference composition of 142 makes; separately approved 131 model rules for comfort/business/minivan; economy excluded; runtime not activated",
   "requestedMakes": [
     "haval",
     "chery"
   ],
-  "makeCount": 140,
+  "makeCount": 142,
   "groups": [
     {
       "id": "china_expanded",
@@ -17,7 +17,7 @@
     {
       "id": "regional_legacy",
       "title": "Региональные и исторические марки",
-      "count": 14
+      "count": 16
     },
     {
       "id": "japan_korea",
@@ -464,6 +464,12 @@
       "searchAliases": []
     },
     {
+      "id": "belgee",
+      "name": "Belgee",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
       "id": "daewoo",
       "name": "Daewoo",
       "group": "regional_legacy",
@@ -494,6 +500,12 @@
     {
       "id": "sollers",
       "name": "Sollers",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "tenet",
+      "name": "TENET",
       "group": "regional_legacy",
       "searchAliases": []
     },
@@ -972,10 +984,16 @@
   "approval": {
     "date": "2026-11-16",
     "source": "explicit-owner-message",
-    "statement": "Состав справочника утверждают.",
-    "scope": "composition-of-140-makes",
-    "approvedSourceCommit": "b5fa627ab31f5c8da65788d60e788f9ea1d824c5",
-    "compositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46"
+    "statement": "Исходные 116 строк и добавление Belgee/TENET добавить и утвердить",
+    "scope": "composition-of-142-makes: existing approved140 plus Belgee and TENET",
+    "previousApprovedCompositionCommit": "5e5f56db5e926a226a048993b47e970c4bf36c87",
+    "previousCompositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46",
+    "addedMakeIds": [
+      "belgee",
+      "tenet"
+    ],
+    "compositionSha256": "abc564d91b94a69e3c213f153fc2aa2179df74e992b226fe9f6a2e55178fd3b1",
+    "compositionHashFormat": "SHA256 UTF-8 compact JSON, keys sorted, records sorted by id, fields id/name/group, ensure_ascii=false"
   },
   "searchAliasesApproval": "not-included-in-composition-decision",
   "proposedBehaviorApproval": "not-included-in-composition-decision",
@@ -995,9 +1013,46 @@
     ],
     "classMayNotBeInferredFromMake": true,
     "referenceMayNotServeAsVehicleAllowlist": true,
-    "vehicleModelEligibilityApproved": false,
-    "approvedModelClassMappingFound": false,
-    "modelRulesStatus": "pending-approved-model-classifier",
-    "repositorySearchReceipt": "VEHICLE_TARIFF_CLASSIFICATION_SEARCH_2026-11-16.json"
+    "vehicleModelEligibilityApproved": true,
+    "approvedModelClassMappingFound": true,
+    "modelRulesStatus": "approved-131-model-rules-with-conditions-not-activated",
+    "repositorySearchReceipt": "VEHICLE_TARIFF_CLASSIFICATION_SEARCH_2026-11-16.json",
+    "approvedModelRulesCount": 131,
+    "modelApprovalScope": "Only the 131 listed rules and their conditions; not all models of these142 makes",
+    "approvedModelClassifier": "https://github.com/lobanov0710-blip/uber-v3/blob/docs/vehicle-classifier-v1-20261116/docs/vehicle-classifier-v2-proposed.csv",
+    "runtimeChanged": false,
+    "approvedModelClassifierSha256": "1e4955a6f7250f0e5183f99d105a5c5b235eaa51b7ee432e2f29ad2a69af4901"
+  },
+  "approvalHistory": [
+    {
+      "date": "2026-11-16",
+      "source": "explicit-owner-message",
+      "statement": "Состав справочника утверждают.",
+      "scope": "composition-of-140-makes",
+      "approvedSourceCommit": "b5fa627ab31f5c8da65788d60e788f9ea1d824c5",
+      "compositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46"
+    }
+  ],
+  "validation": {
+    "date": "2026-11-16",
+    "checkCount": 14,
+    "checks": {
+      "142_makes": "PASS",
+      "unique_valid_ids": "PASS",
+      "unique_names": "PASS",
+      "original140_exactly_preserved": "PASS",
+      "only_belgee_tenet_added": "PASS",
+      "groups_64_16_18_29_15": "PASS",
+      "no_unapproved_new_aliases": "PASS",
+      "search_values_unambiguous": "PASS",
+      "lengths_controls_and_formula_prefixes": "PASS",
+      "old_and_new_composition_hashes": "PASS",
+      "markdown_json_full_parity": "PASS",
+      "policy_economy_excluded_no_make_grants": "PASS",
+      "owner_approval_history": "PASS",
+      "131_approved_model_rules": "PASS"
+    },
+    "searchValueCount": 190,
+    "runtimeTestsRun": false
   }
 }
