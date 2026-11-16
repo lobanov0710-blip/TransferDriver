@@ -219,3 +219,21 @@ G1paused, D4–D7pending. Следующий зависимый Admin manual ass
 этот выбор по AGENTS.md п.3. Новые endpoints/permissions/whitelist не включены.
 Исторические54 Driver lint warnings не объявляются устранёнными; полный CI lint
 PASS не выдаётся за новый warning count. Merge и production deploy отдельно.
+
+
+## Admin assignment read API A — утверждён и проверен 2026-11-16
+
+Владелец явно выбрал A: «Вариант A утверждаю». Предыдущие записи о pending A/B
+являются историческими. Backend [Draft PR#30](https://github.com/lobanov0710-blip/uber-v3/pull/30),
+source dda85d2937f385cc7b0cccbc88d4282d50481485 / CI43854087967 SUCCESS:
+68 unit/router scripts,15 новых actual SQLite/HTTP cases,18 migrations,12 staging
+preflight cases,5 native Worker/D1 checks, protected CLI и Worker dry-run bundle.
+Новые GET orders/options, keyset pagination, minimal projection, current grants,
+OWNER MFA, PIIfree read audit и active-account guard в atomic mutations готовы
+в коде. API не является рейтингом/автоназначением или полной scheduling проверкой.
+
+Следующий плановый срез — Android Admin UI ручного assign/reassign поверх
+этого контракта: выбор заказа/связки, обязательная причина, подтверждение
+человеком, revision/idempotency и обработка неопределённого результата. Этот UI
+данным backend checkpoint не объявляется готовым. G1paused/D4–D7pending,
+ADMIN_PHONE_TEST_ONLY whitelist неизменён. Merge/deploy отдельно.

@@ -1,7 +1,8 @@
 # Предложение: чтение данных ручного назначения в Transfer Admin
 
-Версия2 (исправлена проверка legacy roles). Статус: НЕ УТВЕРЖДЕНО. Это предложение технической детализации D3, не изменение
-ТЗ и не разрешение на deploy. Реализация зависящих новых API ожидает решения.
+Версия2 (исправлена проверка legacy roles). Вариант A УТВЕРЖДЁН владельцем
+2026-11-16 явным сообщением «Вариант A утверждаю». Это техническая детализация D3,
+не изменение ТЗ и не разрешение на merge/deploy. Вариант B не выбран.
 
 ## Подтверждённый пробел
 
@@ -62,8 +63,22 @@ driverId, vehicleId, reason, expectedRevision и Idempotency-Key. Причина
 Вариант B (минимальный): только новый assignment-options, список через действующий
 GET /orders. В таком варианте legacy cutoff1000 и extra PII response сохраняются;
 клиент покажет ограничение списка и не будет отображать/сохранять ненужные поля.
-Это не полная история заказов. Варианты пока не выбраны; можно обсудить отдельно.
-До решения готовится независимый Driver availability UI по уже существующим API.
+Это не полная история заказов. Сравнение B сохранено как история предложения;
+выбран вариант A. Driver availability уже проверен отдельным checkpoint.
+Реализация A и точный контракт — [backend Draft PR#30](https://github.com/lobanov0710-blip/uber-v3/pull/30),
+документ docs/ADMIN_ASSIGNMENT_READ_API.md. Admin UI назначения остаётся следующим срезом.
 G1 остаётся на паузе. ADMIN_PHONE_TEST_ONLY не меняется, новые operational routes
 на текущем OWNER-only STAGING не открываются. Проверки синтетические. Merge и
 production deploy требуют отдельного решения владельца.
+
+
+## Результат реализации A — 2026-11-16
+
+Backend source dda85d2937f385cc7b0cccbc88d4282d50481485, CI43854087967 SUCCESS.
+Минимальные GET, общие SQL eligibility/read-mutation blocker codes, keyset cursor,
+server permissions/MFA, no-store и обязательный read audit реализованы.
+Исправлен существующий D3 дефект: active driver account теперь проверяется
+в precheck и atomic assign/reassign. Это не новый критерий D6.
+Предыдущая общая формулировка «atomic busy» не означает проверку всего расписания:
+текущий unique index относится к order_id; новых scheduling rules нет.
+OWNER-only STAGING whitelist не расширен; Android UI/merge/deploy не выполнены.
