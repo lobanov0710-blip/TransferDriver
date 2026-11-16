@@ -37,6 +37,7 @@
     <string name="photo_not_found">Раздел или автомобиль недоступен. На тестовом сервере OWNER этот раздел закрыт.</string>
     <string name="photo_blocked">Сервер не разрешил назначение проверки для этого автомобиля.</string>
     <string name="photo_unknown">Не указано</string>
+    <string name="photo_vehicle_identity">%1$s %2$s · %3$s\nАвтомобиль: %4$s</string>
     <string name="photo_vehicle_row">%1$s %2$s · %3$s\n%4$s\nПоследняя проверка: %5$s\nСледующий срок: %6$s\nАвтомобиль: %7$s</string>
     <string name="photo_check_row">%1$s · %2$s\n%3$s\nСрок: %4$s\nЛьготный период до: %5$s\nПроверка: %6$s</string>
     <string name="photo_confirm_body">%1$s\n\nОснование: %2$s\nРежим: %3$s\nПричина: %4$s</string>

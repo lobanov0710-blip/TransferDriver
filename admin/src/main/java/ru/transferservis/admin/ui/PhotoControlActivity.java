@@ -50,7 +50,7 @@ public final class PhotoControlActivity extends AppCompatActivity {
         findViewById(R.id.photoConfirm).setOnClickListener(v->prepare());findViewById(R.id.photoRetry).setOnClickListener(v->{if(!busy&&uncertain!=null)confirm(uncertain);});
         findViewById(R.id.photoRows).setSaveFromParentEnabled(false);render();
     }
-    private void spinner(int id,int entries){((Spinner)findViewById(id)).setAdapter(new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item,getResources().getStringArray(entries)));}
+    private void spinner(int id,int entries){ArrayAdapter<String> adapter=new ArrayAdapter<>(this,R.layout.photo_spinner_item,getResources().getStringArray(entries));adapter.setDropDownViewResource(R.layout.photo_spinner_dropdown_item);((Spinner)findViewById(id)).setAdapter(adapter);}
     @Override protected void onStart(){super.onStart();started=true;restart();}
     @Override protected void onStop(){started=false;generation++;repository.cancel();scope=0;busy=false;if(confirmation!=null){confirmation.dismiss();confirmation=null;}
         vehicles=null;checks=null;selected=null;access=null;uncertain=null;stage=VEHICLES;status="";vehicleCursor="";checkCursor="";vehicleHistory.clear();checkHistory.clear();message=0;
@@ -104,7 +104,7 @@ public final class PhotoControlActivity extends AppCompatActivity {
         show(R.id.photoNew,!busy&&uncertain==null&&stage==CHECKS&&checks!=null&&checks.vehicle.canRequest()&&access!=null&&access.canManagePhotoChecks());show(R.id.photoRetry,!busy&&uncertain!=null);findViewById(R.id.photoReload).setEnabled(!busy);
         show(R.id.photoPaging,!busy&&uncertain==null&&((stage==VEHICLES&&vehicles!=null)||(stage==CHECKS&&checks!=null)));
         findViewById(R.id.photoPrevious).setEnabled(stage==VEHICLES?!vehicleHistory.isEmpty():!checkHistory.isEmpty());String next=stage==VEHICLES?(vehicles==null?null:vehicles.nextCursor):(checks==null?null:checks.nextCursor);findViewById(R.id.photoNext).setEnabled(next!=null);
-        ((TextView)findViewById(R.id.photoSummary)).setText(stage==FORM&&selected!=null?vehicleText(selected):"");if(busy)return;
+        ((TextView)findViewById(R.id.photoSummary)).setText(stage==FORM&&selected!=null?vehicleIdentity(selected):"");if(busy)return;
         if(uncertain!=null){label(rows,getString(R.string.photo_original)+"\n"+actionText(uncertain));if(vehicles!=null)for(PhotoControl.Vehicle v:vehicles.rows)if(v.id.equals(uncertain.vehicle.id))label(rows,vehicleText(v));return;}
         if(stage==VEHICLES&&vehicles!=null){if(vehicles.rows.isEmpty())label(rows,getString(R.string.photo_empty_vehicles));for(PhotoControl.Vehicle v:vehicles.rows)row(rows,vehicleText(v),access!=null&&access.canManagePhotoChecks(),()->{checkHistory.clear();checkCursor="";loadChecks(v,"",0);});}
         else if(stage==CHECKS&&checks!=null){label(rows,vehicleText(checks.vehicle));if(checks.rows.isEmpty())label(rows,getString(R.string.photo_empty_checks));for(PhotoControl.Check c:checks.rows)label(rows,getString(R.string.photo_check_row,
@@ -112,7 +112,8 @@ public final class PhotoControlActivity extends AppCompatActivity {
             map(c.restrictionMode,new String[]{"grace_period","after_current_trip","immediate"},R.array.photo_check_modes),date(c.dueAt),date(c.graceUntil),c.id));}
     }
     private String vehicleText(PhotoControl.Vehicle v){return getString(R.string.photo_vehicle_row,v.make,v.model,v.plate,getResources().getStringArray(R.array.photo_filters)[PhotoControl.STATUSES.indexOf(v.status)+1],date(v.lastPassedAt),date(v.nextDueAt),v.id);}
-    private String actionText(PhotoCheckAction a){return getString(R.string.photo_confirm_body,vehicleText(a.vehicle),getResources().getStringArray(R.array.photo_kinds)["complaint".equals(a.kind)?1:2],getResources().getStringArray(R.array.photo_modes)["after_current_trip".equals(a.mode)?1:2],a.reason);}
+    private String vehicleIdentity(PhotoControl.Vehicle v){return getString(R.string.photo_vehicle_identity,v.make,v.model,v.plate,v.id);}
+    private String actionText(PhotoCheckAction a){return getString(R.string.photo_confirm_body,vehicleIdentity(a.vehicle),getResources().getStringArray(R.array.photo_kinds)["complaint".equals(a.kind)?1:2],getResources().getStringArray(R.array.photo_modes)["after_current_trip".equals(a.mode)?1:2],a.reason);}
     private String date(Long time){return time==null?getString(R.string.photo_unknown):java.time.Instant.ofEpochMilli(time).atZone(java.time.ZoneId.systemDefault()).format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.uuuu HH:mm",Locale.getDefault()));}
     private String map(String key,String[] values,int resource){return getResources().getStringArray(resource)[Arrays.asList(values).indexOf(key)];}
     private void row(LinearLayout rows,String text,boolean enabled,Runnable action){MaterialButton b=new MaterialButton(this,null,com.google.android.material.R.attr.materialButtonOutlinedStyle);b.setText(text);b.setAllCaps(false);b.setSingleLine(false);b.setMaxLines(Integer.MAX_VALUE);b.setEllipsize(null);b.setGravity(Gravity.START|Gravity.CENTER_VERTICAL);b.setMinHeight(dp(48));b.setSaveEnabled(false);b.setFilterTouchesWhenObscured(true);b.setEnabled(enabled);b.setOnClickListener(v->action.run());LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.topMargin=dp(8);rows.addView(b,p);}

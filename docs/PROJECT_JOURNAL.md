@@ -3794,3 +3794,17 @@ advance; исправление внесено в backend SQL отдельным
 Native D1 harness также проверяет оба режима; нужен итоговый CI этого source.
 Код классификатора131/142 не активирован; G1paused/D4–D7pending, OWNER-only
 phone scope не расширялся, реальные материалы/merge/deploy не выполнялись.
+
+
+## UI finish review: длинные режимы получили перенос строк — 2026-11-16
+
+Независимый reviewer исходногоa460273f не обнаружил source-level session/permission
+blocker, но потребовал проверить длинные режимы. Проверен SDK layout:
+simple_spinner_dropdown_item задаёт singleLine=true/fixed height/marquee.
+Системный однострочный шаблон применялся к selected view, что ограничивало
+видимость полного последствия режима. Выбран минимальный fix: native TextView/
+CheckedTextView wrap-content, singleLine=false, min48dp и существующая Material3
+BodyLarge типографика для selected/dropdown. В форме и подтверждении оставлена
+краткая make/model/plate/ID summary; полные даты/статусы остаются в read screens.
+Native test проверяет перенос длинного immediate label. Это изменение UI требует
+нового Android CI и кадров конечного source; предыдущий run не заменяет их.
