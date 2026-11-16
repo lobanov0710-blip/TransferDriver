@@ -1,0 +1,506 @@
+{
+  "date": "2026-11-16",
+  "status": "no-approved-model-tariff-table-found-within-searched-scope",
+  "currentBranches": [
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/g2-admin-assignment-ui",
+      "head": "ff628f71a561841a5d0ae80fef3ea2b6ba2de549",
+      "treeEntries": 350
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/g2-admin-photo-control-proposal",
+      "head": "b4a9e8999ffabeda5b5aef45c073deeefe73d39a",
+      "treeEntries": 354
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/g2-availability-assignment",
+      "head": "ca1134dbf7ae8781abfd95dc689db2bcba019b3c",
+      "treeEntries": 332
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/g2-driver-registration",
+      "head": "97eb3309f3305862d4c816e395bed2c9265d43a0",
+      "treeEntries": 322
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/g2-transfer-admin",
+      "head": "516827a3d9b61ad5b06679ac0a4612e188c241b5",
+      "treeEntries": 301
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/spec-v1-security-baseline",
+      "head": "568501c1222944839d42a434ebac808e20c0213b",
+      "treeEntries": 271
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/11.15b2-android-push-registration",
+      "head": "83e79f1d1c8e8eb57499a7715285193662c3e836",
+      "treeEntries": 138
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/11.15b3-fcm-receive",
+      "head": "5623eee20639d40417727da2fc862f7c4ba61e9e",
+      "treeEntries": 138
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "arch/11.16-order-status-receive",
+      "head": "9898cf5dd5c96fdc36f6ff2189b3a210558a9b9d",
+      "treeEntries": 139
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "docs/project-journal-production-policy",
+      "head": "478af59a29ecd2e44aa10b2f2610c9dbbd9ab5e1",
+      "treeEntries": 141
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "fix/arch-11.16-push-registration-diagnostics",
+      "head": "8ae8ff0f508390107a5eee9199d9d41bec179f7e",
+      "treeEntries": 139
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "fix/d3-ui-instrumentation-ci",
+      "head": "41fec7b863867882f0d13a5476d2e6215acdcf6c",
+      "treeEntries": 251
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "master",
+      "head": "501481c20168c496e11ea21b7a7e82d047523788",
+      "treeEntries": 138
+    },
+    {
+      "repository": "TransferDriver",
+      "branch": "probe/d3-staging-e2e",
+      "head": "81b4748fba552a5567d2279dac1955c8be41ed3e",
+      "treeEntries": 208
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/api-contract-v1",
+      "head": "48c2b81e4e31ddd3284b6d4afa5e469f90867f70",
+      "treeEntries": 33
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/backend-critical-tests",
+      "head": "20cc45f0142227923ba9f16826b033cc486de27d",
+      "treeEntries": 31
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/g2-admin-assignment-read",
+      "head": "e072fd208f25c87416c8756d141ddceb41f20f6e",
+      "treeEntries": 217
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/g2-owner-totp-mfa",
+      "head": "3ccc9a15eff53df6e44aeb603aaf8205dd5b377b",
+      "treeEntries": 211
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/order-state-transitions",
+      "head": "42597d197c554a77887f64696d6686124d04b20a",
+      "treeEntries": 37
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/orders-d1-read-source",
+      "head": "7a17767794d13b59be3d4839fae02a6ccd33443c",
+      "treeEntries": 27
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/passenger-order-access",
+      "head": "add4698edb7f2c45e7bf26f4bd5acfaa46beb1a0",
+      "treeEntries": 35
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/quotes-d1-source-of-truth",
+      "head": "a745e92668b7b25e7b8700b8edc410b34853e054",
+      "treeEntries": 26
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/remove-orders-quotes-kv",
+      "head": "8a94dfa04193be72b633bf4ce29222a90a1aec8c",
+      "treeEntries": 26
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/spec-v1-backend-phase1",
+      "head": "b33ee98ab74758d5b045d37ec70c05d6749ddea8",
+      "treeEntries": 173
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/staff-auth-v1",
+      "head": "56e39a5276fab7b012480afb4420df902eb5b372",
+      "treeEntries": 52
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/11.15b2-staff-push-devices",
+      "head": "46fa445e2cdb4dc44481158eda4bb2f96ba90aa1",
+      "treeEntries": 62
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/11.15b3-fcm-delivery",
+      "head": "25e8f2fc383d6486661a31069f079d23ee18abf9",
+      "treeEntries": 66
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "arch/11.16-order-status-push",
+      "head": "73a944987db08a4e3153402d56b906a667b0db43",
+      "treeEntries": 78
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "docs/arch-06-passenger-order-access",
+      "head": "be845817eb0572cfaa403f11cdc85e55b1b5aa33",
+      "treeEntries": 35
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "docs/passenger-push-registration-contract-20261103",
+      "head": "4d3555a0fb4962cff8ecb22d49f41f999ea1450a",
+      "treeEntries": 77
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "docs/production-release-preflight-20261101",
+      "head": "4ee5279f5d62c1badfcb170b2a39fdbc61b0aeff",
+      "treeEntries": 77
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/arch-10-staff-account-management",
+      "head": "224270b5ce6a93b530b069dc8d6f7ea4eb62d7a8",
+      "treeEntries": 57
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01a-passenger-device-storage",
+      "head": "1797482c215ee4716ca3840c61b190daa4f34990",
+      "treeEntries": 83
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01b-passenger-push-grant",
+      "head": "509a4a87fce91f99da062981eb278ffe5e122ae5",
+      "treeEntries": 87
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01c-replay-safe-device-api",
+      "head": "296c861104fd3c62ebef72c23d97196054683e95",
+      "treeEntries": 93
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01d-sliding-limit-lifecycle",
+      "head": "d7b808162f703044463eccabfa789be7c0c3ff41",
+      "treeEntries": 97
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01f-hmac-nonce-replay",
+      "head": "114a738e7e4b33bc3c5e47ac527e763248c36143",
+      "treeEntries": 105
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01i-revoke-only-grant",
+      "head": "9bb1ab19e2acbf402fab8ce6eb1297b6f677e6c6",
+      "treeEntries": 118
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01j-revoke-quota-policy",
+      "head": "49449ffcce1fca2ed9b7c1aa02595605edbf5313",
+      "treeEntries": 119
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01k-delivery-eligibility",
+      "head": "0fe12b1aef3a5375dcb242119ae2218f68ce04d1",
+      "treeEntries": 123
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01l-atomic-revoke-redaction",
+      "head": "64b0a4b4b83440732f1ea614a9939d659ff16334",
+      "treeEntries": 124
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01m-bounded-fcm-cleanup",
+      "head": "95fa1cdb5b1f7d47a6db0485a6c453d53c7722a2",
+      "treeEntries": 128
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "feature/push-01n-read-expiry-bound",
+      "head": "26aba1bfb73f680a7ef2efbfe9303a1fe4195960",
+      "treeEntries": 129
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/d3-staging-preflight-ci",
+      "head": "8cc860443f43c25f5f4edf312f5934dfd1949c11",
+      "treeEntries": 170
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/d3-terminal-hardening-ci",
+      "head": "db5d3ef4a6d4096c80c71cdd55740e9f6dc52c16",
+      "treeEntries": 167
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/idempotent-order-fcm-v1",
+      "head": "e02271fed837e4b6d5da5043a7c28a5645b9dd93",
+      "treeEntries": 69
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/order-phone-validation-v1",
+      "head": "40a04ced226ac51d342163e42f4736b314551ec8",
+      "treeEntries": 73
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/quote-canonical-place-name-v1",
+      "head": "f2c47ff50e32cea0419e70fe085ba831897cbf03",
+      "treeEntries": 76
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/reject-past-booking-dates-v1",
+      "head": "02466d843b60cddcadd888657208394cb5a10d25",
+      "treeEntries": 71
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/staging-notifications-guard-v1",
+      "head": "01a1644a9eb73f6ff5c02364adaaa40ae6fe28b3",
+      "treeEntries": 75
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "fix/staging-telegram-optin-v1",
+      "head": "51bca43a10c6145bf3c1e29bf275f633e918a8ca",
+      "treeEntries": 76
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "main",
+      "head": "7fad96a63ac963e6c28bf03f21d52b90e5cb69ff",
+      "treeEntries": 76
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "ops/arch-11-15b2-deploy",
+      "head": "77890e30ef71c8363d1dcd4b6903e91787bb6ead",
+      "treeEntries": 62
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "ops/d3-staging-approved-20261107",
+      "head": "204be43c92eaea2b36c3b01bc012d1f8ba638cb0",
+      "treeEntries": 170
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "ops/deploy-pr3-fcm-70737bb",
+      "head": "04d78fdeab2c806102f540ea8ce2b38c8d05c6cb",
+      "treeEntries": 70
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "probe/d3-staging-inventory",
+      "head": "d9b085f4730e5010e9f8f145d8782c208df45e94",
+      "treeEntries": 172
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "test/production-order-smoke-regressions-v1",
+      "head": "71cdbb20546dfe07b87325a1f4789fff88d5178a",
+      "treeEntries": 77
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "test/push-01e-php-worker-d1-integration",
+      "head": "4151b07985d53a35b2c0e6d86955543d67df689d",
+      "treeEntries": 100
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "test/push-01g-loopback-http-e2e",
+      "head": "9ce7616edff35e6f312da86fa58b5190c678fd5e",
+      "treeEntries": 111
+    },
+    {
+      "repository": "uber-v3",
+      "branch": "test/push-01h-staging-preflight",
+      "head": "99df820d61ecbb3d07e9747f1736170a44980d05",
+      "treeEntries": 117
+    }
+  ],
+  "remoteCurrentUniqueTextBlobs": {
+    "TransferDriver": 376,
+    "uber-v3": 445
+  },
+  "remoteMissingFetchedAndScanned": {
+    "TransferDriver": 36,
+    "uber-v3": 9
+  },
+  "remoteTreeTruncations": 0,
+  "binaryTableFiles": [],
+  "keywordSearchDefaultBranchQueries": [
+    "эконом",
+    "econom",
+    "каталог",
+    "solaris",
+    "vehicleClass"
+  ],
+  "keywordSearchDefaultBranchMatches": "econom occurs only in negative pricing/order/router tests",
+  "existingTariffs": [
+    "comfort",
+    "business",
+    "minivan"
+  ],
+  "excludedEconomyInputsVerified": [
+    "econom",
+    "economy",
+    "ECONOMY",
+    "Эконом"
+  ],
+  "supportedTariffsDirectRuntimeCheckPassed": true,
+  "modelTableFound": false,
+  "modelsPresentIn140MakeReference": false,
+  "makeCompositionChanged": false,
+  "implementationChanged": false,
+  "limitations": [
+    "Current branch snapshots were searched; full remote ancestry of every branch was not fetched",
+    "Only locally available reachable history was scanned",
+    "Private D1/R2 contents and external documents were not inspected",
+    "Existing negative-test occurrences are not an approved make/model classifier"
+  ],
+  "additionalRemoteFileModelHits": 0,
+  "localHistory": {
+    "TransferDriver": {
+      "commits": 215,
+      "uniqueTextBlobs": 538,
+      "relevantModelTableFound": false,
+      "economyMatchPaths": [],
+      "oversizedSkipped": 0
+    },
+    "uber-v3": {
+      "commits": 536,
+      "uniqueTextBlobs": 736,
+      "relevantModelTableFound": false,
+      "economyMatchPaths": [
+        "tests/orders.test.mjs",
+        "tests/pricing.test.mjs",
+        "tests/router.test.mjs"
+      ],
+      "oversizedSkipped": 0,
+      "modelLexicalFalsePositives": {
+        "blobs": 9,
+        "path": "tests/passengerPushPhpWorkerD1.integration.mjs",
+        "term": "grantA",
+        "reason": "JavaScript variable, no vehicle/tariff classification"
+      }
+    }
+  },
+  "remoteContentCoverage": {
+    "TransferDriver": {
+      "uniqueTextBlobs": 376,
+      "localBlobsRead": 340,
+      "additionalRemoteBlobsRead": 36,
+      "economyMatchPaths": [],
+      "brandMatchPaths": [
+        "PRODUCT.md",
+        "docs/G2_PHOTO_CONTROL_NEXT_SLICE_PROPOSAL_2026-11-16.md",
+        "docs/PROJECT_JOURNAL.md",
+        "docs/PROJECT_PLAN_V1_0.md",
+        "docs/VEHICLE_MAKES_CATALOG_PROPOSAL_2026-11-16.json",
+        "docs/VEHICLE_MAKES_CATALOG_PROPOSAL_2026-11-16.md"
+      ]
+    },
+    "uber-v3": {
+      "uniqueTextBlobs": 445,
+      "localBlobsRead": 436,
+      "additionalRemoteBlobsRead": 9,
+      "economyMatchPaths": [
+        "tests/orders.test.mjs",
+        "tests/pricing.test.mjs",
+        "tests/router.test.mjs"
+      ],
+      "brandMatchPaths": [
+        "docs/PROJECT_JOURNAL.md"
+      ]
+    }
+  },
+  "verification": {
+    "pricingSuite": {
+      "file": "tests/pricing.test.mjs",
+      "status": "passed",
+      "reportedChecks": 27
+    },
+    "driverRegistrationSuite": {
+      "file": "tests/driverRegistrationService.test.mjs",
+      "status": "passed",
+      "reportedSuccessGroups": 1
+    },
+    "directTariffProbe": {
+      "supported": [
+        "comfort",
+        "business",
+        "minivan"
+      ],
+      "rejectedInputs": [
+        "econom",
+        "economy",
+        "ECONOMY",
+        "Эконом"
+      ],
+      "normalizeReturnsNull": true,
+      "calculationFails": true
+    },
+    "androidBuildRun": false,
+    "nativeWorkerRun": false,
+    "liveDeploymentChanged": false,
+    "logsSha256": {
+      "pricing.test.mjs": "9b16212921368008314ac88331b0033cf3f7d2afd0d8dc790cbd6c38a0d5fe80",
+      "driverRegistrationService.test.mjs": "ff46f352f674ba5455c242aa51501282025376b6f8c1170588dee7e9749bbcf4"
+    }
+  },
+  "sourceSha256": {
+    "src/core/pricing.js": "021df11b72e15de3612b55616e6333d516f2ca754abe03c44fa11e34f2a6e00c",
+    "src/core/driverRegistrationService.js": "366c9507fd6060903c000e9b0bc386754a77e76b59bbda7922142c2f383c0acb",
+    "tests/pricing.test.mjs": "c07e1a5922e7bff00fcbc270d415c1ebf3e6dc644723f03b1731124f5f167ba9",
+    "tests/driverRegistrationService.test.mjs": "d266fd606efb8f9a5ac90d881ad95f89aa0bbb665e5096fa77adc18ebe7fcb7d",
+    "migrations/0005_driver_platform_core.sql": "9986db083f03349e1bae6364d01d5152f6838c94107557f9297ab7572daaa065",
+    "app/src/main/java/ru/transferservis/driver/data/registration/Registration.java": "a110a4146cd001e95ee8b5f264c48edbe0ac1a247cd1ef9befd0d32b828c3af2",
+    "app/src/main/res/values/registration_strings.xml": "0f8650b326c237a9ecb6cc6509920b9582130c5e294c5311740f827e7f3a1e57"
+  },
+  "snapshotDescription": "Branch heads captured before adding this tariff clarification and search report"
+}

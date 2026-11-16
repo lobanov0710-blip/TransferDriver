@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-16",
+  "status": "proposal-pending-owner-decision",
+  "androidBaseDocsCommit": "3f9fad6f1be32b54674bdfe7bd56317e5d3760dd",
+  "androidBaseTree": "abad017859ef912e4921f44295fc388a4ee4bf41",
+  "backendHead": "412591d0d633e25ead8596cb8121ea703f12ca09",
+  "backendTree": "fe04f226f46e38d42c256f335686681397aa5779",
+  "node": "v24.22.1",
+  "suites": [
+    {
+      "file": "tests/photoControlSupport.sqlite.test.mjs",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "logSha256": "6a2f247c3702bfcd7996161f05cf2981e58ac231b837eb81a97397e9cd4e523a"
+    },
+    {
+      "file": "tests/photoControlLifecycle.sqlite.test.mjs",
+      "tests": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "logSha256": "a6bb6004dde3a2eb571706f1f6b830b7a29084015665b0c6af56c8cbd4319143"
+    }
+  ],
+  "totalTests": 11,
+  "supportRegressionCasesIncluded": 2,
+  "sourceSha256": {
+    "src/router.js": "f3204bd83d36a0c1d3fd6a270ee3ec73d7914d2702a58a08bebbc4a6c1f1f5ac",
+    "src/core/vehiclePhotoControlService.js": "b954c9b027f2922ad0a2b2b3c39ecf0aaac5d54de1b0e1fac373312d87364f58",
+    "src/core/vehiclePhotoControlRepository.js": "34d2a68505727493ac49a1c15683b80e8b231f891b8b0857b3918b84a107f808",
+    "src/core/staffAuthorization.js": "718f9bc12468eabed6aaf115fce95f131a9e0ec74e3e89cc3d4a7783699892f7",
+    "src/core/adminPhoneTestScope.js": "80e4027f2d2905ef54e5e31132304e780001c80f37b63d9033662fbab515f1c1",
+    "tests/photoControlSupport.sqlite.test.mjs": "b2da5c73c0f0a064b6ce97123a9ce0b89be0852485a67f09188c5ce946c3f86c",
+    "tests/photoControlLifecycle.sqlite.test.mjs": "56086aeaf8771944a8861d2d9c2bc246b7853c453762620a40c85a11738918e9"
+  },
+  "notRun": [
+    "new proposed GET APIs (not implemented)",
+    "Android build/lint/runtime for new UI (no UI changes)",
+    "native Worker/D1",
+    "HTTP/MFA E2E",
+    "remote infrastructure or phone operations"
+  ],
+  "boundaries": {
+    "g1Paused": true,
+    "d4ThroughD7Pending": true,
+    "ownerPhoneWhitelistChanged": false,
+    "backendCodeChanged": false,
+    "androidCodeChanged": false,
+    "deployOrMergePerformed": false,
+    "photoControlVariantApproved": false
+  },
+  "previousReadinessSnapshot": {
+    "backendHead": "506d7523c61e86cfb703a9a0eaffae5d36787294",
+    "backendTree": "f57c9bed945281a44297a0f63eb0cc752a1fb328",
+    "androidBaseDocsCommit": "ff628f71a561841a5d0ae80fef3ea2b6ba2de549",
+    "androidBaseTree": "b5756c771322f110c91100e5244ac32da38c7626",
+    "suites": [
+      {
+        "file": "tests/photoControlSupport.sqlite.test.mjs",
+        "tests": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "logSha256": "6a2f247c3702bfcd7996161f05cf2981e58ac231b837eb81a97397e9cd4e523a"
+      },
+      {
+        "file": "tests/photoControlLifecycle.sqlite.test.mjs",
+        "tests": 6,
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "cancelled": 0,
+        "logSha256": "a6bb6004dde3a2eb571706f1f6b830b7a29084015665b0c6af56c8cbd4319143"
+      }
+    ],
+    "sourceSha256": {
+      "src/router.js": "f3204bd83d36a0c1d3fd6a270ee3ec73d7914d2702a58a08bebbc4a6c1f1f5ac",
+      "src/core/vehiclePhotoControlService.js": "b954c9b027f2922ad0a2b2b3c39ecf0aaac5d54de1b0e1fac373312d87364f58",
+      "src/core/vehiclePhotoControlRepository.js": "34d2a68505727493ac49a1c15683b80e8b231f891b8b0857b3918b84a107f808",
+      "src/core/staffAuthorization.js": "718f9bc12468eabed6aaf115fce95f131a9e0ec74e3e89cc3d4a7783699892f7",
+      "src/core/adminPhoneTestScope.js": "80e4027f2d2905ef54e5e31132304e780001c80f37b63d9033662fbab515f1c1",
+      "tests/photoControlSupport.sqlite.test.mjs": "b2da5c73c0f0a064b6ce97123a9ce0b89be0852485a67f09188c5ce946c3f86c",
+      "tests/photoControlLifecycle.sqlite.test.mjs": "56086aeaf8771944a8861d2d9c2bc246b7853c453762620a40c85a11738918e9"
+    }
+  },
+  "freshRecheck": true,
+  "sourceFilesChangedSincePreviousReadiness": [],
+  "approvedData": {
+    "makeCount": 142,
+    "modelRuleCount": 131,
+    "classifierApproved": true,
+    "referenceMayNotServeAsVehicleAllowlist": true,
+    "classifierRuntimeActivated": false,
+    "makeRef": "3f9fad6f1be32b54674bdfe7bd56317e5d3760dd",
+    "classifierRef": "412591d0d633e25ead8596cb8121ea703f12ca09",
+    "classifierSha256": "1e4955a6f7250f0e5183f99d105a5c5b235eaa51b7ee432e2f29ad2a69af4901"
+  },
+  "decisionRequired": {
+    "scope": "photo-control-UI-and-read-API-variant",
+    "recommended": "vehicle-catalog-and-photo-check-list",
+    "newGetPaths": [
+      "/v1/admin/vehicles",
+      "/v1/admin/vehicles/{vehicleId}/photo-checks"
+    ],
+    "alternative": "existing-registration-card-only",
+    "approved": false,
+    "reason": "Owner approved model rules/make composition, not either photo-control variant or new GET contracts."
+  }
+}

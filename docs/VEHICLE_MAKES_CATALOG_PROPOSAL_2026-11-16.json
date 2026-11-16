@@ -1,0 +1,1058 @@
+{
+  "schemaVersion": 1,
+  "version": "2026-11-16-approved-composition-3-belgee-tenet",
+  "status": "approved-composition",
+  "scope": "Approved reference composition of 142 makes; separately approved 131 model rules for comfort/business/minivan; economy excluded; runtime not activated",
+  "requestedMakes": [
+    "haval",
+    "chery"
+  ],
+  "makeCount": 142,
+  "groups": [
+    {
+      "id": "china_expanded",
+      "title": "Расширенный китайский блок",
+      "count": 64
+    },
+    {
+      "id": "regional_legacy",
+      "title": "Региональные и исторические марки",
+      "count": 16
+    },
+    {
+      "id": "japan_korea",
+      "title": "Японские и корейские марки",
+      "count": 18
+    },
+    {
+      "id": "europe",
+      "title": "Европейские марки",
+      "count": 29
+    },
+    {
+      "id": "america",
+      "title": "Американские марки",
+      "count": 15
+    }
+  ],
+  "makes": [
+    {
+      "id": "aion",
+      "name": "Aion",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "aito",
+      "name": "Aito",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "arcfox",
+      "name": "Arcfox",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "avatr",
+      "name": "Avatr",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "baic",
+      "name": "BAIC",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "baojun",
+      "name": "Baojun",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "baw",
+      "name": "BAW",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "bestune",
+      "name": "Bestune",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "brilliance",
+      "name": "Brilliance",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "byd",
+      "name": "BYD",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "changan",
+      "name": "Changan",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Чанган"
+      ]
+    },
+    {
+      "id": "chery",
+      "name": "Chery",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Черри",
+        "Чери",
+        "Cherry"
+      ]
+    },
+    {
+      "id": "deepal",
+      "name": "Deepal",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "denza",
+      "name": "Denza",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "dongfeng",
+      "name": "Dongfeng",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "exeed",
+      "name": "Exeed",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Эксид"
+      ]
+    },
+    {
+      "id": "exlantix",
+      "name": "Exlantix",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Экслантикс"
+      ]
+    },
+    {
+      "id": "fang_cheng_bao",
+      "name": "Fang Cheng Bao",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "faw",
+      "name": "FAW",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "firefly",
+      "name": "Firefly",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "forthing",
+      "name": "Forthing",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "foton",
+      "name": "Foton",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "gac",
+      "name": "GAC",
+      "group": "china_expanded",
+      "searchAliases": [
+        "ГАК"
+      ]
+    },
+    {
+      "id": "geely",
+      "name": "Geely",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Джили"
+      ]
+    },
+    {
+      "id": "great_wall",
+      "name": "Great Wall",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Грейт Волл"
+      ]
+    },
+    {
+      "id": "haima",
+      "name": "Haima",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "haval",
+      "name": "Haval",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Хавал",
+        "Хавейл"
+      ]
+    },
+    {
+      "id": "hongqi",
+      "name": "Hongqi",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Хончи"
+      ]
+    },
+    {
+      "id": "icar",
+      "name": "iCAR",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "im_motors",
+      "name": "IM Motors",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "jac",
+      "name": "JAC",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "jaecoo",
+      "name": "Jaecoo",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Джейку"
+      ]
+    },
+    {
+      "id": "jetour",
+      "name": "Jetour",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Джетур"
+      ]
+    },
+    {
+      "id": "jetta",
+      "name": "Jetta",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "kaiyi",
+      "name": "Kaiyi",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "leapmotor",
+      "name": "Leapmotor",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "li_auto",
+      "name": "Li Auto",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Lixiang",
+        "Лисян",
+        "Ли Сян"
+      ]
+    },
+    {
+      "id": "livan",
+      "name": "Livan",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "luxeed",
+      "name": "Luxeed",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "lynk_co",
+      "name": "Lynk & Co",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "maextro",
+      "name": "Maextro",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "maxus",
+      "name": "Maxus",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "neta",
+      "name": "Neta",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "nio",
+      "name": "NIO",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "omoda",
+      "name": "Omoda",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Омода"
+      ]
+    },
+    {
+      "id": "onvo",
+      "name": "Onvo",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "ora",
+      "name": "Ora",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "rox",
+      "name": "Rox",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "seres",
+      "name": "Seres",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "skywell",
+      "name": "Skywell",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "soueast",
+      "name": "Soueast",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "stelato",
+      "name": "Stelato",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "swm",
+      "name": "SWM",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "tank",
+      "name": "Tank",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Танк"
+      ]
+    },
+    {
+      "id": "venucia",
+      "name": "Venucia",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "vgv",
+      "name": "VGV",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "voyah",
+      "name": "Voyah",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Воя"
+      ]
+    },
+    {
+      "id": "wey",
+      "name": "Wey",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "wuling",
+      "name": "Wuling",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "xiaomi",
+      "name": "Xiaomi",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "xpeng",
+      "name": "Xpeng",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "yangwang",
+      "name": "Yangwang",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "zeekr",
+      "name": "Zeekr",
+      "group": "china_expanded",
+      "searchAliases": [
+        "Зикр"
+      ]
+    },
+    {
+      "id": "zotye",
+      "name": "Zotye",
+      "group": "china_expanded",
+      "searchAliases": []
+    },
+    {
+      "id": "aurus",
+      "name": "Aurus",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "belgee",
+      "name": "Belgee",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "daewoo",
+      "name": "Daewoo",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "evolute",
+      "name": "Evolute",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "lada",
+      "name": "LADA",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "Лада",
+        "ВАЗ",
+        "VAZ"
+      ]
+    },
+    {
+      "id": "ravon",
+      "name": "Ravon",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "sollers",
+      "name": "Sollers",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "tenet",
+      "name": "TENET",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "volga",
+      "name": "Volga",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "Волга"
+      ]
+    },
+    {
+      "id": "xcite",
+      "name": "Xcite",
+      "group": "regional_legacy",
+      "searchAliases": []
+    },
+    {
+      "id": "zaz",
+      "name": "ZAZ",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "ЗАЗ"
+      ]
+    },
+    {
+      "id": "gaz",
+      "name": "ГАЗ",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "GAZ"
+      ]
+    },
+    {
+      "id": "izh",
+      "name": "ИЖ",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "IZH"
+      ]
+    },
+    {
+      "id": "moskvich",
+      "name": "Москвич",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "Moskvich"
+      ]
+    },
+    {
+      "id": "tagaz",
+      "name": "ТагАЗ",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "TagAZ"
+      ]
+    },
+    {
+      "id": "uaz",
+      "name": "УАЗ",
+      "group": "regional_legacy",
+      "searchAliases": [
+        "UAZ"
+      ]
+    },
+    {
+      "id": "acura",
+      "name": "Acura",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "daihatsu",
+      "name": "Daihatsu",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "datsun",
+      "name": "Datsun",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "genesis",
+      "name": "Genesis",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "honda",
+      "name": "Honda",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "hyundai",
+      "name": "Hyundai",
+      "group": "japan_korea",
+      "searchAliases": [
+        "Хендэ",
+        "Хёндай"
+      ]
+    },
+    {
+      "id": "infiniti",
+      "name": "Infiniti",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "isuzu",
+      "name": "Isuzu",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "kgm",
+      "name": "KGM",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "kia",
+      "name": "Kia",
+      "group": "japan_korea",
+      "searchAliases": [
+        "Киа"
+      ]
+    },
+    {
+      "id": "lexus",
+      "name": "Lexus",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "mazda",
+      "name": "Mazda",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "mitsubishi",
+      "name": "Mitsubishi",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "nissan",
+      "name": "Nissan",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "ssangyong",
+      "name": "SsangYong",
+      "group": "japan_korea",
+      "searchAliases": [
+        "СсангЙонг",
+        "Ссанг Йонг"
+      ]
+    },
+    {
+      "id": "subaru",
+      "name": "Subaru",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "suzuki",
+      "name": "Suzuki",
+      "group": "japan_korea",
+      "searchAliases": []
+    },
+    {
+      "id": "toyota",
+      "name": "Toyota",
+      "group": "japan_korea",
+      "searchAliases": [
+        "Тойота"
+      ]
+    },
+    {
+      "id": "alfa_romeo",
+      "name": "Alfa Romeo",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "aston_martin",
+      "name": "Aston Martin",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "audi",
+      "name": "Audi",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "bentley",
+      "name": "Bentley",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "bmw",
+      "name": "BMW",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "citroen",
+      "name": "Citroën",
+      "group": "europe",
+      "searchAliases": [
+        "Citroen",
+        "Ситроен"
+      ]
+    },
+    {
+      "id": "cupra",
+      "name": "Cupra",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "dacia",
+      "name": "Dacia",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "ds_automobiles",
+      "name": "DS Automobiles",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "fiat",
+      "name": "Fiat",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "iveco",
+      "name": "Iveco",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "jaguar",
+      "name": "Jaguar",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "lancia",
+      "name": "Lancia",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "land_rover",
+      "name": "Land Rover",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "maserati",
+      "name": "Maserati",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "mercedes_benz",
+      "name": "Mercedes-Benz",
+      "group": "europe",
+      "searchAliases": [
+        "Mercedes",
+        "Мерседес",
+        "Мерседес-Бенц"
+      ]
+    },
+    {
+      "id": "mini",
+      "name": "MINI",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "opel",
+      "name": "Opel",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "peugeot",
+      "name": "Peugeot",
+      "group": "europe",
+      "searchAliases": [
+        "Пежо"
+      ]
+    },
+    {
+      "id": "porsche",
+      "name": "Porsche",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "renault",
+      "name": "Renault",
+      "group": "europe",
+      "searchAliases": [
+        "Рено"
+      ]
+    },
+    {
+      "id": "rolls_royce",
+      "name": "Rolls-Royce",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "rover",
+      "name": "Rover",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "saab",
+      "name": "Saab",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "seat",
+      "name": "SEAT",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "smart",
+      "name": "smart",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "volkswagen",
+      "name": "Volkswagen",
+      "group": "europe",
+      "searchAliases": [
+        "VW",
+        "Фольксваген"
+      ]
+    },
+    {
+      "id": "volvo",
+      "name": "Volvo",
+      "group": "europe",
+      "searchAliases": []
+    },
+    {
+      "id": "skoda",
+      "name": "Škoda",
+      "group": "europe",
+      "searchAliases": [
+        "Skoda",
+        "Шкода"
+      ]
+    },
+    {
+      "id": "buick",
+      "name": "Buick",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "cadillac",
+      "name": "Cadillac",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "chevrolet",
+      "name": "Chevrolet",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "chrysler",
+      "name": "Chrysler",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "dodge",
+      "name": "Dodge",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "fisker",
+      "name": "Fisker",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "ford",
+      "name": "Ford",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "gmc",
+      "name": "GMC",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "hummer",
+      "name": "Hummer",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "jeep",
+      "name": "Jeep",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "lincoln",
+      "name": "Lincoln",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "lucid",
+      "name": "Lucid",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "pontiac",
+      "name": "Pontiac",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "rivian",
+      "name": "Rivian",
+      "group": "america",
+      "searchAliases": []
+    },
+    {
+      "id": "tesla",
+      "name": "Tesla",
+      "group": "america",
+      "searchAliases": []
+    }
+  ],
+  "proposedBehavior": {
+    "searchAliasesOnly": true,
+    "rewriteExistingValues": false,
+    "preserveSeparateRelatedBrands": true,
+    "otherMakeManualEntry": true,
+    "assignVehicleClassByMake": false,
+    "grantAdmissionByMake": false
+  },
+  "implementationChanged": false,
+  "photoControlApiApprovalImplied": false,
+  "approval": {
+    "date": "2026-11-16",
+    "source": "explicit-owner-message",
+    "statement": "Исходные 116 строк и добавление Belgee/TENET добавить и утвердить",
+    "scope": "composition-of-142-makes: existing approved140 plus Belgee and TENET",
+    "previousApprovedCompositionCommit": "5e5f56db5e926a226a048993b47e970c4bf36c87",
+    "previousCompositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46",
+    "addedMakeIds": [
+      "belgee",
+      "tenet"
+    ],
+    "compositionSha256": "abc564d91b94a69e3c213f153fc2aa2179df74e992b226fe9f6a2e55178fd3b1",
+    "compositionHashFormat": "SHA256 UTF-8 compact JSON, keys sorted, records sorted by id, fields id/name/group, ensure_ascii=false"
+  },
+  "searchAliasesApproval": "not-included-in-composition-decision",
+  "proposedBehaviorApproval": "not-included-in-composition-decision",
+  "tariffPolicy": {
+    "status": "owner-confirmed-exclusion",
+    "date": "2026-11-16",
+    "ownerInstruction": "Эконом нужно исключить, так как этот тариф у нас исключен.",
+    "allowedVehicleClasses": [
+      "comfort",
+      "business",
+      "minivan"
+    ],
+    "excludedTariffNames": [
+      "econom",
+      "economy",
+      "Эконом"
+    ],
+    "classMayNotBeInferredFromMake": true,
+    "referenceMayNotServeAsVehicleAllowlist": true,
+    "vehicleModelEligibilityApproved": true,
+    "approvedModelClassMappingFound": true,
+    "modelRulesStatus": "approved-131-model-rules-with-conditions-not-activated",
+    "repositorySearchReceipt": "VEHICLE_TARIFF_CLASSIFICATION_SEARCH_2026-11-16.json",
+    "approvedModelRulesCount": 131,
+    "modelApprovalScope": "Only the 131 listed rules and their conditions; not all models of these142 makes",
+    "approvedModelClassifier": "https://github.com/lobanov0710-blip/uber-v3/blob/docs/vehicle-classifier-v1-20261116/docs/vehicle-classifier-v2-proposed.csv",
+    "runtimeChanged": false,
+    "approvedModelClassifierSha256": "1e4955a6f7250f0e5183f99d105a5c5b235eaa51b7ee432e2f29ad2a69af4901"
+  },
+  "approvalHistory": [
+    {
+      "date": "2026-11-16",
+      "source": "explicit-owner-message",
+      "statement": "Состав справочника утверждают.",
+      "scope": "composition-of-140-makes",
+      "approvedSourceCommit": "b5fa627ab31f5c8da65788d60e788f9ea1d824c5",
+      "compositionSha256": "20c245092f7299e051616d1ade2c71aab8bd233578c2f5c47edab721b54e6d46"
+    }
+  ],
+  "validation": {
+    "date": "2026-11-16",
+    "checkCount": 14,
+    "checks": {
+      "142_makes": "PASS",
+      "unique_valid_ids": "PASS",
+      "unique_names": "PASS",
+      "original140_exactly_preserved": "PASS",
+      "only_belgee_tenet_added": "PASS",
+      "groups_64_16_18_29_15": "PASS",
+      "no_unapproved_new_aliases": "PASS",
+      "search_values_unambiguous": "PASS",
+      "lengths_controls_and_formula_prefixes": "PASS",
+      "old_and_new_composition_hashes": "PASS",
+      "markdown_json_full_parity": "PASS",
+      "policy_economy_excluded_no_make_grants": "PASS",
+      "owner_approval_history": "PASS",
+      "131_approved_model_rules": "PASS"
+    },
+    "searchValueCount": 190,
+    "runtimeTestsRun": false
+  }
+}
