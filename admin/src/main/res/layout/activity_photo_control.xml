@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/photoRoot"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical"
+    android:saveEnabled="false" android:importantForAutofill="noExcludeDescendants">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/photoToolbar"
+        android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        app:title="@string/photo_title" app:navigationIcon="@drawable/ic_assignment_back"
+        app:navigationContentDescription="@string/photo_back" />
+    <ProgressBar android:id="@+id/photoProgress" style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent" android:layout_height="4dp" android:indeterminate="true" android:visibility="gone" />
+    <TextView android:id="@+id/photoMessage" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBodyMedium" android:accessibilityLiveRegion="polite" android:saveEnabled="false" />
+    <Spinner android:id="@+id/photoFilter" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp" android:saveEnabled="false" android:contentDescription="@string/photo_filter" />
+    <TextView android:id="@+id/photoHeading" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:layout_marginBottom="8dp" android:textAppearance="?attr/textAppearanceTitleLarge" android:saveEnabled="false" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true" android:saveEnabled="false">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <LinearLayout android:id="@+id/photoRows" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:saveEnabled="false" />
+            <LinearLayout android:id="@+id/photoForm" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:visibility="gone">
+                <TextView android:id="@+id/photoSummary" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodyLarge" android:saveEnabled="false" />
+                <Spinner android:id="@+id/photoKind" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:saveEnabled="false" android:contentDescription="@string/photo_kind_label" />
+                <Spinner android:id="@+id/photoMode" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:saveEnabled="false" android:contentDescription="@string/photo_mode_label" />
+                <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp" android:hint="@string/photo_reason" app:helperText="@string/photo_reason_help">
+                    <com.google.android.material.textfield.TextInputEditText android:id="@+id/photoReason"
+                        android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="96dp"
+                        android:gravity="top|start" android:inputType="textMultiLine|textNoSuggestions" android:maxLength="500"
+                        android:imeOptions="flagNoPersonalizedLearning" android:saveEnabled="false" android:importantForAutofill="no" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:id="@+id/photoPaging" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <Button android:id="@+id/photoPrevious" style="?attr/borderlessButtonStyle" android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/photo_previous" />
+        <Button android:id="@+id/photoNext" style="?attr/borderlessButtonStyle" android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/photo_next" />
+    </LinearLayout>
+    <Button android:id="@+id/photoNew" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp" android:text="@string/photo_new" android:visibility="gone" />
+    <Button android:id="@+id/photoConfirm" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp" android:text="@string/photo_prepare" android:visibility="gone" />
+    <Button android:id="@+id/photoRetry" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp" android:text="@string/photo_retry" android:visibility="gone" />
+    <Button android:id="@+id/photoReload" style="?attr/borderlessButtonStyle" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/photo_reload" />
+</LinearLayout>

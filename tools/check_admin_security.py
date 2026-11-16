@@ -51,6 +51,12 @@ class AdminSecurityConfigurationTests(unittest.TestCase):
             view = next(e for e in operational.iter() if e.get(A+'id') == '@+id/'+name)
             self.assertEqual('false', view.get(A+'saveEnabled'))
         self.assertIn('FLAG_SECURE', (JAVA / 'ui/AssignmentActivity.java').read_text())
+        photo = ET.parse(MAIN / 'res/layout/activity_photo_control.xml').getroot()
+        self.assertEqual('noExcludeDescendants', photo.get(A + 'importantForAutofill'))
+        for name in ('photoReason','photoSummary','photoRows','photoFilter','photoMessage','photoKind','photoMode'):
+            view = next(e for e in photo.iter() if e.get(A+'id') == '@+id/'+name)
+            self.assertEqual('false', view.get(A+'saveEnabled'))
+        self.assertIn('FLAG_SECURE', (JAVA / 'ui/PhotoControlActivity.java').read_text())
         net = ET.parse(MAIN / 'res/xml/network_security_config.xml').getroot()
         self.assertEqual('false', net.find('base-config').get('cleartextTrafficPermitted'))
         self.assertEqual(['system'], [e.get('src') for e in net.iter('certificates')])

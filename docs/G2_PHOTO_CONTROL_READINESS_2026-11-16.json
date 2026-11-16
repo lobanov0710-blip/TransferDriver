@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "date": "2026-11-16",
-  "status": "proposal-pending-owner-decision",
+  "status": "catalog-and-check-list-approved-implementation-started",
   "androidBaseDocsCommit": "3f9fad6f1be32b54674bdfe7bd56317e5d3760dd",
   "androidBaseTree": "abad017859ef912e4921f44295fc388a4ee4bf41",
   "backendHead": "412591d0d633e25ead8596cb8121ea703f12ca09",
@@ -52,7 +52,7 @@
     "backendCodeChanged": false,
     "androidCodeChanged": false,
     "deployOrMergePerformed": false,
-    "photoControlVariantApproved": false
+    "photoControlVariantApproved": true
   },
   "previousReadinessSnapshot": {
     "backendHead": "506d7523c61e86cfb703a9a0eaffae5d36787294",
@@ -109,7 +109,15 @@
       "/v1/admin/vehicles/{vehicleId}/photo-checks"
     ],
     "alternative": "existing-registration-card-only",
-    "approved": false,
+    "approved": true,
     "reason": "Owner approved model rules/make composition, not either photo-control variant or new GET contracts."
-  }
+  },
+  "ownerApproval": {
+    "date": "2026-11-16",
+    "statement": "Утверждают каталог и список",
+    "variant": "vehicle-catalog-and-photo-check-list",
+    "proposalCommit": "6f4e3caf0ce283bbcca086ccf9b9e18f48935796",
+    "scope": "Two proposed GET contracts and metadata/create UI with all stated checks and boundaries"
+  },
+  "validationScope": "Existing11-test readiness snapshot remains historical; new implementation verification is separate"
 }

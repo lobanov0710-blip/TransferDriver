@@ -376,3 +376,14 @@ status transitions, сохранение полей/13 примечаний/15 �
 receipt обновлён с сохранением истории. Это не новые GET/Android/HTTP/MFA E2E
 и не полная проверка обоих режимов на активной поездке. Исполняемый код
 не менялся; G1/D4–D7/OWNER-only scope остаются в прежних границах.
+
+
+## G2 фотоконтроль: вариант утверждён, реализация начата — 2026-11-16
+
+Ответ «Утверждают каталог и список» выбирает полный вариант с двумя GET,
+метаданными, scoped pagination и явным назначением через существующий POST.
+Рабочие ветки arch/g2-admin-photo-control-read (backend) и
+arch/g2-admin-photo-control-ui (Android). После API и тестов — Admin UI,
+JVM/native проверки и build/lint, затем независимый UI finish review/evidence.
+Предыдущие pending записи исторические; повтор выбора не требуется.
+G1paused/D4–D7pending, OWNER-only phone scope сохраняется. Merge/deploy отдельно.

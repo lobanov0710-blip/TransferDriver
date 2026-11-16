@@ -96,7 +96,7 @@ public final class AssignmentUiInstrumentationTest {
         assertTrue(store.save(AssignmentServer.session("original")));f.set(app,fake);
         try(ActivityScenario<AdminActivity> home=ActivityScenario.launch(AdminActivity.class)){
             long end=System.currentTimeMillis()+10000;boolean[] shown={false};do{home.onActivity(a->shown[0]=a.findViewById(R.id.profile).isShown());if(shown[0])break;Thread.sleep(40);}while(System.currentTimeMillis()<end);assertTrue(shown[0]);
-            home.onActivity(a->assertEquals(View.GONE,a.findViewById(R.id.assignments).getVisibility()));assertEquals(0,server.orders.get());
+            home.onActivity(a->{assertEquals(View.GONE,a.findViewById(R.id.assignments).getVisibility());assertEquals(View.GONE,a.findViewById(R.id.photoControl).getVisibility());});assertEquals(0,server.orders.get());
         }finally{f.set(app,old);fake.executor.shutdownNow();}
     }
     @Test public void reassignChoosesAnotherVehicleAndUsesOrderRevision()throws Exception {
