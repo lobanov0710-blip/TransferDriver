@@ -1,0 +1,51 @@
+<resources>
+    <string name="assignment_title">Назначения</string>
+    <string name="assignment_back">Назад</string>
+    <string name="assignment_filter">Фильтр заказов</string>
+    <string-array name="assignment_filters"><item>Все</item><item>Новые</item><item>Назначенные</item><item>В работе</item></string-array>
+    <string name="assignment_choose_order">Выберите заказ</string>
+    <string name="assignment_choose_pair">Выберите водителя и автомобиль</string>
+    <string name="assignment_form_title">Проверьте выбор</string>
+    <string name="assignment_empty_orders">Заказов по этому фильтру нет.</string>
+    <string name="assignment_empty_options">Для этого заказа нет связок водитель–автомобиль.</string>
+    <string name="assignment_order_row">%1$s → %2$s\n%3$s · %4$s\n%5$s</string>
+    <string name="assignment_option_row">%1$s\n%2$s %3$s · %4$s\n%5$s</string>
+    <string name="assignment_unknown">Не указано</string>
+    <string name="assignment_comfort">Комфорт</string><string name="assignment_business">Бизнес</string><string name="assignment_minivan">Минивэн</string>
+    <string name="assignment_new">Новый</string><string name="assignment_taken">Назначен</string><string name="assignment_in_progress">В работе</string>
+    <string name="assignment_on_line">На линии</string><string name="assignment_off_line">Не на линии</string>
+    <string name="assignment_reason">Причина назначения</string>
+    <string name="assignment_reason_help">Обязательна, до 500 символов. Выбор и ввод очищаются при уходе с экрана.</string>
+    <string name="assignment_reason_required">Укажите причину: от 1 до 500 символов.</string>
+    <string name="assignment_prepare">Назначить</string><string name="assignment_reassign">Переназначить</string>
+    <string name="assignment_confirm_title">Подтвердить назначение?</string>
+    <string name="assignment_reassign_title">Подтвердить переназначение?</string>
+    <string name="assignment_replace_notice">Текущее назначение будет заменено.</string>
+    <string name="assignment_confirm_reason">Причина: %1$s</string>
+    <string name="assignment_yes">Подтвердить</string><string name="assignment_no">Отмена</string>
+    <string name="assignment_previous">Предыдущая</string><string name="assignment_next">Следующая</string>
+    <string name="assignment_reload">Обновить список</string><string name="assignment_retry">Повторить исходное действие</string>
+    <string name="assignment_loading">Проверяем данные и права…</string>
+    <string name="assignment_saving">Ожидаем подтверждение сервера…</string>
+    <string name="assignment_updated">Данные обновлены с сервера.</string>
+    <string name="assignment_ack_reload">Сервер принял действие. Обновите список для проверки текущего состояния.</string>
+    <string name="assignment_uncertain_title">Неподтверждённое действие</string>
+    <string name="assignment_uncertain">Результат не подтверждён. Обновите данные; при повторе сохранятся исходные данные и причина.</string>
+    <string name="assignment_uncertain_checked">Список обновлён. Подтвердите повтор исходного действия для получения его результата.</string>
+    <string name="assignment_session">Сессия изменилась или истекла. Вернитесь на главный экран и проверьте вход.</string>
+    <string name="assignment_permission">Недостаточно прав или доступ ограничен. Вернитесь на главный экран для проверки доступа.</string>
+    <string name="assignment_conflict">Состояние заказа изменилось. Обновите список перед новым выбором.</string>
+    <string name="assignment_not_found">Заказ больше не доступен. Обновите список.</string>
+    <string name="assignment_failed">Не удалось проверить данные. Проверьте соединение и обновите список.</string>
+    <string name="assignment_blocked">Назначение недоступно. Обновите данные и проверьте условия допуска.</string>
+    <string name="assignment_driver_inactive">Аккаунт водителя неактивен.</string>
+    <string name="assignment_driver_approval">Анкета водителя не одобрена.</string>
+    <string name="assignment_identity">Проверка личности не подтверждена.</string>
+    <string name="assignment_vehicle">Автомобиль недоступен или не одобрен.</string>
+    <string name="assignment_photo">Требуется фотоконтроль автомобиля.</string>
+    <string name="assignment_vehicle_mismatch">На линии выбран другой автомобиль.</string>
+    <string name="assignment_order_blocked">Текущее состояние заказа не допускает это действие.</string>
+    <string name="assignment_unchanged">Эта связка уже назначена.</string>
+    <string name="assignment_original">Исходный выбор до отправки:</string>
+    <string name="assignment_current_state">Состояние заказа по последнему чтению: %1$s</string>
+</resources>

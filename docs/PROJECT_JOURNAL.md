@@ -3166,3 +3166,33 @@ Admin UI ручного назначения — следующий планов
 не объявляется готовым; новый APK не выпускался. Merge/deploy требуют отдельного
 решения. Финальные docs/journal commits [skip ci] не меняют проверенный код;
 результаты относятся к exact code source выше.
+
+
+### 2026-11-16 — Начат утверждённый Admin assignment UI
+
+После «Далее» начат следующий срез в отдельной arch/g2-admin-assignment-ui
+от Android checkpoint с утверждением A; backend PR#30/CI43854087967 уже PASS.
+Реализуются только утверждённые GET + существующие assign/reassign: native
+Material3 Java/XML, выбор заказа/driver+vehicle, обязательная причина и
+подтверждение человеком, cursor pagination и исходный Idempotency-Key.
+Новая private Activity не exported, FLAG_SECURE, Autofill/saved-state excluded,
+foreground-only snapshots/reason/uncertain action; onStop cancel/clear. Отдельный
+клиент не refresh/replay, привязан к account/access/refresh/scope и guard до
+HTTP dispatch. Каждый read/POST заново получает server me/permissions/MFA.
+OWNER phone scope не открывает operational UI/API. Backend/whitelist не меняются.
+
+Impeccable ordinary extension: launcher отсутствует, fallback раскрыт, прочитаны
+PRODUCT/native incumbent/new-work/craft-floor/Android guidance. Редизайн, новые
+палитра/шрифты/dependencies и concept tournament не вводятся: flow задан ТЗ/D3/A.
+Новый экран пока не проверен сборкой/runtime; тесты/native captures и fresh
+finish reviewer/documenter обязательны. G1paused/D4–D7pending/merge+deploy отдельно.
+
+Локальная проверка G2 Admin assignment UI: 15 JVM-тестов контракта/транспорта
+прошли на текущих исходниках (включая проверку ACK и прежнего ключа повтора).
+Компиляция выполнена прямым javac/JUnit с Android SDK и ранее проверенным
+публичным debug BuildConfig; это не сборка APK и не проверка вариантов Android.
+AAPT2 скомпилировал ресурсы; проверены 252 ссылки R.string/R.id без пропусков.
+Ранее выполненные security guards: Admin 5 и Driver 7 — PASS.
+Локальный Gradle недоступен из-за запрета service socket в sandbox; повторных
+обходов/ослабления sandbox нет. Полная сборка, lint, варианты и runtime
+проверяются отдельным GitHub Actions run; результат ещё не объявлен.

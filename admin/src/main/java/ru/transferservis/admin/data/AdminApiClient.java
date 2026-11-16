@@ -22,10 +22,24 @@ public final class AdminApiClient {
         Failure(int status) { this(status, ""); }
         Failure(int status,String code) { super("Admin request failed"); this.status = status; this.code=code; }
     }
-    public AdminApiClient() { client = AdminEndpointPolicy.clientBuilder().build(); }
+    public AdminApiClient() { this(null,null); }
     public void cancelPending() { client.dispatcher().cancelAll(); }
     // Package-private transport seam for offline protocol tests. The origin guard always runs first.
-    AdminApiClient(Interceptor transport) { client = AdminEndpointPolicy.clientBuilder().addInterceptor(transport).build(); }
+    AdminApiClient(Interceptor transport) { this(null,transport); }
+    AdminApiClient(Interceptor guard,Interceptor transport) {
+        OkHttpClient.Builder builder=AdminEndpointPolicy.clientBuilder();if(guard!=null)builder.addInterceptor(guard);if(transport!=null)builder.addInterceptor(transport);client=builder.build();
+    }
+    JsonObject assignmentMe(String token,long scope)throws IOException {return request("GET","v1/admin/me",null,token,null,scope);}
+    JsonObject assignmentOrders(String token,String status,String cursor,long scope)throws IOException {
+        if(!java.util.Arrays.asList("","new","taken","in_progress").contains(status))throw new IOException("Invalid filter");
+        String next=Assignments.cursor(cursor);return request("GET","v1/admin/orders?limit=20"+(status.isEmpty()?"":"&status="+status)+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);
+    }
+    JsonObject assignmentOptions(String token,String id,String cursor,long scope)throws IOException {
+        String next=Assignments.cursor(cursor);return request("GET","v1/admin/orders/"+Assignments.orderId(id)+"/assignment-options?limit=20"+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);
+    }
+    JsonObject assignmentCommand(String token,AssignmentAction action)throws IOException {
+        return request("POST","v1/admin/orders/"+Assignments.orderId(action.order.id)+(action.reassign?"/reassign":"/assign"),action.body(),token,action.key,action.scope);
+    }
     public JsonObject login(String login, String password) throws IOException {
         JsonObject body = new JsonObject(); body.addProperty("login", login); body.addProperty("password", password);
         return request("POST", "staff/login", body, null);
@@ -89,7 +103,10 @@ public final class AdminApiClient {
         return request(method,path,body,token,null);
     }
     private JsonObject request(String method, String path, JsonObject body, String token,String key) throws IOException {
-        Request.Builder builder = new Request.Builder().url(AdminEndpointPolicy.BASE_URL + path)
+        return request(method,path,body,token,key,null);
+    }
+    private JsonObject request(String method,String path,JsonObject body,String token,String key,Long scope)throws IOException {
+        Request.Builder builder = new Request.Builder().url(AdminEndpointPolicy.BASE_URL + path).tag(Long.class,scope)
                 .header("Accept", "application/json").header("Cache-Control", "no-store");
         if (token != null) builder.header("Authorization", "Bearer " + token);
         if(key!=null)builder.header("Idempotency-Key",key);

@@ -207,9 +207,12 @@ jobs:
             mkdir -p registration-evidence
             for image in profile-light profile-dark-large vehicle-light vehicle-dark-large availability-offline-light availability-online-light availability-offline-dark-large availability-online-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
             python3 tools/check_registration_evidence.py registration-evidence
-            touch registration-evidence/.validated
+            touch registration-evidence/.driver-validated
             ./gradlew :app:installDebug --no-daemon --stacktrace
-            ./gradlew :admin:connectedDebugAndroidTest --no-daemon --stacktrace
+            ./gradlew :admin:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
+            for image in assignment-orders-light assignment-options-light assignment-form-light assignment-confirm-light assignment-uncertain-light assignment-orders-dark-large assignment-options-dark-large assignment-form-dark-large assignment-confirm-dark-large assignment-uncertain-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/assignment-evidence/$image.png > registration-evidence/$image.png; done
+            python3 tools/check_assignment_evidence.py registration-evidence
+            touch registration-evidence/.validated
 
       - name: Verify executed JVM and Android test reports
         shell: bash
@@ -283,6 +286,18 @@ jobs:
                       'revokedGrantStopsPendingMutationBeforePostAndSensitiveReadBeforeTransport',
                       'delayedMutationUnauthorizedDoesNotRefreshOrUseAnotherAccount',
                       'resourceIsBoundToSnapshotAndNeverStoredInPreferences',
+                      'uncertainCommandIsNeverReplayedUntilExplicitSameKeyRetry',
+                      'revokedGrantOrOwnerMfaStopsMutationBeforePost',
+                      'cancelledQueuedActionCannotRunAfterSameSessionRebind',
+                      'delayedReadCannotExposeOldAccountOrEraseItsNextLogin',
+                      'command401And503HaveNoAutomaticRefreshOrReplay',
+                      'explicitConfirmationRequiresReasonAndUsesCurrentOrderRevision',
+                      'uncertainUiOnlyRetriesOriginalBodyAndKeyAfterExplicitConfirmation',
+                      'realLifecycleClearsReasonSnapshotsAndCancelsPendingOperation',
+                      'reassignChoosesAnotherVehicleAndUsesOrderRevision',
+                      'sameAccountReloginInvalidatesVisibleConfirmationWithoutErasingNextSession',
+                      'nativeAssignmentLight',
+                      'nativeAssignmentDarkLargeFont',
                       'moderationUiExplicitlyRetriesUncertainStartAndReturnsOneElementWithReason',
                       'reviewMaterialReasonAndProfileAreNotSavedAndBackgroundClearsThem',
                   ):
@@ -296,6 +311,15 @@ jobs:
         with:
           name: registration-synthetic-native-evidence
           path: registration-evidence/*.png
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload tested Admin debug APK
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: admin-assignment-debug-apk
+          path: admin/build/outputs/apk/debug/admin-debug.apk
           if-no-files-found: error
           retention-days: 7
 
