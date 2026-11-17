@@ -82,3 +82,9 @@ review без blockers. Точные code SHA/tree,318 JVM/99 native,69 backend 
 [verification receipt](docs/ADMIN_PHOTO_CONTROL_VERIFICATION_2026-11-16.json).
 Это не полная приёмка G2/live phone/release; G1paused, OWNER-only scope,
 D4–D7pending и запрет merge/deploy без отдельного решения сохраняются.
+
+
+Системный класс и правила справочника: актуальные решения владельца собраны
+в docs/VEHICLE_SYSTEM_CLASSIFICATION_CONTRACT_PROPOSAL_2026-11-16.md.
+Реализация серверного основания в backend Draft PR33 не подключает
+классификацию к работающей регистрации или допуску на линию.
