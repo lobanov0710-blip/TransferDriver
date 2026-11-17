@@ -14,7 +14,7 @@
     <string name="registration_loading">Загружаем анкету…</string>
     <string name="registration_note">Сохраните личные данные и каждый автомобиль отдельно. Несохранённый ввод очищается при уходе с экрана.</string>
     <string name="registration_empty">Автомобилей пока нет. Добавьте первый автомобиль.</string>
-    <string name="registration_vehicle_note">Изменение VIN, госномера или основания использования может потребовать повторной проверки.</string>
+    <string name="registration_vehicle_note">Изменение марки, модели или года выпуска требует повторной проверки. До её завершения автомобиль недоступен для выхода на линию. Если выполняете заказ, остановитесь в безопасном месте и свяжитесь с диспетчером для замены водителя.</string>
     <string name="registration_class">Класс автомобиля</string>
     <string name="registration_baggage">Багаж</string>
     <string name="registration_usage">Основание использования</string>
@@ -30,7 +30,14 @@
     <string name="registration_color_label">Цвет (необязательно)</string>
     <string name="registration_capacity_label">Пассажирских мест</string>
     <string name="registration_capacity_help">От 1 до 20</string>
-    <string-array name="registration_class_choices"><item>Выберите класс</item><item>Комфорт</item><item>Бизнес</item><item>Минивэн</item></string-array>
+    <string name="registration_model_year_label">Год выпуска</string>
+    <string name="registration_model_year_help">Год подтвердит администратор по документам</string>
+    <string name="registration_class_pending">Определит система после проверки</string>
+    <string name="registration_class_comfort">Комфорт</string>
+    <string name="registration_class_business">Бизнес</string>
+    <string name="registration_class_minivan">Минивэн</string>
+    <string name="registration_stop_required">Остановитесь в безопасном месте и сообщите диспетчеру местоположение. Диспетчер назначит другого водителя и проинформирует пассажира. Автомобиль направлен на проверку.</string>
+    <string name="registration_stop_uncertain">Изменение могло сохраниться. Если выполняете заказ, остановитесь в безопасном месте и свяжитесь с диспетчером. Обновите данные перед дальнейшими действиями.</string>
     <string-array name="registration_baggage_choices"><item>Выберите объём багажа</item><item>Меньше стандартного</item><item>Стандартный</item><item>Большой</item></string-array>
     <string-array name="registration_usage_choices"><item>Выберите основание</item><item>Собственность</item><item>Аренда</item><item>Иное</item></string-array>
 </resources>

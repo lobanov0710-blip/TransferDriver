@@ -35,7 +35,7 @@ public final class RegistrationActivity extends SecureActivity {
     private int generation;
     private long scope;
     private static final int[] INPUTS = {R.id.fullNameInput, R.id.birthDateInput, R.id.regionInput,
-            R.id.vinInput, R.id.plateInput, R.id.makeInput, R.id.modelInput, R.id.colorInput, R.id.capacityInput};
+            R.id.vinInput, R.id.plateInput, R.id.makeInput, R.id.modelInput, R.id.modelYearInput, R.id.colorInput, R.id.capacityInput};
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -77,13 +77,14 @@ public final class RegistrationActivity extends SecureActivity {
     private void back() { if (vehicleScreen && !busy) showOverview(); else finish(); }
     private void clear() {
         registration = null; editing = null; vehicleScreen = false; busy = false;
+        ((TextView) findViewById(R.id.registrationSystemClass)).setText(R.string.registration_class_pending);
         for (int id : INPUTS) { input(id).setText(""); layout(id).setError(null); }
         ((TextView) findViewById(R.id.registrationPhone)).setText("");
         ((TextView) findViewById(R.id.registrationMessage)).setText("");
         ((LinearLayout) findViewById(R.id.registrationVehicles)).removeAllViews();
         findViewById(R.id.registrationOverview).setVisibility(View.GONE);
         findViewById(R.id.registrationVehicleEditor).setVisibility(View.GONE);
-        for (int id : new int[]{R.id.classInput, R.id.baggageInput, R.id.usageInput}) ((Spinner) findViewById(id)).setSelection(0);
+        for (int id : new int[]{R.id.baggageInput, R.id.usageInput}) ((Spinner) findViewById(id)).setSelection(0);
     }
     private void reload() {
         if (!started || busy) return;
@@ -110,12 +111,12 @@ public final class RegistrationActivity extends SecureActivity {
         for (int id : new int[]{R.id.registrationSaveProfile, R.id.registrationAddVehicle, R.id.registrationSaveVehicle, R.id.registrationCancel})
             findViewById(id).setEnabled(!value);
         for (int id : INPUTS) input(id).setEnabled(!value);
-        for (int id : new int[]{R.id.classInput, R.id.baggageInput, R.id.usageInput}) findViewById(id).setEnabled(!value);
+        for (int id : new int[]{R.id.baggageInput, R.id.usageInput}) findViewById(id).setEnabled(!value);
     }
     private void showOverview() {
         if (registration == null || busy) return;
         vehicleScreen = false; editing = null;
-        for (int id : new int[]{R.id.vinInput, R.id.plateInput, R.id.makeInput, R.id.modelInput, R.id.colorInput, R.id.capacityInput}) input(id).setText("");
+        for (int id : new int[]{R.id.vinInput, R.id.plateInput, R.id.makeInput, R.id.modelInput, R.id.modelYearInput, R.id.colorInput, R.id.capacityInput}) input(id).setText("");
         findViewById(R.id.registrationOverview).setVisibility(View.VISIBLE);
         findViewById(R.id.registrationVehicleEditor).setVisibility(View.GONE);
         ((TextView) findViewById(R.id.registrationPhone)).setText(registration.phone);
@@ -147,12 +148,16 @@ public final class RegistrationActivity extends SecureActivity {
         editing = vehicle; vehicleScreen = true;
         findViewById(R.id.registrationOverview).setVisibility(View.GONE);
         findViewById(R.id.registrationVehicleEditor).setVisibility(View.VISIBLE);
-        int[] ids = {R.id.vinInput, R.id.plateInput, R.id.makeInput, R.id.modelInput, R.id.colorInput, R.id.capacityInput};
-        String[] values = vehicle == null ? new String[]{"", "", "", "", "", ""}
-                : new String[]{vehicle.vin, vehicle.plate, vehicle.make, vehicle.model, vehicle.color, Integer.toString(vehicle.capacity)};
+        int[] ids = {R.id.vinInput, R.id.plateInput, R.id.makeInput, R.id.modelInput, R.id.modelYearInput, R.id.colorInput, R.id.capacityInput};
+        String[] values = vehicle == null ? new String[]{"", "", "", "", "", "", ""}
+                : new String[]{vehicle.vin, vehicle.plate, vehicle.make, vehicle.model, vehicle.modelYear == null ? "" : vehicle.modelYear.toString(), vehicle.color, Integer.toString(vehicle.capacity)};
         boolean editable = vehicle == null || vehicle.editable();
         for (int i = 0; i < ids.length; i++) { input(ids[i]).setText(values[i]); input(ids[i]).setEnabled(editable); layout(ids[i]).setError(null); }
-        select(R.id.classInput, Registration.CLASSES, vehicle == null ? null : vehicle.vehicleClass, editable);
+        String serverClass = vehicle == null ? null : vehicle.vehicleClass;
+        int classLabel = "comfort".equals(serverClass) ? R.string.registration_class_comfort
+                : "business".equals(serverClass) ? R.string.registration_class_business
+                : "minivan".equals(serverClass) ? R.string.registration_class_minivan : R.string.registration_class_pending;
+        ((TextView) findViewById(R.id.registrationSystemClass)).setText(classLabel);
         select(R.id.baggageInput, Registration.BAGGAGE, vehicle == null ? null : vehicle.baggage, editable);
         select(R.id.usageInput, Registration.USAGE, vehicle == null ? null : vehicle.usage, editable);
         findViewById(R.id.registrationSaveVehicle).setEnabled(editable);
@@ -168,7 +173,7 @@ public final class RegistrationActivity extends SecureActivity {
         JsonObject body = new JsonObject(); body.addProperty("fullName", text(R.id.fullNameInput));
         body.addProperty("birthDate", date); body.addProperty("region", text(R.id.regionInput)); body.addProperty("expectedRevision", registration.revision);
         long expectedScope = scope;
-        mutate(expectedScope, () -> repository.saveProfile(expectedScope, body));
+        mutate(expectedScope, () -> { repository.saveProfile(expectedScope, body); return false; }, false);
     }
     private void saveVehicle() {
         if (registration == null || busy || (editing != null && !editing.editable())) return;
@@ -181,37 +186,47 @@ public final class RegistrationActivity extends SecureActivity {
         int seats = 0; try { seats = Integer.parseInt(text(R.id.capacityInput)); } catch (NumberFormatException ignored) { }
         boolean capacityValid = seats >= 1 && seats <= 20;
         layout(R.id.capacityInput).setError(capacityValid ? null : "От 1 до 20 пассажирских мест");
-        String vehicleClass = selected(R.id.classInput, Registration.CLASSES);
+        Integer modelYear = Registration.inputModelYear(text(R.id.modelYearInput));
+        layout(R.id.modelYearInput).setError(modelYear == null ? "Введите год выпуска" : null);
         String baggage = selected(R.id.baggageInput, Registration.BAGGAGE);
         String usage = selected(R.id.usageInput, Registration.USAGE);
-        if (!valid || !capacityValid || vehicleClass == null || baggage == null || usage == null) {
-            message("Проверьте поля и выберите класс, объём багажа и основание использования"); return;
+        if (!valid || !capacityValid || modelYear == null || baggage == null || usage == null) {
+            message("Проверьте поля и выберите объём багажа и основание использования"); return;
         }
         JsonObject body = new JsonObject();
         body.addProperty("vin", text(R.id.vinInput).toUpperCase(Locale.ROOT)); body.addProperty("plate", text(R.id.plateInput));
         body.addProperty("make", text(R.id.makeInput)); body.addProperty("model", text(R.id.modelInput));
         body.addProperty("color", text(R.id.colorInput)); body.addProperty("capacity", seats);
-        body.addProperty("vehicleClass", vehicleClass); body.addProperty("baggageCapacity", baggage); body.addProperty("usageBasis", usage);
+        body.addProperty("modelYear", modelYear); body.addProperty("baggageCapacity", baggage); body.addProperty("usageBasis", usage);
         String id = editing == null ? null : editing.id;
         if (editing != null) body.addProperty("expectedRevision", editing.revision);
         long expectedScope = scope;
-        mutate(expectedScope, () -> repository.saveVehicle(expectedScope, id, body));
+        boolean dataChanged = editing != null && (!editing.make.equals(text(R.id.makeInput))
+                || !editing.model.equals(text(R.id.modelInput)) || !modelYear.equals(editing.modelYear));
+        mutate(expectedScope, () -> repository.saveVehicle(expectedScope, id, body), dataChanged);
     }
-    private interface Mutation { void run() throws IOException; }
-    private void mutate(long expectedScope, Mutation action) {
+    private interface Mutation { boolean run() throws IOException; }
+    private void mutate(long expectedScope, Mutation action, boolean vehicleDataChanged) {
         if (!repository.current(scope)) { failed(new RegistrationRepository.Failure(401, ""), false); return; }
         setBusy(true); message("Сохраняем…"); int ticket = ++generation;
         executor.execute(() -> {
+            boolean stopRequired = false;
             try {
-                action.run();
+                stopRequired = action.run();
+                final boolean stopConfirmed = stopRequired;
                 // Re-read authoritative state; never synthesize an approval/status/revision.
                 Registration loaded = repository.load(expectedScope);
                 runOnUiThread(() -> {
                     if (!active(ticket)) return;
                     if (!repository.current(scope)) { failed(new RegistrationRepository.Failure(401, ""), true); return; }
-                    registration = loaded; setBusy(false); showOverview(); message("Сохранено. Статус анкеты: " + status(loaded.status));
+                    registration = loaded; setBusy(false); showOverview(); message(stopConfirmed ? getString(R.string.registration_stop_required) : "Сохранено. Статус анкеты: " + status(loaded.status));
                 });
-            } catch (IOException failure) { deliverFailure(ticket, failure, true); }
+            } catch (IOException failure) {
+                RegistrationRepository.Failure api = failure instanceof RegistrationRepository.Failure ? (RegistrationRepository.Failure) failure : null;
+                boolean uncertainStop = stopRequired || (vehicleDataChanged && (api == null || api.status >= 500));
+                if (uncertainStop) runOnUiThread(() -> { if (active(ticket)) { failed(failure, true); message(getString(R.string.registration_stop_uncertain)); } });
+                else deliverFailure(ticket, failure, true);
+            }
         });
     }
     private void deliverFailure(int ticket, IOException failure, boolean mutation) {

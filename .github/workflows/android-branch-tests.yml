@@ -205,7 +205,7 @@ jobs:
           script: |
             ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
             mkdir -p registration-evidence
-            for image in profile-light profile-dark-large vehicle-light vehicle-dark-large availability-offline-light availability-online-light availability-offline-dark-large availability-online-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
+            for image in profile-light profile-dark-large vehicle-light vehicle-dark-large vehicle-class-light vehicle-class-dark-large availability-offline-light availability-online-light availability-offline-dark-large availability-online-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
             python3 tools/check_registration_evidence.py registration-evidence
             touch registration-evidence/.driver-validated
             ./gradlew :app:installDebug --no-daemon --stacktrace
@@ -250,6 +250,9 @@ jobs:
                       'cancelledQueuedMutationCannotRunAfterRebind',
                       'uiSavesRevisionAndConfirmedPhoneCannotBeEdited',
                       'vehicleUiRequiresVinAndSavesSeparateVehicleRevision',
+                      'acknowledgedActiveVehicleChangeShowsSafeStopAndDispatcherInstructions',
+                      'lostVehicleChangeAcknowledgementShowsSafeStopWithoutReplay',
+                      'confirmedStopSurvivesFailedReadAfterAcknowledgement',
                       'ambiguousUiMutationRequiresReloadBeforeAnotherSave',
                       'backgroundClearsUnsavedInputAndSecureCaptureFlagRemains',
                       'nativeSyntheticScreensLight',
@@ -338,6 +341,15 @@ jobs:
         with:
           name: admin-photo-control-debug-apk
           path: admin/build/outputs/apk/debug/admin-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload tested Driver system-class debug APK
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: driver-system-class-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
 

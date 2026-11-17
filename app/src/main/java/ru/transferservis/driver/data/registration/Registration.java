@@ -74,6 +74,7 @@ public final class Registration {
     public static final class Vehicle {
         public final String id, vin, plate, make, model, color, vehicleClass, baggage, usage, status;
         public final int capacity;
+        public final Integer modelYear;
         public final long revision;
         private Vehicle(JsonObject row, String driver) throws IOException {
             id = required(row, "id", 80);
@@ -82,17 +83,27 @@ public final class Registration {
             if (!validVin(vin)) throw invalid();
             plate = required(row, "plate", 32); make = required(row, "make", 80);
             model = required(row, "model", 80); color = optional(row, "color", 80);
-            vehicleClass = choice(row, "vehicleClass", CLASSES); baggage = choice(row, "baggageCapacity", BAGGAGE);
+            if (!row.has("vehicleClass")) throw invalid();
+            vehicleClass = row.get("vehicleClass").isJsonNull() ? null : choice(row, "vehicleClass", CLASSES);
+            Long suppliedYear = !row.has("modelYear") || row.get("modelYear").isJsonNull() ? null : number(row, "modelYear");
+            if (suppliedYear != null && (suppliedYear < 1 || suppliedYear > 9999)) throw invalid();
+            modelYear = suppliedYear == null ? null : suppliedYear.intValue();
+            baggage = choice(row, "baggageCapacity", BAGGAGE);
             // Existing vehicles may predate the usage-basis field; let the editor complete it.
             String basis = optional(row, "usageBasis", 40);
             if (!basis.isEmpty() && !Arrays.asList(USAGE).contains(basis)) throw invalid();
             usage = basis;
             status = choice(row, "status", new String[]{"draft", "pending_review", "approved", "photo_check_required", "suspended", "rejected"});
+            if ("approved".equals(status) && vehicleClass == null) throw invalid();
             long seats = number(row, "capacity");
             if (seats < 1 || seats > 20) throw invalid();
             capacity = (int) seats; revision = revision(row);
         }
         public boolean editable() { return !"suspended".equals(status) && !"rejected".equals(status); }
+    }
+    public static Integer inputModelYear(String value) {
+        if (value == null || !value.matches("[1-9][0-9]{0,3}")) return null;
+        return Integer.valueOf(value);
     }
     public static boolean validVin(String value) { return value != null && value.trim().toUpperCase(Locale.ROOT).matches("[A-HJ-NPR-Z0-9]{17}"); }
     public static String displayDate(String iso) { return iso.isEmpty() ? "" : LocalDate.parse(iso).format(DISPLAY_DATE); }
