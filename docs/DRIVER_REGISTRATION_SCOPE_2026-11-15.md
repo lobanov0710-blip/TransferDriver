@@ -97,3 +97,8 @@ Production FLAG_SECURE сохранён; два новых PNG снимаютс�
 Trusted moderation/классификация текущим правилом, полный in_progress handoff,
 пассажирское уведомление и legacy admission guard не завершены этим срезом.
 Итоговые CI/PNG/APK/source hashes — в DRIVER_SYSTEM_CLASS_VERIFICATION_2026-11-17.json.
+
+
+Уточнение 2026-11-17: color обязателен для сохранения/готовности автомобиля,
+label «Цвет кузова». Историческая optional строка API выше относится к своему
+checkpoint; новое правило — REQUIRED_VEHICLE_COLOR_2026-11-17.md.

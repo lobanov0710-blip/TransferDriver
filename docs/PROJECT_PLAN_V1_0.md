@@ -565,3 +565,12 @@ migrations,10 native D1 workflows,audit0). Исправлен выявленны
 счётчик trigger changes; receipt отделяет verified source от docs commits.
 Далее trusted assessment/evidence/правила API и admission guards, затем Admin
 DTO/форма; новый APK ещё не создавался. Не путать pinning с допуском.
+
+
+## Уточнение владельца: обязательный цвет кузова — 2026-11-17
+
+[Правило](REQUIRED_VEHICLE_COLOR_2026-11-17.md) принято прямым указанием.
+Исправляются Driver validation/label и backend save/readiness; legacy null
+доступен для заполнения, без выдуманного цвета или массовой миграции.
+Проверки в отдельных fix-ветках; финальный CI будет записан в журнал/receipt.
+Это целевое исправление поля, не завершение следующего Admin classification.

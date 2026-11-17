@@ -344,11 +344,11 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Upload tested Driver system-class debug APK
+      - name: Upload tested Driver required-color debug APK
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: driver-system-class-debug-apk
+          name: driver-required-color-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
