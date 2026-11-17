@@ -4333,3 +4333,54 @@ VEHICLE_CLASSIFICATION_VERSION_VERIFICATION_2026-11-17.json. Последующ�
 линии/поездки/Android. Ни snapshot candidate, ни CSV не дают допуска на линию.
 Не выполнялись seed, remote migration, реальные документы, merge/deploy.
 Полный обзор электрических исполнений и интеграция остаются дальнейшей работой.
+
+
+## Следующий срез: schema и чтение регистрации — 2026-11-17
+
+По поручению «Далее» подготовлен backend Draft PR34
+https://github.com/lobanov0710-blip/uber-v3/pull/34 в отдельной ветке
+arch/g2-classifier-registration-schema. Миграция0020 поддерживает реальный
+null-класс, model_year и powertrain без присвоения фиктивных значений. Старые
+классы и связи сохраняются через DROP/ADD COLUMN без DROP TABLE vehicles.
+Triggers запрещают approved при null-классе. Внутренний insert draft и
+owner-bound metadata read подготовлены, GET Driver me включает новые поля.
+
+8 actual SQLite/HTTP cases PASS,20 migration smoke PASS. На заполненной19
+базе проверены все таблицы/связи/история и rollback. Первый расширенный тест
+ошибочно вызвал новую read-функцию до миграции; проверка исправлена на прямое
+сравнение старых данных и чтение новой функцией после0020. Существующие
+registration и version-store tests PASS; локальный полный npm test остановлен
+на известном CLI spawnSync EPERM, не ослаблен. Native D1 harness проверяет
+реальный populated upgrade и отдельный откат намеренно ошибочной миграции.
+Первый run44055638704 отменён после добавления rollback case; final source
+0de3ffd83e9adebc1c2409bce9f0a2082733c3bd / tree1759e9b423af9e7693e0a2d7a6c61f4e668bb345,
+CI44055860164 ещё выполняется. Local/remote source tree parity проверена.
+
+Важно: публичные POST/PATCH всё ещё требуют прежний vehicleClass и не
+принимают modelYear. Старый Android DTO не готов к null. Это storage/read
+срез, не полная интеграция классификации/верификации документов/линии/поездки.
+Не выполнялись remote migration, merge/deploy, seed и реальные документы.
+Обзор BEV121 остаётся незавершённым, G1paused.
+
+
+## Schema/чтение регистрации: итоговый CI PASS — 2026-11-17
+
+Source0de3ffd83e9adebc1c2409bce9f0a2082733c3bd,
+tree1759e9b423af9e7693e0a2d7a6c61f4e668bb345,
+CI44055860164/job133944966595 SUCCESS.72 npm test scripts,8 новых actual
+SQLite/HTTP cases,20 migrations,12 D3 preflight,6 reference tests,8 native
+D1 workflows,6 protected CLI scenarios,audit0 и Worker dry-run PASS.
+Native D1 подтвердил сохранность populated upgrade19→20, rollback намеренной
+ошибки, null draft, owner-bound read и запрет approved без класса.
+Первый run44055638704 отменён после добавления rollback проверки, не считается
+финальным PASS. Локальный EPERM не обходился; полный CLI проверил CI.
+
+Backend Draft PR34, local/remote tree parity проверена. Точные hashes и
+границы в VEHICLE_REGISTRATION_SCHEMA_VERIFICATION_2026-11-17.json.
+Следующие изменения только docs [skip ci], проверенный code SHA не подменять.
+Публичные POST/PATCH сохраняют прежний driver-supplied vehicleClass и не
+принимают modelYear; Android DTO ещё не готов к null. Реализованы только
+storage/read prerequisite, не полная классификация, не проверка документов,
+не line/trip guards. Не включать null drafts через старые клиенты.
+Нет seed/полного BEV обзора/remote migration/merge/deploy/реальных данных,
+G1paused. Далее согласованно обновить API записи/клиент и trusted moderation.
