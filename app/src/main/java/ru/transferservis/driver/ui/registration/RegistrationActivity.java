@@ -182,7 +182,7 @@ public final class RegistrationActivity extends SecureActivity {
         valid = check(R.id.plateInput, 1, 32, "Введите госномер") && valid;
         valid = check(R.id.makeInput, 1, 80, "Введите марку") && valid;
         valid = check(R.id.modelInput, 1, 80, "Введите модель") && valid;
-        valid = check(R.id.colorInput, 0, 80, "Не более 80 символов") && valid;
+        valid = check(R.id.colorInput, 1, 80, "Укажите цвет кузова: от 1 до 80 символов") && valid;
         int seats = 0; try { seats = Integer.parseInt(text(R.id.capacityInput)); } catch (NumberFormatException ignored) { }
         boolean capacityValid = seats >= 1 && seats <= 20;
         layout(R.id.capacityInput).setError(capacityValid ? null : "От 1 до 20 пассажирских мест");
