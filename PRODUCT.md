@@ -94,3 +94,12 @@ Backend PR33/34 реализовали version store и nullable schema/read. С
 Это не завершение trusted Admin проверки/системной классификации, legacy year
 guard или полного in_progress handoff. Статус проверок и source provenance —
 в docs/DRIVER_SYSTEM_CLASS_VERIFICATION_2026-11-17.json. Выпуск пока не готов.
+
+
+Следующий Admin/system-class этап находится на согласовании конкретного
+контракта прав/версий, см. docs/ADMIN_VEHICLE_CLASSIFICATION_NEXT_STEP_2026-11-17.md.
+Новые operations/grants/seed не включены; бизнес-решения владельца не подменены.
+
+Контракт утверждён 2026-11-17: новые права правил/исключений только OWNER,
+диспетчерам запрещены. Фиксация версии при первом сохранении также утверждена.
+Реализация поэтапная, не полная готовность API или разрешение развёртывания.

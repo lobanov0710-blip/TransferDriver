@@ -538,3 +538,22 @@ D4–D7pending; remote migration/seed/merge/deploy не выполнялись.
 в light и dark/font1.3. Все hashes, точные источники/границы и результаты —
 DRIVER_SYSTEM_CLASS_VERIFICATION_2026-11-17.json. Следующий шаг остаётся
 trusted Admin classification; это не приёмка полного классификатора/G2/live.
+
+
+## Admin trusted classification: проект следующего контракта — 2026-11-17
+
+После проверенного Driver PR14/backend PR35 подготовлен отдельный
+[следующий шаг](ADMIN_VEHICLE_CLASSIFICATION_NEXT_STEP_2026-11-17.md) и backend
+OpenAPI/аудит8 блокеров. Предложение — явные новые права на справочник/исключение
+и фиксация версии при первом сохранении машины. Эти параметры ещё не выбраны
+владельцем; требуются его явное решение и согласованный контракт по AGENTS п.3.
+Новый runtime код/права/DDL до ответа не вводятся. Бизнес-правила, G1paused
+и D4–D7pending сохранены. Baseline regression/security и JSON Schema validation
+PASS; это docs-only подготовка, не сборка нового Admin или приёмка API.
+
+
+Контракт PR36 утверждён владельцем 2026-11-17 с поправкой: новые полномочия
+правил/исключений диспетчерам не выдавать; сервер обязан их отклонять даже при
+ошибочной записи. Версия при первом сохранении принята. Pending approval выше
+теперь исторический. Начат отдельный binding/OWNER-only prerequisite; trusted
+assessment/admission/Admin UI остаются следующими частями реализации.
