@@ -574,3 +574,10 @@ DTO/форма; новый APK ещё не создавался. Не путат
 доступен для заполнения, без выдуманного цвета или массовой миграции.
 Проверки в отдельных fix-ветках; финальный CI будет записан в журнал/receipt.
 Это целевое исправление поля, не завершение следующего Admin classification.
+
+
+Итог обязательного цвета: Driver CI44089001617/backend44088974938 SUCCESS.
+327 JVM/102 native, обе apps build/lint3 variants,74 backend scripts и
+requiredColor на native D1 PASS.30 PNG сверены с GitHub archive digest/source,
+2 кадра с новой подписью осмотрены. Факты/границы в REQUIRED_VEHICLE_COLOR_VERIFICATION_2026-11-17.json.
+Следующие Admin classification части не объявляются завершёнными этим fix.

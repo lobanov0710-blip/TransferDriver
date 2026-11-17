@@ -4591,3 +4591,39 @@ driverPrivateUploadService; один Android read выполнен в backend cw
 прочитан по правильному пути. До CI исправлено неверное ожидание строки ошибки
 в native test (фактическая ошибка формы «Проверьте поля...»). Assertions не
 ослаблялись. G1paused,D4–D7pending; нет seed/real data/remote migration/merge/deploy.
+
+
+## Обязательный цвет: Android и backend CI PASS — 2026-11-17
+
+Android sourcee5712c969049fb6670fd64863db189f3d32eb038,
+tree0dc4e4c6ebee281e9aba2709e24aa82860971b65, CI44089001617/
+job134058903623 SUCCESS.327 JVM executions (Driver51×3,Admin58×3),102
+native (41+61), обе apps build/lint debug/staging/release, security8/5,
+endpoint/signing/AppCheck gates PASS. Existing native create/edit case
+реально исполнил проверки обязательного цвета: blank/whitespace/очистка
+поля не отправляют POST/PATCH; цвет присутствует в валидном body. DTO
+сохраняет чтение legacy null для исправления. Первый CI run успешен.
+
+Backend sourcea8a67fd9aaaf32359aa04370ebece424709d87df, CI44088974938/
+job134058811280 SUCCESS:74 scripts,10 actual write HTTP cases (2 новых),
+17 binding regressions,21 migrations,12 preflight,6 reference,10 native
+D1 workflows с requiredColor,6 protected CLI,audit0,Worker dry-run PASS.
+Readiness не считает машину без цвета завершённой и возвращает missingColor.
+
+Artifacts строго от этого Android source/run: nativePNG14331817179 и
+DriverAPK14331382948. Native ZIP скачан, digest6b8e47562d6c0d3ed1ed03ede9a5a1d0437748b1dbdc8576eb6a72af3593453e
+совпал с GitHub, safe extraction/ZIP CRC PASS, hashes всех30 PNG совпали с CI.
+Primary agent осмотрел2 vehicle-class light/dark font1.3 кадра: «Цвет кузова»
+читается без optional и без обрезки целевой подписи. Это не independent review
+всех30. APK только перечислен по metadata с source/digest, локально не
+скачивался; его phone-upgrade signature/live Driver не проверялись. Synthetic
+Firebase/debug signing не выдаются за release. Raw signed download URLs
+не выводились/не записывались; использован file_id загрузчика.
+
+Draft PR16 Driver/PR38 backend, точные counts/source/artifact hashes и границы
+в REQUIRED_VEHICLE_COLOR_VERIFICATION_2026-11-17.json и backend API receipt.
+Далее docs-only checkpoint не меняет verified code SHA. Требование владельца
+зафиксировано в плане/PRODUCT/scope и журналах. Нет новой миграции, дефолтного
+цвета, палитры, массового снятия допуска, изменения класса/pinned rule/
+OWNER-only прав. Это целевое исправление поля, не полное внедрение Admin
+classification. G1paused,D4–D7pending, remote migration/merge/deploy нет.

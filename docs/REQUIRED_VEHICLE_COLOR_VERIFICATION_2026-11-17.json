@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-17",
+  "scope": "required-body-color-driver-and-backend",
+  "status": "ci-and-native-evidence-verified",
+  "ownerDecision": "Цвет кузова обязателен.",
+  "sourceCommit": "e5712c969049fb6670fd64863db189f3d32eb038",
+  "sourceTree": "0dc4e4c6ebee281e9aba2709e24aa82860971b65",
+  "workflowRun": 44089001617,
+  "workflowJob": 134058903623,
+  "conclusion": "success",
+  "checks": {
+    "testExecutions": {
+      "JVM": 51,
+      "STAGING_JVM": 51,
+      "RELEASE_JVM": 51,
+      "ANDROID": 41,
+      "ADMIN_DEBUG_JVM": 58,
+      "ADMIN_STAGING_JVM": 58,
+      "ADMIN_RELEASE_JVM": 58,
+      "ADMIN_ANDROID": 61
+    },
+    "totalJvmExecutions": 327,
+    "totalNativeExecutions": 102,
+    "bothAppsBuildAndLintThreeVariants": true,
+    "driverSecurityGuards": 8,
+    "adminSecurityGuards": 5,
+    "nativePngCount": 30,
+    "downloadedNativeArchiveDigestMatched": true,
+    "allPngHashesMatchCi": true,
+    "extendedNativeCase": "vehicleUiRequiresVinAndSavesSeparateVehicleRevision",
+    "requiredColorAssertions": [
+      "blank creation blocked without POST",
+      "whitespace creation blocked without POST",
+      "blank edit blocked without PATCH",
+      "valid color included in create/edit body"
+    ]
+  },
+  "backend": {
+    "sourceCommit": "a8a67fd9aaaf32359aa04370ebece424709d87df",
+    "sourceTree": "a560708c194fd1f9639f7d8d81751f94cfc89745",
+    "workflowRun": 44088974938,
+    "workflowJob": 134058811280,
+    "conclusion": "success",
+    "npmTestScripts": 74,
+    "driverWriteHttpCases": 10,
+    "newColorHttpCases": 2,
+    "bindingRegressions": 17,
+    "nativeD1Workflows": 10,
+    "requiredColorVerifiedNatively": true,
+    "dependencyAuditVulnerabilities": 0
+  },
+  "artifacts": [
+    {
+      "id": 14331817179,
+      "name": "registration-synthetic-native-evidence",
+      "digest": "sha256:6b8e47562d6c0d3ed1ed03ede9a5a1d0437748b1dbdc8576eb6a72af3593453e",
+      "bytes": 3452884,
+      "sourceCommit": "e5712c969049fb6670fd64863db189f3d32eb038",
+      "expiresAt": "2026-11-24T13:16:26Z"
+    },
+    {
+      "id": 14331382948,
+      "name": "driver-required-color-debug-apk",
+      "digest": "sha256:832b238cb626156fefca6c31b8622c7699a26a0ede4f3af0422cd5fcfe8c15d0",
+      "bytes": 9089985,
+      "sourceCommit": "e5712c969049fb6670fd64863db189f3d32eb038",
+      "expiresAt": "2026-11-24T13:16:30Z"
+    },
+    {
+      "id": 14330509906,
+      "name": "admin-photo-control-debug-apk",
+      "digest": "sha256:c2b4b15b1bad9c8302f09c302deb65cc1af23a59a0f897309cde2096879680c1",
+      "bytes": 6552029,
+      "sourceCommit": "e5712c969049fb6670fd64863db189f3d32eb038",
+      "expiresAt": "2026-11-24T13:16:28Z"
+    }
+  ],
+  "pngSha256": {
+    "vehicle-light.png": "848cf1f48a43f5c4e8a92d1d1f27a04953b0bba6734f8eac90b07b688e3d0520",
+    "assignment-form-light.png": "17fc4894220b58950600b4e2054add82a5d0a80d4443a3aa782443f37bcbc836",
+    "photo-vehicles-dark-large.png": "cb6b8a84ee148f4710de576eddcf613c8cd05bc4e44e45a6ff28b7099fc00d16",
+    "photo-confirm-light.png": "291381cc34cb691fe127665d78eb015047c5c43ea91a745fb14544f9017b3578",
+    "photo-checks-dark-large.png": "c7b233a86f4c2e53e35b810d75f2b11739851d22b3e7de7d764553d7ff688680",
+    "photo-form-light.png": "5d77583d5cb1f6c425bf3645da9b37613d406a5050cc5c91ffd752f5626e73f4",
+    "assignment-confirm-light.png": "eadae776c4b2d5664d408400a41af5d38c7e2427a1407946da4b0855b5cef0a8",
+    "assignment-form-dark-large.png": "41633e3419ae91c93af693ef26080d92a54f3b14628cfde7b232569c8fc1c125",
+    "photo-checks-light.png": "8694f83536b74c68c94a4144fad14f8cb2312e5ee1156274d3d591c0a2f93b56",
+    "photo-vehicles-light.png": "95aafdb0a5c86cf18d6acdafa4d0c82b52a163b20e2f1233e3413cec4bb76f1e",
+    "photo-form-dark-large.png": "2f138deda89331f0ac17148d3c3eae4cfde16c2813d9531c840b23a94ed38c45",
+    "profile-dark-large.png": "145a1ec7691158f2984b13c1633a9f7fdd5786ca2962c1d78963cc17964dd9b7",
+    "assignment-uncertain-light.png": "e77b3a5c7e1d4010baa0ab92e0ac2a9dba292e0f53d9a25279fc2b383b5c4a51",
+    "assignment-uncertain-dark-large.png": "88b922c2d4ade90d7652dfe2c20cbb697c9c9176b79560fcc29b2451b70c8138",
+    "vehicle-class-light.png": "515bb5807a09e640f13a97f57997e3f58d1345d5ca14361d269f3a0064e6cc27",
+    "vehicle-dark-large.png": "452b45d0a04e1220905c5e9f6cec46921aa46a340299ecf1c4ff3b19bed00a47",
+    "assignment-options-light.png": "cb616538ddb182a375f5e6fabfa25ab5fd2037e64d5488b85a338c9ed940a7ce",
+    "assignment-orders-dark-large.png": "ca4f19846f08636511ef9e17efa1af9e8b3724326265f0f1d376be0de21e31c6",
+    "photo-uncertain-light.png": "3a7eae8f0a8cc9a3252a900f438080803b873582cdcc7311a376a580bf5c89da",
+    "availability-online-light.png": "c9b51f6563b723b775d58ab666ab5d927c1215b13497ee8ac5775afc2297e7ef",
+    "vehicle-class-dark-large.png": "cd755f666cef144f4724a5d776b12a87d4c8396ed3cc6a25427256996a889b26",
+    "assignment-confirm-dark-large.png": "13ed6ed682d37ca00fb978d59da2f51288111c991ac8784902ca81da95aced86",
+    "assignment-orders-light.png": "dadcab38f174291f89f1a28507a8f45e0767809e508a00bf9a3cf552b48d2517",
+    "profile-light.png": "75c5c750305dd3347d0af2654a6d7ea05195cf291803753275469d624f1c97af",
+    "availability-online-dark-large.png": "66e17cf8e68e7860fc1d65bd88f174ff8e88793dce6ef170f1aae777abe15a9e",
+    "assignment-options-dark-large.png": "f4e68448cb3d63b861f3461f9e8290faa4d56ddf8ca3ceab44cb41433aac63e7",
+    "availability-offline-dark-large.png": "e57692a8c1d274de78f28ea9d7312e9380d03cb708a2e48774ea15436238df87",
+    "photo-uncertain-dark-large.png": "01c9ee0a84fd8fbc6727d02c76747c039e65a7a2801624cc8bb15732ee41571b",
+    "photo-confirm-dark-large.png": "f0bd0f4f9ee1420bbc4cd38f3e127c3d9be4434ddfd5e55a0fa09e3dcee233c1",
+    "availability-offline-light.png": "8dfdc59bd2d131df3e7c4b6fc52793781cc8d01f9f950d8556bfd0b355941a20"
+  },
+  "sourceSha256": {
+    ".github/workflows/android-branch-tests.yml": "fc81dc84ebc2774a7bd09c77d9bba9c3068dee20f467159f1177f40a6491a9cf",
+    "app/src/androidTest/java/ru/transferservis/driver/data/registration/RegistrationInstrumentationTest.java": "44e00e027a248f6a1c2e6955a163208e178c49eae064878338a53528b408f5f9",
+    "app/src/main/java/ru/transferservis/driver/ui/registration/RegistrationActivity.java": "14425f0d227f48a35111814b23e8317c95e4ab56a0b9c3d9cac8a5467de40dce",
+    "app/src/main/res/values/registration_strings.xml": "c2ec0cc2b84347dbceb56fbf1763000b3be4156b5e984f781e38543349c32003"
+  },
+  "visualReview": {
+    "reviewer": "primary agent own inspection",
+    "files": [
+      "vehicle-class-light.png",
+      "vehicle-class-dark-large.png"
+    ],
+    "result": "New Цвет кузова label readable in light and dark/font1.3; optional qualifier absent, no clipping/overlap of target label.",
+    "allThirtyImagesVisuallyReviewed": false
+  },
+  "boundaries": {
+    "apkDownloadedLocally": false,
+    "apkSignatureOnOwnerPhoneVerified": false,
+    "liveDriverPhoneE2ePerformed": false,
+    "ciApkHasSyntheticFirebase": true,
+    "newMigrationCreated": false,
+    "legacyColorBackfilled": false,
+    "newPaletteIntroduced": false,
+    "classificationRuleChanged": false,
+    "dispatcherRightsChanged": false,
+    "wholeClassificationCompleted": false,
+    "mergePerformed": false,
+    "deployPerformed": false,
+    "g1Paused": true
+  },
+  "limits": [
+    "Legacy missing color remains readable for correction; save/readiness require a valid nonblank color.",
+    "Existing incomplete extra vehicle does not become a completed vehicle; existing multi-vehicle readiness behavior retained.",
+    "APK is CI debug with synthetic Firebase/ephemeral signing, not a live/release build.",
+    "Later documentation-only commits do not change verified code SHA."
+  ]
+}
