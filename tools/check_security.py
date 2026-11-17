@@ -11,6 +11,18 @@ A = '{http://schemas.android.com/apk/res/android}'
 
 
 class SecurityConfigurationTests(unittest.TestCase):
+    def test_vehicle_class_is_read_only_and_year_is_not_saved(self):
+        layout = ET.parse(MAIN / 'res/layout/activity_registration.xml').getroot()
+        views = {v.get(A + 'id'): v for v in layout.iter() if v.get(A + 'id')}
+        self.assertNotIn('@+id/classInput', views)
+        self.assertEqual('TextView', views['@+id/registrationSystemClass'].tag)
+        year = views['@+id/modelYearInput']
+        self.assertEqual('false', year.get(A + 'saveEnabled'))
+        self.assertEqual('noExcludeDescendants', year.get(A + 'importantForAutofill'))
+        activity = (JAVA / 'ui/registration/RegistrationActivity.java').read_text()
+        self.assertNotIn('body.addProperty("vehicleClass"', activity)
+        self.assertIn('body.addProperty("modelYear"', activity)
+
     def test_backup_and_device_transfer_exclude_all_storage(self):
         required = {'root', 'file', 'database', 'sharedpref', 'external',
                     'device_root', 'device_file', 'device_database', 'device_sharedpref'}

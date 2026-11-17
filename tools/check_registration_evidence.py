@@ -7,6 +7,7 @@ import sys
 import zlib
 
 DRIVER_NAMES = ("profile-light", "profile-dark-large", "vehicle-light", "vehicle-dark-large",
+             "vehicle-class-light", "vehicle-class-dark-large",
              "availability-offline-light", "availability-online-light",
              "availability-offline-dark-large", "availability-online-dark-large")
 

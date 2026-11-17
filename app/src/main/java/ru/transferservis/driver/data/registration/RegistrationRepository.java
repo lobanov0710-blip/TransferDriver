@@ -72,14 +72,20 @@ public final class RegistrationRepository {
         if (!result.has("ok") || !result.get("ok").isJsonPrimitive() || !result.get("ok").getAsJsonPrimitive().isBoolean()
                 || !result.get("ok").getAsBoolean()) throw new IOException("Invalid availability response");
     }
-    public void saveVehicle(long scope, String id, JsonObject body) throws IOException {
+    public boolean saveVehicle(long scope, String id, JsonObject body) throws IOException {
         if (id != null && !id.matches("vehicle_[0-9a-fA-F-]{36}")) throw new IOException("Invalid vehicle ID");
-        mutate(id == null ? "POST" : "PATCH", "v1/driver/vehicles" + (id == null ? "" : "/" + id), body, scope);
+        JsonObject result = mutate(id == null ? "POST" : "PATCH", "v1/driver/vehicles" + (id == null ? "" : "/" + id), body, scope);
+        if (!result.has("requiresDispatcherReassignment")) return false;
+        if (!result.get("requiresDispatcherReassignment").isJsonPrimitive()
+                || !result.get("requiresDispatcherReassignment").getAsJsonPrimitive().isBoolean())
+            throw new IOException("Invalid mutation response");
+        return result.get("requiresDispatcherReassignment").getAsBoolean();
     }
-    private void mutate(String method, String path, JsonObject body, long scope) throws IOException {
+    private JsonObject mutate(String method, String path, JsonObject body, long scope) throws IOException {
         JsonObject result = request(method, path, body, requireCurrent(scope), scope);
         if (!result.has("ok") || !result.get("ok").isJsonPrimitive() || !result.get("ok").getAsJsonPrimitive().isBoolean()
                 || !result.get("ok").getAsBoolean()) throw new IOException("Invalid mutation response");
+        return result;
     }
     private synchronized DriverSession requireCurrent(long scope) throws IOException {
         if (!current(scope)) throw new Failure(401, "session_changed"); return bound;

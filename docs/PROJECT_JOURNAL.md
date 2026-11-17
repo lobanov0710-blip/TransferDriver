@@ -4384,3 +4384,29 @@ storage/read prerequisite, не полная классификация, не п
 не line/trip guards. Не включать null drafts через старые клиенты.
 Нет seed/полного BEV обзора/remote migration/merge/deploy/реальных данных,
 G1paused. Далее согласованно обновить API записи/клиент и trusted moderation.
+
+
+## Driver: начато согласованное обновление формы системного класса — 2026-11-17
+
+По поручению «Далее» отдельная ветка arch/g2-driver-system-class-ui. Удалён
+classInput/выбор класса и отправка vehicleClass; добавлен modelYear, read-only
+серверный класс и явное отсутствие класса до проверки. DTO принимает null
+для неутверждённого авто, сохраняет неизвестный старый год как null и отвергает
+approved без класса/нецелый или строковый год. UI очищает год при onStop,
+не сохраняет его в view state/autofill; приватность и session guards сохранены.
+
+Добавлены3 JVM случая и3 native UI случая: смена года с ACKstop, потерянный
+ACK без replay, ошибка чтения после ACKstop. Старый native create/edit scenario
+теперь проверяет modelYear и отсутствие class в запросе. Добавлены2 actual
+native class PNG light/dark1.3 и artifact tested Driver debug APK. Security
+guards локально8 Driver/5 Admin PASS. Gradle/native на этой среде не объявлены
+PASS; штатный CI обязателен. Первый большой read был усечён, нужные методы
+прочитаны отдельно; один поиск tests/src-router выполнялся не в том repo,
+исправлено чтением backend-файлов. Настройки/secret/provider flags не менялись.
+
+Backend одновременно меняет контракт create/patch и атомарно сбрасывает
+класс/линию при изменении марки/модели/года, запрещает дальнейшие phase/done
+переходы; выбор замены остаётся ручным диспетчером. Доверенная модерация
+года/установки и UI редактирования правил не включаются этим срезом, новый
+автомобиль остаётся draft без класса. Нет новых миграций сверх0020, seed,
+реальных документов/remote migration/merge/deploy; G1paused.

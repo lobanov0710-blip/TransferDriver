@@ -167,13 +167,13 @@ public final class RegistrationInstrumentationTest {
         AtomicInteger writes=new AtomicInteger();JsonObject data=JsonParser.parseString(DRAFT).getAsJsonObject();
         launch(chain->{String method=chain.request().method();if(!method.equals("GET")){
             writes.incrementAndGet();okio.Buffer buffer=new okio.Buffer();chain.request().body().writeTo(buffer);JsonObject body=JsonParser.parseString(buffer.readUtf8()).getAsJsonObject();
-            assertFalse(body.has("driverId"));assertFalse(body.has("status"));assertEquals("XW8ZZZ61ZFG000001",body.get("vin").getAsString());
-            if(method.equals("POST")){assertEquals(9,body.size());body.addProperty("id",VEHICLE);body.addProperty("driverId","synthetic-driver");body.addProperty("status","draft");body.addProperty("revision",1);data.getAsJsonArray("vehicles").add(body);}
+            assertFalse(body.has("driverId"));assertFalse(body.has("status"));assertFalse(body.has("vehicleClass"));assertEquals(2020,body.get("modelYear").getAsInt());assertEquals("XW8ZZZ61ZFG000001",body.get("vin").getAsString());
+            if(method.equals("POST")){assertEquals(9,body.size());body.add("vehicleClass",com.google.gson.JsonNull.INSTANCE);body.addProperty("id",VEHICLE);body.addProperty("driverId","synthetic-driver");body.addProperty("status","draft");body.addProperty("revision",1);data.getAsJsonArray("vehicles").add(body);}
             else {assertEquals("PATCH",method);assertEquals(10,body.size());assertEquals(1,body.get("expectedRevision").getAsInt());data.getAsJsonArray("vehicles").get(0).getAsJsonObject().addProperty("revision",2);}
             return response(chain,200,"{\"ok\":true}");}return response(chain,200,data.toString());});
         click(R.id.registrationAddVehicle);click(R.id.registrationSaveVehicle);awaitText("Проверьте поля");assertEquals(0,writes.get());
-        enter(R.id.vinInput,"xw8zzz61zfg000001");enter(R.id.plateInput,"TEST-001");enter(R.id.makeInput,"Synthetic");enter(R.id.modelInput,"Vehicle");enter(R.id.capacityInput,"4");
-        instrumentation.runOnMainSync(()->{for(int id:new int[]{R.id.classInput,R.id.baggageInput,R.id.usageInput})((android.widget.Spinner)activity.findViewById(id)).setSelection(1);});
+        enter(R.id.vinInput,"xw8zzz61zfg000001");enter(R.id.plateInput,"TEST-001");enter(R.id.makeInput,"Synthetic");enter(R.id.modelInput,"Vehicle");enter(R.id.modelYearInput,"2020");enter(R.id.capacityInput,"4");
+        instrumentation.runOnMainSync(()->{for(int id:new int[]{R.id.baggageInput,R.id.usageInput})((android.widget.Spinner)activity.findViewById(id)).setSelection(1);});
         click(R.id.registrationSaveVehicle);awaitText("Сохранено");assertEquals(1,writes.get());
         instrumentation.runOnMainSync(()->((android.widget.LinearLayout)activity.findViewById(R.id.registrationVehicles)).getChildAt(0).performClick());
         click(R.id.registrationSaveVehicle);awaitText("Сохранено");assertEquals(2,writes.get());
@@ -186,6 +186,38 @@ public final class RegistrationInstrumentationTest {
         try{parcel.writeBundle(state);assertFalse(new String(parcel.marshall(),java.nio.charset.StandardCharsets.UTF_16LE).contains("UNSAVED_SYNTHETIC_NAME"));}finally{parcel.recycle();}
         instrumentation.runOnMainSync(()->instrumentation.callActivityOnStop(activity));
         instrumentation.runOnMainSync(()->{assertEquals("",((EditText)activity.findViewById(R.id.fullNameInput)).getText().toString());assertTrue((activity.getWindow().getAttributes().flags&WindowManager.LayoutParams.FLAG_SECURE)!=0);});
+    }
+    private JsonObject approvedVehicleData() {
+        JsonObject data=JsonParser.parseString(DRAFT).getAsJsonObject();
+        JsonObject row=JsonParser.parseString("{\"vin\":\"XW8ZZZ61ZFG000001\",\"plate\":\"TEST-001\",\"make\":\"Synthetic\",\"model\":\"Vehicle\",\"modelYear\":2020,\"color\":null,\"vehicleClass\":\"comfort\",\"capacity\":4,\"baggageCapacity\":\"standard\",\"usageBasis\":\"owner\",\"status\":\"approved\",\"revision\":1}").getAsJsonObject();
+        row.addProperty("id",VEHICLE);row.addProperty("driverId","synthetic-driver");data.getAsJsonArray("vehicles").add(row);return data;
+    }
+    private void openFirstVehicle(){instrumentation.runOnMainSync(()->((android.widget.LinearLayout)activity.findViewById(R.id.registrationVehicles)).getChildAt(0).performClick());}
+    @Test public void acknowledgedActiveVehicleChangeShowsSafeStopAndDispatcherInstructions() throws Exception {
+        JsonObject data=approvedVehicleData();AtomicInteger writes=new AtomicInteger();
+        launch(chain->{if(chain.request().method().equals("PATCH")){
+            writes.incrementAndGet();okio.Buffer buffer=new okio.Buffer();chain.request().body().writeTo(buffer);
+            JsonObject sent=JsonParser.parseString(buffer.readUtf8()).getAsJsonObject();assertFalse(sent.has("vehicleClass"));assertEquals(2021,sent.get("modelYear").getAsInt());
+            JsonObject row=data.getAsJsonArray("vehicles").get(0).getAsJsonObject();row.addProperty("modelYear",2021);row.addProperty("status","pending_review");row.add("vehicleClass",com.google.gson.JsonNull.INSTANCE);row.addProperty("revision",2);
+            return response(chain,200,"{\"ok\":true,\"requiresDispatcherReassignment\":true}");}return response(chain,200,data.toString());});
+        openFirstVehicle();instrumentation.runOnMainSync(()->assertFalse(activity.findViewById(R.id.registrationSystemClass) instanceof EditText));
+        enter(R.id.modelYearInput,"2021");click(R.id.registrationSaveVehicle);awaitText("Остановитесь в безопасном месте");assertEquals(1,writes.get());
+    }
+    @Test public void lostVehicleChangeAcknowledgementShowsSafeStopWithoutReplay() throws Exception {
+        JsonObject data=approvedVehicleData();AtomicInteger writes=new AtomicInteger();
+        launch(chain->{if(chain.request().method().equals("PATCH")){writes.incrementAndGet();throw new IOException("Synthetic disconnect");}return response(chain,200,data.toString());});
+        openFirstVehicle();enter(R.id.modelYearInput,"2021");click(R.id.registrationSaveVehicle);awaitText("Изменение могло сохраниться");
+        assertEquals(1,writes.get());instrumentation.runOnMainSync(()->{
+            assertEquals(View.GONE,activity.findViewById(R.id.registrationVehicleEditor).getVisibility());
+            assertEquals("",((EditText)activity.findViewById(R.id.modelYearInput)).getText().toString());
+        });
+        click(R.id.registrationSaveVehicle);assertEquals(1,writes.get());
+    }
+    @Test public void confirmedStopSurvivesFailedReadAfterAcknowledgement() throws Exception {
+        JsonObject data=approvedVehicleData();AtomicInteger writes=new AtomicInteger();
+        launch(chain->{if(chain.request().method().equals("PATCH")){writes.incrementAndGet();return response(chain,200,"{\"ok\":true,\"requiresDispatcherReassignment\":true}");}
+            if(writes.get()>0)throw new IOException("Synthetic read failure");return response(chain,200,data.toString());});
+        openFirstVehicle();enter(R.id.modelYearInput,"2021");click(R.id.registrationSaveVehicle);awaitText("Изменение могло сохраниться");assertEquals(1,writes.get());
     }
     @Test public void nativeSyntheticScreensLight() throws Exception {nativeScreens(false);}
     @Test public void nativeSyntheticScreensDarkLargeFont() throws Exception {nativeScreens(true);}
@@ -208,6 +240,16 @@ public final class RegistrationInstrumentationTest {
             assertTrue(field.getPaint().measureText(capacity.getHint().toString())<=field.getWidth()-field.getPaddingLeft()-field.getPaddingRight());
         });
         capture(dark?"vehicle-dark-large":"vehicle-light");
+        instrumentation.runOnMainSync(()->{
+            TextView systemClass=activity.findViewById(R.id.registrationSystemClass);
+            assertFalse(systemClass instanceof EditText);
+            assertEquals(activity.getString(R.string.registration_class_pending),systemClass.getText().toString());
+            assertFalse(activity.findViewById(R.id.modelYearInput).isSaveEnabled());
+            android.graphics.Rect rect=new android.graphics.Rect();systemClass.getDrawingRect(rect);
+            systemClass.requestRectangleOnScreen(rect,true);
+        });
+        instrumentation.waitForIdleSync();
+        capture(dark?"vehicle-class-dark-large":"vehicle-class-light");
     }
     private void awaitFontScale(float expected) throws Exception {
         long deadline=System.currentTimeMillis()+8000;

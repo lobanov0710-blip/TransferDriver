@@ -66,4 +66,23 @@ public final class RegistrationTest {
         JsonObject value=draft();JsonObject vehicle=vehicle();vehicle.add("usageBasis",com.google.gson.JsonNull.INSTANCE);value.getAsJsonArray("vehicles").add(vehicle);
         assertEquals("",Registration.parse(value,"synthetic-driver").vehicles.get(0).usage);
     }
+    @Test public void systemClassCanRemainNullUntilReviewAndYearIsPreserved() throws Exception {
+        JsonObject value=draft(), row=vehicle();row.add("vehicleClass",com.google.gson.JsonNull.INSTANCE);row.addProperty("modelYear",2020);
+        value.getAsJsonArray("vehicles").add(row);
+        Registration.Vehicle parsed=Registration.parse(value,"synthetic-driver").vehicles.get(0);
+        assertNull(parsed.vehicleClass);assertEquals(Integer.valueOf(2020),parsed.modelYear);
+    }
+    @Test public void approvedVehicleWithoutClassFailsClosed() {
+        JsonObject value=draft(), row=vehicle();row.add("vehicleClass",com.google.gson.JsonNull.INSTANCE);row.addProperty("status","approved");
+        value.getAsJsonArray("vehicles").add(row);rejects(value);
+    }
+    @Test public void modelYearRequiresAnIntegerAndMissingLegacyYearStaysUnknown() throws Exception {
+        for(String year:new String[]{"0","10000","2020.5","\"2020\""}) {
+            JsonObject value=draft(), row=vehicle();row.add("modelYear",JsonParser.parseString(year));value.getAsJsonArray("vehicles").add(row);rejects(value);
+        }
+        JsonObject value=draft();value.getAsJsonArray("vehicles").add(vehicle());
+        assertNull(Registration.parse(value,"synthetic-driver").vehicles.get(0).modelYear);
+        assertEquals(Integer.valueOf(2020),Registration.inputModelYear("2020"));
+        for(String year:new String[]{"","0000","2020.5","20x0","10000"})assertNull(Registration.inputModelYear(year));
+    }
 }
