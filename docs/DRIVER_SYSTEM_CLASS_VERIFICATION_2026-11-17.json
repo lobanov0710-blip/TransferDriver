@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-17",
+  "scope": "driver-system-class-form-and-change-stop-guidance",
+  "status": "ci-and-native-evidence-verified",
+  "sourceCommit": "58102355b24201f6eba06f2d5190341c7541be06",
+  "sourceTree": "104a42432e186fe881ecc1b0d89a9a6740d139f8",
+  "workflowRun": 44060885312,
+  "workflowJob": 133962153709,
+  "conclusion": "success",
+  "backend": {
+    "pullRequest": "https://github.com/lobanov0710-blip/uber-v3/pull/35",
+    "sourceCommit": "57c17bbc67b5c8aef3f137d9c13341f619dbd8a2",
+    "sourceTree": "87b4af13798cb318bfcf4b9f8172eece63f88484",
+    "workflowRun": 44062029259,
+    "workflowJob": 133966070138,
+    "conclusion": "success",
+    "npmTestScripts": 73,
+    "newSqliteHttpCases": 8,
+    "nativeD1Workflows": 9,
+    "dependencyAuditVulnerabilities": 0
+  },
+  "checks": {
+    "driverJvmPerVariant": 51,
+    "adminJvmPerVariant": 58,
+    "variants": [
+      "debug",
+      "staging",
+      "release"
+    ],
+    "totalJvmExecutions": 327,
+    "driverNative": 41,
+    "adminNative": 61,
+    "totalNative": 102,
+    "driverSecurityGuards": 8,
+    "adminSecurityGuards": 5,
+    "bothAppsBuildsAndLintThreeVariants": true,
+    "endpointAndSigningIsolationAndAppCheckPolicy": true,
+    "nativePngCount": 30,
+    "artifactDigestsMatched": true,
+    "newNativeCases": [
+      "acknowledgedActiveVehicleChangeShowsSafeStopAndDispatcherInstructions",
+      "lostVehicleChangeAcknowledgementShowsSafeStopWithoutReplay",
+      "confirmedStopSurvivesFailedReadAfterAcknowledgement"
+    ]
+  },
+  "artifacts": [
+    {
+      "artifactId": 14319405601,
+      "archiveSha256": "609d71d302d535dbecefb35f6124f8a0ed8ce00ff96c178a0ed620257964f418",
+      "entries": [
+        {
+          "file": "native/assignment-confirm-dark-large.png",
+          "sha256": "b7ed941374de8a66f0839ec71f725cac6dc48446e783395b7fa3c689e9849ebf",
+          "bytes": 157438
+        },
+        {
+          "file": "native/assignment-confirm-light.png",
+          "sha256": "6e18cd60435f3de0633858f726e643cdf462d80db19e2b7931896fd84914ba94",
+          "bytes": 140278
+        },
+        {
+          "file": "native/assignment-form-dark-large.png",
+          "sha256": "d0cd62bd497e5ae24677eb92f8a545589ccaeda4a903d0e7f8eb3b84ddbe41ea",
+          "bytes": 140057
+        },
+        {
+          "file": "native/assignment-form-light.png",
+          "sha256": "da1f2b77e9f8aa04f52c8a66177a10f27f43fdbece990da56f0037865ef979dd",
+          "bytes": 114754
+        },
+        {
+          "file": "native/assignment-options-dark-large.png",
+          "sha256": "ee3c22c8c03fab6ee63d56b998a507ac20ede3b058a18f96b006c583db2d696c",
+          "bytes": 156132
+        },
+        {
+          "file": "native/assignment-options-light.png",
+          "sha256": "b70322b2f7e9b52470dca5a563a659c8c3a6c5282c06e4b631441a5241960da1",
+          "bytes": 122476
+        },
+        {
+          "file": "native/assignment-orders-dark-large.png",
+          "sha256": "2cc3f261bec46e2db0b4cd7cebd6953b4fabda2a051686d4002c324020eec446",
+          "bytes": 94015
+        },
+        {
+          "file": "native/assignment-orders-light.png",
+          "sha256": "1348a26e5e8c6a0913d2a64f0c50e1af865272feaacd62d33a55d7a16e3526ca",
+          "bytes": 76743
+        },
+        {
+          "file": "native/assignment-uncertain-dark-large.png",
+          "sha256": "dbdaa49d23181e3bf4b79669b073b48c5a8e532cc6b9674a5db302d73b01fd57",
+          "bytes": 156318
+        },
+        {
+          "file": "native/assignment-uncertain-light.png",
+          "sha256": "973992f2ca807ae2921cdd80c01fbdc45d47297c85f96efacbd9a047c76b0c47",
+          "bytes": 123426
+        },
+        {
+          "file": "native/availability-offline-dark-large.png",
+          "sha256": "252c9a256118f83d302d2359ca1af199a57f6ff6d3f4ec6094d44037f5733ed8",
+          "bytes": 132359
+        },
+        {
+          "file": "native/availability-offline-light.png",
+          "sha256": "a8572f51ece7e9e58230a608e5dfff8c8c576e880f8d074912843d28854a95f0",
+          "bytes": 112488
+        },
+        {
+          "file": "native/availability-online-dark-large.png",
+          "sha256": "3ab2e3167de67bf50f0b07bd3adc80f3cdf8eaf2245deabed3bf659790f73367",
+          "bytes": 90154
+        },
+        {
+          "file": "native/availability-online-light.png",
+          "sha256": "bd29571874aeacc7c12383c67dc71101b9683406ed52221af4e7272379a32dbf",
+          "bytes": 76864
+        },
+        {
+          "file": "native/photo-checks-dark-large.png",
+          "sha256": "b151720d5dfb82e149477fa8991998725ee943977e1d85baa98149a0222fffbd",
+          "bytes": 117605
+        },
+        {
+          "file": "native/photo-checks-light.png",
+          "sha256": "7fd4b116fa55d387d1286408f96d44df553bfe0cb3861589831ca8dc9eeeeeed",
+          "bytes": 101642
+        },
+        {
+          "file": "native/photo-confirm-dark-large.png",
+          "sha256": "6629abf5003263d7d863242473867a2cbaae20f176fdb36c8258af1738947b73",
+          "bytes": 165889
+        },
+        {
+          "file": "native/photo-confirm-light.png",
+          "sha256": "e704c77b2c10c8979d4c4f85f14f278cef92f31fb3378f8ce8fbc6b3e09fefc9",
+          "bytes": 152926
+        },
+        {
+          "file": "native/photo-form-dark-large.png",
+          "sha256": "18a605723572a52dabc839e3f797776c0e7664287edcf1a3f03905b2ccf68a95",
+          "bytes": 135813
+        },
+        {
+          "file": "native/photo-form-light.png",
+          "sha256": "02452a8e01fd2de751f9e27e7bf2186ae2ed028c851c50b2e993355708435d63",
+          "bytes": 112289
+        },
+        {
+          "file": "native/photo-uncertain-dark-large.png",
+          "sha256": "1320691a4f2c6b96d2fc2371270a37934c70e1c90d250cd52a12f607f5ddbce3",
+          "bytes": 158987
+        },
+        {
+          "file": "native/photo-uncertain-light.png",
+          "sha256": "e1342c0d54b318cb0c13ebc468fd1797c578ccece5d7799c36e05f12424d761a",
+          "bytes": 129574
+        },
+        {
+          "file": "native/photo-vehicles-dark-large.png",
+          "sha256": "a22693def5dd7b00dff713a9ca2da178b8cde913da4eab1923f7597c74008197",
+          "bytes": 115136
+        },
+        {
+          "file": "native/photo-vehicles-light.png",
+          "sha256": "2c893a409659c9cce0e2e55ed1b0be1c42d818597c553942f8faaf98db9a99ef",
+          "bytes": 95612
+        },
+        {
+          "file": "native/profile-dark-large.png",
+          "sha256": "d31aeb010d1d532e93b51ec87d6f0eda83cb23ba36c943685dd1e9dd0ef5e907",
+          "bytes": 158591
+        },
+        {
+          "file": "native/profile-light.png",
+          "sha256": "409673a87965d6362f9cd5f64f2760364842a5114c1b6ca9d048d68663bca463",
+          "bytes": 133210
+        },
+        {
+          "file": "native/vehicle-class-dark-large.png",
+          "sha256": "88906c846ac28f1c2e1c286dc9ab08fc39eea8247e36f63020571855c326e660",
+          "bytes": 136388
+        },
+        {
+          "file": "native/vehicle-class-light.png",
+          "sha256": "06f8e67a655c01edd66290a14893426a372ba62987b23f28f0a4d2d24daf06d0",
+          "bytes": 147569
+        },
+        {
+          "file": "native/vehicle-dark-large.png",
+          "sha256": "76a62dcbd19f2af92f3468fdff3941bb265b375566a134e8b2aed42fed663b57",
+          "bytes": 160436
+        },
+        {
+          "file": "native/vehicle-light.png",
+          "sha256": "9d237922d9683017cd310614e3a63ac8faa6073c2e65745a002d29dfd3f18eea",
+          "bytes": 143463
+        }
+      ]
+    },
+    {
+      "artifactId": 14317963902,
+      "archiveSha256": "1548982e750c4f4aa113d245e206718b4cf05b472d4108c6e61551c478dda428",
+      "entries": [
+        {
+          "file": "apk/app-debug.apk",
+          "sha256": "a1d818962811625ff7506b710a34f04846003070a0f1e19ba5b133644a980829",
+          "bytes": 10639247
+        }
+      ]
+    }
+  ],
+  "sourceSha256": {
+    ".github/workflows/android-branch-tests.yml": "ed1c82200543c1787768496287ac6c862047183a257bd76ef562624301de3201",
+    "app/src/androidTest/java/ru/transferservis/driver/data/registration/RegistrationInstrumentationTest.java": "b229781346407d8b7e82ac8436496566ee72ff85018823cdf60665e127845e18",
+    "app/src/main/java/ru/transferservis/driver/data/registration/Registration.java": "39bb91c56bc7740c6fef40a7685e1d5cd6590f36be0974d7af44942e0db87b6a",
+    "app/src/main/java/ru/transferservis/driver/data/registration/RegistrationRepository.java": "cfdb153d824c4cbb444417f496bd573f936a5a155ccfdaee6d46d5ca3abb2de1",
+    "app/src/main/java/ru/transferservis/driver/ui/registration/RegistrationActivity.java": "4981b5e8a11a7d374f9c7a9d049f51a7245cbb497f6533cfc0cc8e017cba3a50",
+    "app/src/main/res/layout/activity_registration.xml": "e70dda0cffd0a68c21bed2da1907dfe4312976aaf2af522ceec4e44f3233e0a6",
+    "app/src/main/res/values/registration_strings.xml": "4e5b728bec9b793e4ef6e42c98bcbaa6c289aba1fcab93e8b87d19fe8c4e3068",
+    "app/src/test/java/ru/transferservis/driver/data/registration/RegistrationTest.java": "7a7cd860417c6bcb64affe07648cb3dbd798099e9060b50755a3b196fbe14ede",
+    "tools/check_registration_evidence.py": "8aef759d6e55ef668e2c878f056ac5c7a7970d9aa982c60ded0843c50f916bd3",
+    "tools/check_security.py": "3c7169a62447d2b074ed8127cdf0c7b754ba1bc3e7f3c5a656aa2f7c3c0671c8"
+  },
+  "visualReview": {
+    "reviewer": "primary agent, own inspection; not independent review",
+    "files": [
+      "vehicle-light.png",
+      "vehicle-dark-large.png",
+      "vehicle-class-light.png",
+      "vehicle-class-dark-large.png"
+    ],
+    "viewport": "1080x2400, native emulator API35",
+    "fontScales": [
+      1.0,
+      1.3
+    ],
+    "result": "Year label and document-verification help readable; class is read-only, pending message fits in light and dark large font. No overlapping/clipped class/year text found in inspected viewports. Scrolled top content is outside viewport as expected.",
+    "allThirtyPngsVisuallyReviewed": false
+  },
+  "boundaries": {
+    "liveDriverPhoneE2ePerformed": false,
+    "phoneUpgradeSignatureVerified": false,
+    "realFirebaseConfigInCiApk": false,
+    "trustedDocumentVerificationAdded": false,
+    "currentRuleRuntimeClassificationAdded": false,
+    "fullInProgressDispatcherHandoffAdded": false,
+    "allPowertrainVariantsReviewed": false,
+    "catalogSeedActivated": false,
+    "remoteMigrationPerformed": false,
+    "mergePerformed": false,
+    "deployPerformed": false,
+    "g1Paused": true
+  },
+  "limits": [
+    "CI debug APK uses synthetic Firebase configuration and ephemeral debug identity; not a release or live Driver build.",
+    "No driver-selected class; pending null class cannot be treated as admission.",
+    "Existing legacy vehicles without verified year still need complete admission guard; trusted Admin flow remains next.",
+    "Dispatcher replacement remains manual; full already-started-trip handoff and passenger notification remain unfinished.",
+    "Later documentation-only commits do not change the verified code SHA."
+  ]
+}

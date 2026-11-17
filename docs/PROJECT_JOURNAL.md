@@ -4410,3 +4410,53 @@ Backend одновременно меняет контракт create/patch и �
 года/установки и UI редактирования правил не включаются этим срезом, новый
 автомобиль остаётся draft без класса. Нет новых миграций сверх0020, seed,
 реальных документов/remote migration/merge/deploy; G1paused.
+
+
+## Driver system class: Android/backend проверены — 2026-11-17
+
+Android source58102355b24201f6eba06f2d5190341c7541be06,
+tree104a42432e186fe881ecc1b0d89a9a6740d139f8, CI44060885312/job133962153709
+SUCCESS. Driver51 JVM на каждый из3 variants, Admin58 на каждый:327 JVM
+executions. Driver41/Admin61 native:102 runtime, без failure/error/skipped.
+Сборки и lint debug/staging/release обеих apps, endpoint locks, отдельная
+подпись/UID Admin, App Check policy, security guards8/5 PASS. Новый native
+набор проверил ACKstop, потерю ACK без replay и failed GET после ACKstop.
+
+Backend source57c17bbc67b5c8aef3f137d9c13341f619dbd8a2, CI44062029259/
+job133966070138 SUCCESS:73 scripts,8 новых actual SQLite/HTTP cases,20
+migrations,12 preflight,6 reference,9 native D1 workflows,6 protected CLI
+scenarios,audit0,dry-run PASS. Draft PR35 зависит от schema PR34; Driver PR14
+зависит от docs PR13. Полные source/artifact hashes и границы сохранены в
+DRIVER_SYSTEM_CLASS_VERIFICATION_2026-11-17.json; проверенный code SHA отделён
+от следующих docs-only commits. Source trees до публикации сверены побайтово.
+
+Скачаны именно artifacts этого source/run:14319405601 nativePNG и14317963902
+DriverAPK. ZIP SHA256 совпали с GitHub digest; safe extraction, PNG CRC/viewport
+и hashes всех30 кадров совпали с CI log. Primary agent осмотрел4 изменённых
+vehicle/class light/dark font1.3 кадров: год/подсказка/readonly class читаемы,
+наложения/обрезки целевых строк не обнаружены. Это собственный осмотр4 кадров,
+не независимый обзор всех30. Driver APK hash
+a1d818962811625ff7506b710a34f04846003070a0f1e19ba5b133644a980829.
+APK содержит synthetic Firebase/ephemeral debug signing; phone upgrade, live
+Driver или production этим не проверены, устанавливать вместо релиза не поручалось.
+
+Ошибки инструментов: повторный Admin security check сначала вызван по
+несуществующему admin/tools пути; исправлен на tools/check_admin_security.py,
+5/5 PASS. В metadata технического вывода загрузчика ошибочно выведены временные
+ссылки двух synthetic CI ZIP; URL не включены в файлы/PR/receipt, далее только
+file_id. Их указанное время expiry10:19:35UTC; это не реальные учётные данные
+и не app/provider credentials. Не повторять полный metadata output. Backend
+publish read был неполным; tree parity остановила обновление ветки, отдельное
+чтение дало точное дерево. Полный local npm ограничен sandbox на OWNER CLI,
+но CI проверил этот набор без ослаблений. Исторические pending записи выше
+относятся к прежним checkpoint; новый write API уже не принимает driver class.
+
+Далее по утверждённому плану: trusted Admin проверка года/силовой установки,
+current-rule classification/snapshot, legacy year guard, правила/исключение;
+также полный in_progress handoff/пассажирское уведомление и завершение BEV
+обзора. Этот срез не завершает весь справочник или G2. Нет seed, реальных
+документов, remote migration, merge/deploy; G1paused,D4–D7pending.
+
+Финальный docs payload большого плана сначала превысил output limit и не
+распарсился; remote mutation не выполнялась. Файлы перечитаны частями по5000
+символов с проверкой длины, перед обновлением ветки проверяется точное tree.

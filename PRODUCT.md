@@ -86,5 +86,11 @@ D4–D7pending и запрет merge/deploy без отдельного реше
 
 Системный класс и правила справочника: актуальные решения владельца собраны
 в docs/VEHICLE_SYSTEM_CLASSIFICATION_CONTRACT_PROPOSAL_2026-11-16.md.
-Реализация серверного основания в backend Draft PR33 не подключает
-классификацию к работающей регистрации или допуску на линию.
+Backend PR33/34 реализовали version store и nullable schema/read. Следующий
+зависимый срез backend PR35 + Driver PR14 удаляет выбор класса водителем,
+передаёт modelYear и читает системный класс/null. Смена make/model/year атомарно
+снимает класс и линию, требует проверки и ручного действия диспетчера при
+активном назначении; приложение показывает безопасную остановку без replay.
+Это не завершение trusted Admin проверки/системной классификации, legacy year
+guard или полного in_progress handoff. Статус проверок и source provenance —
+в docs/DRIVER_SYSTEM_CLASS_VERIFICATION_2026-11-17.json. Выпуск пока не готов.

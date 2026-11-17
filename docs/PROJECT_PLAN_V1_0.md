@@ -508,3 +508,33 @@ storage/read prerequisite, не полная классификация, не п
 не line/trip guards. Не включать null drafts через старые клиенты.
 Нет seed/полного BEV обзора/remote migration/merge/deploy/реальных данных,
 G1paused. Далее согласованно обновить API записи/клиент и trusted moderation.
+
+
+## Системный класс: API записи и форма Driver — 2026-11-17
+
+Следующий зависимый срез подготовлен в Draft PR14 Driver и backend PR35
+поверх PR34/schema0020. Удалён driver выбор/передача класса, введён modelYear,
+показывается только серверный класс либо отсутствие результата до проверки.
+Смена make/model/year атомарно снимает класс/линию и ставит одобренный
+автомобиль на проверку; phase/оба done path закрыты, активное назначение
+требует ручного действия диспетчера. Потерянный ACK/ошибка GET после ACK
+не создают автоматический replay и сохраняют указание безопасной остановки.
+Backend source57c17bbc / CI44062029259 SUCCESS:73 scripts,8 новых actual
+SQLite/HTTP cases,20 migrations,12 preflight,6 reference,9 native D1 workflows,
+6 protected CLI scenarios, audit0 и dry-run PASS. Android source58102355 /
+CI44060885312 пока проходит native проверки; финальные факты в отдельном receipt.
+
+Этап ещё не завершает внедрение справочника: далее trusted Admin проверка
+года/силовой установки, применение актуальной версии правила/snapshot, legacy
+year admission guard и Admin правило/исключение. Полный in_progress dispatcher
+handoff/пассажирское уведомление и полный BEV обзор ещё не готовы. Проверки
+этого среза не заменяют live E2E, release или полную приёмку G2. G1paused,
+D4–D7pending; remote migration/seed/merge/deploy не выполнялись.
+
+
+Итог этого checkpoint: Android CI44060885312 SUCCESS,327 JVM/102 native,
+обе apps build/lint3 variants и security gates PASS.30 nativePNG и DriverAPK
+проверены по GitHub digest/source;4 изменённых vehicle/class кадров осмотрены
+в light и dark/font1.3. Все hashes, точные источники/границы и результаты —
+DRIVER_SYSTEM_CLASS_VERIFICATION_2026-11-17.json. Следующий шаг остаётся
+trusted Admin classification; это не приёмка полного классификатора/G2/live.
