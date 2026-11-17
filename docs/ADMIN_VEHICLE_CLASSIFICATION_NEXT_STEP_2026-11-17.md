@@ -62,3 +62,12 @@ OpenAPI/schema/local refs: PASS,4 valid/8 invalid examples. Это не runtime
 Полный BEV обзор121 строк, переход старых записей и полный in_progress
 dispatcher handoff остаются отдельными незавершёнными работами. Нет seed,
 реальных документов, remote migration, merge/deploy. G1paused,D4–D7pending.
+
+
+## Первый проверенный prerequisite после утверждения
+
+[Backend PR37](https://github.com/lobanov0710-blip/uber-v3/pull/37):
+first-save binding и OWNER-only protected powers. CI44078545851 SUCCESS;
+[provenance и границы](https://github.com/lobanov0710-blip/uber-v3/blob/arch/g2-classifier-binding/docs/VEHICLE_RULE_BINDING_VERIFICATION_2026-11-17.json).
+Trusted assessment/API/admission/Admin UI — следующие части контракта,
+не считаются готовыми по наличию binding. Новых Android binaries здесь нет.

@@ -557,3 +557,11 @@ PASS; это docs-only подготовка, не сборка нового Admi
 ошибочной записи. Версия при первом сохранении принята. Pending approval выше
 теперь исторический. Начат отдельный binding/OWNER-only prerequisite; trusted
 assessment/admission/Admin UI остаются следующими частями реализации.
+
+
+Binding/OWNER-only первый prerequisite утверждённого контракта реализован
+в backend PR37, CI44078545851 SUCCESS (74 scripts,17 новых SQLite/HTTP,21
+migrations,10 native D1 workflows,audit0). Исправлен выявленный native D1
+счётчик trigger changes; receipt отделяет verified source от docs commits.
+Далее trusted assessment/evidence/правила API и admission guards, затем Admin
+DTO/форма; новый APK ещё не создавался. Не путать pinning с допуском.

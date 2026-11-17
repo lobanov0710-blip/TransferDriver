@@ -4529,3 +4529,31 @@ Admin vehicle classification утверждён с этой поправкой: 
 и фактической смены данных; защита новых OWNER-only прав на сервере и в БД.
 Trusted assessment/review API, итоговый admission guard и Admin UI ещё впереди.
 Это не автоматический допуск или объявление полной реализации контракта.
+
+
+## Утверждённый binding/OWNER-only prerequisite проверен — 2026-11-17
+
+Backend Draft PR37 https://github.com/lobanov0710-blip/uber-v3/pull/37
+реализовал миграцию0021: immutable версия при первом сохранении машины, новая
+привязка только при make/model/year edit, без backfill/фиктивного класса.
+Новые protected grants DISPATCHER отклоняются сервером/SQL, включая Unicode
+edge trim и старые ошибочные записи. Действующие операционные права сохранены.
+Поправка владельца уже принята в AGENTS/контракте, повторно её не спрашивать.
+
+Проверенный sourcea52b83ba1da0e8024946f2d92288e6f6e52cc383, treedad21bcb855f8d49bc2446f6bbfc5a0eb9745c55,
+CI44078545851/job134022783461 SUCCESS:74 npm scripts,17 новых SQLite/HTTP,
+21 migrations,12 preflight,6 reference,10 native D1 workflows,6 protected CLI,
+audit0,Worker dry-run. Первый failed44077774303 нашёл native D1 отличие
+meta.changes: trigger writes увеличивали счётчик и могли дать ошибку после
+committed vehicle insert. Исправлено чтением top-level changes() в той же
+batch; native Driver contract и новая regression PASS. Первый run не считается
+успешным. Local sandbox OWNER CLI ограничение не ослаблялось — проверил CI.
+
+Receipt: backend docs/VEHICLE_RULE_BINDING_VERIFICATION_2026-11-17.json.
+В Android здесь изменены только документы, security guards8 Driver/5 Admin
+PASS; новая сборка/APK/native UI не выполнялись. Binding ещё не trusted
+assessment/год/класс/допуск: полноценные Admin API/проверка документов/условий,
+admission guards/UI, BEV обзор/legacy plan/in_progress handoff остаются впереди.
+Legacy current-head candidate helper не читает binding и не должен подключаться
+к trusted review/admission. Нет seed/реальных материалов/remote migration/
+merge/deploy/расширения OWNER-only STAGING; G1paused,D4–D7pending.
