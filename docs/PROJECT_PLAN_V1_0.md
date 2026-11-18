@@ -598,3 +598,19 @@ Backend PR №43 завершил public review/trusted GET/history поверх
 [Draft PR19](https://github.com/lobanov0710-blip/TransferDriver/pull/19), source `739059daa09341fd3239644b1ab26c7f8061b1b8`, CI `44321910346` SUCCESS. Exact lookup и создание модели/неизменяемой версии доступны только actual OWNER/MFA; Dispatcher и owner_phone запрещены. Явные minYear/class/body/nullable mini-van policy/whole condition rows/reason, CAS current/null, confirmation, original same-key retry и foreground privacy проверены. Правило не меняет существующие pins и не даёт автомобилям approved/online.423 JVM/143 native без failure/error/skip, обе apps3 variants build/lint, security8/5/runner5 PASS.56 PNG hashes/2 archives/package/signature сверены,10 новых raw frames осмотрены. [Receipt](OWNER_VEHICLE_RULE_EDITOR_VERIFICATION_2026-11-18.json).
 
 Readonly PR17, review/exception PR18 и rule editor PR19 реализуют Android UI части утверждённого контракта в отдельных зависимых draft ветках. Это не full classifier activation/production readiness: full powertrain121/legacy inventory/live phone acceptance остаются открытыми. Intermittent baseline Driver focus root cause не закрыт свежим PASS, диагностика/assertions/timeouts сохранены. G1paused,D4–D7pending; нет merge/deploy/seed/remote migration/phone scope расширения. Этот checkpoint фиксирует проверенную реализацию, не утверждает новые бизнес-решения или порядок активации.
+
+
+## G2: подготовка readiness audit — 2026-11-18
+
+После OWNER editor начаты powertrain review и локальная read-only inventory. 121 правило сохранено; 9 семейств имеют частичные первичные свидетельства, 112 pending в новом реестре. Полное покрытие лет/поколений/рынков и реальная legacy inventory остаются открытыми. Подробности: [checkpoint](G2_CLASSIFIER_READINESS_2026-11-18.md). Это не активация/seed/migration и не новая Android-сборка; G1 paused, D4–D7 pending.
+
+
+## G2: первый проход источников по всем 121 семействам — 2026-11-18
+
+Revision 2 реестра:121 строки с частичными первичными сведениями,111 источников;
+исчерпывающее покрытие лет/поколений/рынков и actual legacy inventory открыты.
+Уточнены точные источники Maxus G10/Opel Zafira Life и mixed Lexus ES. CSV и
+runtime не менялись. Вопрос допуска лифтбеков в Комфорт отправлен владельцу;
+ответ ожидается, зависимые изменения запрещены до решения. Действующие pins,
+body guards и dispatcher restrictions сохраняются. Подробности: readiness
+checkpoint и VEHICLE_BODY_POLICY_CLARIFICATION_2026-11-18.md. G1paused,D4–D7pending.
