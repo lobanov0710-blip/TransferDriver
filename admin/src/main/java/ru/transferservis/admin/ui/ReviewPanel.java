@@ -26,7 +26,7 @@ final class ReviewPanel {
     ReviewPanel(AdminActivity activity,AdminViewModel model){
         this.activity=activity;this.model=model;items=activity.findViewById(R.id.reviewItems);
         for(int id:new int[]{R.id.reviewStart,R.id.reviewPreview,R.id.reviewApproveItem,R.id.reviewReturnItem,R.id.reviewRejectItem,
-                R.id.reviewApprove,R.id.reviewReturn,R.id.reviewReject,R.id.reviewRetry,R.id.reviewClassification})activity.findViewById(id).setFilterTouchesWhenObscured(true);
+                R.id.reviewApprove,R.id.reviewReturn,R.id.reviewReject,R.id.reviewRetry,R.id.reviewClassification,R.id.reviewAssessment})activity.findViewById(id).setFilterTouchesWhenObscured(true);
         activity.findViewById(R.id.reviewCard).setSaveFromParentEnabled(false);
         items.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
             @Override public void onNothingSelected(AdapterView<?> parent){}
@@ -46,6 +46,9 @@ final class ReviewPanel {
         activity.findViewById(R.id.reviewClassification).setOnClickListener(v->{RegistrationReview.Item i=item();
             if(i!=null&&i.isVehicle()&&state!=null&&!state.loading&&state.access!=null&&state.access.canReadClassification()&&screen()!=null&&screen().uncertain==null)
                 activity.startActivity(VehicleClassificationActivity.intent(activity,state.access.accountId,i.id));});
+        activity.findViewById(R.id.reviewAssessment).setOnClickListener(v->{RegistrationReview.Item i=item();
+            if(i!=null&&i.isVehicle()&&state!=null&&!state.loading&&state.access!=null&&state.access.canReadClassification()&&screen()!=null&&screen().uncertain==null)
+                activity.startActivity(VehicleAssessmentActivity.intent(activity,state.access.accountId,screen().registration.driverId,i.id));});
         activity.findViewById(R.id.reviewApproveItem).setOnClickListener(v->{RegistrationReview.Item i=item();if(i!=null)confirm(i.id,i.isVehicle()?"approved":"verified");});
         activity.findViewById(R.id.reviewReturnItem).setOnClickListener(v->{if(item()!=null)confirm(item().id,"changes_required");});
         activity.findViewById(R.id.reviewRejectItem).setOnClickListener(v->{if(item()!=null)confirm(item().id,"rejected");});
@@ -89,6 +92,7 @@ final class ReviewPanel {
         boolean classification=available&&i!=null&&i.isVehicle()&&state.access.canReadClassification();
         activity.findViewById(R.id.reviewClassification).setVisibility(classification?View.VISIBLE:View.GONE);
         enabled(R.id.reviewClassification,classification);
+        activity.findViewById(R.id.reviewAssessment).setVisibility(classification?View.VISIBLE:View.GONE);enabled(R.id.reviewAssessment,classification);
         enabled(R.id.reviewPreview,canRead);
         boolean viewed=i!=null&&s!=null&&i.id.equals(s.previewId)&&s.preview!=null;
         enabled(R.id.reviewApproveItem,pending&&(i.isVehicle()||(canRead&&viewed)));

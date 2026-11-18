@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="assessment_title">Проверка параметров</string>
+    <string name="assessment_open">Проверить параметры автомобиля</string>
+    <string name="assessment_make">Марка по документам</string><string name="assessment_model">Реальная модель по документам</string>
+    <string name="assessment_year">Год выпуска по документам</string><string name="assessment_power">Исполнение автомобиля</string><string name="assessment_body">Тип кузова</string>
+    <string name="assessment_exception">Рассмотреть исключение (OWNER)</string><string name="assessment_basis">Модель-основание той же марки</string>
+    <string name="assessment_load_rule">Загрузить правило и условия</string><string name="assessment_reason">Основание проверки или исключения</string>
+    <string name="assessment_documents">Выберите проверенные стороны СТС. Право открыть содержимое проверяется отдельно.</string>
+    <string name="assessment_front">Лицевая сторона СТС</string><string name="assessment_back">Оборотная сторона СТС</string>
+    <string name="assessment_preview_front">Открыть лицевую сторону СТС</string><string name="assessment_preview_back">Открыть оборотную сторону СТС</string>
+    <string name="assessment_select_document">Выберите проверенный документ</string><string name="assessment_document_row">%1$s · ревизия %2$d</string>
+    <string name="assessment_waive_year">Явно разрешить год ниже порога как исключение</string><string name="assessment_waive_condition">Явно разрешить невыполненное условие как исключение</string>
+    <string name="assessment_confirm">Проверить и подтвердить запись</string><string name="assessment_retry">Повторить исходный запрос</string><string name="assessment_reload">Прочитать текущее состояние</string>
+    <string name="assessment_loading">Проверяем доступ и актуальность данных…</string><string name="assessment_saving">Отправляем подтверждённую проверку…</string>
+    <string name="assessment_required">Заполните параметры, выберите обе стороны СТС и загрузите правило заново после изменения полей. Основание обязательно.</string>
+    <string name="assessment_conflict">Данные или материалы изменились. Прочитайте текущее состояние и подготовьте проверку заново.</string>
+    <string name="assessment_permission">Недостаточно текущих прав или истекло подтверждение входа. Новые права не выдаются автоматически.</string>
+    <string name="assessment_failed">Не удалось прочитать проверенные данные. Повторите чтение вручную.</string>
+    <string name="assessment_uncertain">Результат записи неизвестен. Автоматического повтора нет. Можно прочитать состояние или явно повторить только исходный запрос.</string>
+    <string name="assessment_original">Исходная проверка для явного повтора</string><string name="assessment_no_rule">Правило не найдено, класс не подтверждён. Итог проверки определит сервер с учётом обязательных ограничений; класс не выбирается вручную.</string>
+    <string name="assessment_rule_row">Применяемая версия: %1$s\nМодель правила: %2$s %3$s\nКласс правила: %4$s\nКласс автомобиля определит сервер.</string>
+    <string name="assessment_snapshot">Автомобиль: %1$s %2$s · %3$s\nВведённый год: %4$s\nИзменение параметров снимает прежний допуск. Активное назначение требует ручного действия диспетчера.</string>
+    <string name="assessment_confirm_title">Подтвердить проверку?</string>
+    <string name="assessment_confirm_body">Автомобиль: %1$s\nМарка / реальная модель: %2$s %3$s\nГод: %4$d\nИсполнение / кузов: %5$s / %6$s\nРежим: %7$s\nМодель-основание: %8$s\nУсловия: %9$s\nИсключение по году: %10$s\nОснование: %11$s\n\nКласс вычислит сервер. Это не итоговое одобрение и не выход на линию. Старое назначение может потребовать безопасной остановки и ручного переназначения диспетчером.</string>
+    <string name="assessment_standard">Обычная проверка</string><string name="assessment_exception_mode">Исключение OWNER</string><string name="assessment_none">Нет</string><string name="assessment_yes">Да</string><string name="assessment_no">Отмена</string>
+    <string name="assessment_recorded">Проверка записана. %1$s\nИтоговое одобрение автомобиля выполняется отдельно.</string>
+    <string name="assessment_dispatcher">Прежний допуск снят. Водителю нужна безопасная остановка; замену назначает диспетчер вручную. Подтверждение автомобиля не возобновляет старое назначение.</string>
+    <string name="assessment_conditions_summary">%1$s: %2$s%3$s\n</string><string name="assessment_waived_suffix"> (явное исключение)</string>
+    <string-array name="assessment_powers"><item>Выберите исполнение</item><item>ДВС</item><item>Гибрид</item><item>Электромобиль</item></string-array>
+    <string-array name="assessment_bodies"><item>Выберите кузов</item><item>Седан</item><item>Кроссовер</item><item>Минивэн</item><item>Другой</item></string-array>
+    <string-array name="assessment_decisions"><item>Не проверено</item><item>Выполнено</item><item>Не выполнено</item></string-array>
+<string name="assessment_pinned">Закреплённая версия: %1$s. Класс вычислит сервер после проверки условий.</string>
+<string name="assessment_evidence_summary">Выбранные стороны СТС и ревизии: %1$s</string>
+</resources>

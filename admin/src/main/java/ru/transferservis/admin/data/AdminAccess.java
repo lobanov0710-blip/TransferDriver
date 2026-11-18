@@ -52,6 +52,7 @@ public final class AdminAccess {
     public boolean canReadOrders(){return !ownerPhoneTest&&can("orders.read");}
     public boolean canReadVehicles(){return !ownerPhoneTest&&can("vehicles.read");}
     public boolean canReadClassification(){return !ownerPhoneTest&&can("vehicles.verify");}
+    public boolean canApproveVehicleException(){return canReadClassification()&&isOwner()&&hasVerifiedMfa()&&can("vehicles.approve_exception");}
     public boolean canManagePhotoChecks(){return canReadVehicles()&&can("vehicles.verify");}
     public boolean canAssign(boolean reassign){return canReadOrders()&&can("drivers.read")&&can("vehicles.read")&&can(reassign?"orders.reassign":"orders.assign");}
     public boolean canReadReview(){return can("drivers.verify_documents")||can("drivers.verify_identity")||can("vehicles.verify");}

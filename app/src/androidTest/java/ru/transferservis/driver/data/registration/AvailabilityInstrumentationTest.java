@@ -115,7 +115,7 @@ public final class AvailabilityInstrumentationTest {
         await(()->main.findViewById(R.id.availabilityProgress).getVisibility()==View.GONE);
     }
     private interface Condition{boolean ready();}
-    private void await(Condition condition) throws Exception {long until=System.currentTimeMillis()+8000;while(System.currentTimeMillis()<until){boolean[] ok={false};instrumentation.runOnMainSync(()->ok[0]=condition.ready());if(ok[0])return;Thread.sleep(40);}fail("Expected safe availability state not reached");}
+    private void await(Condition condition) throws Exception {long until=System.currentTimeMillis()+8000;while(System.currentTimeMillis()<until){boolean[] ok={false};instrumentation.runOnMainSync(()->ok[0]=condition.ready());if(ok[0])return;Thread.sleep(40);}windowDiagnostic();fail("Expected safe availability state not reached");}
     private void message(String text) throws Exception {await(()->((TextView)main.findViewById(R.id.availabilityMessage)).getText().toString().contains(text));}
     private void onlineAction(){instrumentation.runOnMainSync(()->{Slider slider=main.findViewById(R.id.availabilitySlider);Bundle arguments=new Bundle();arguments.putFloat(android.view.accessibility.AccessibilityNodeInfo.ACTION_ARGUMENT_PROGRESS_VALUE,100);assertNotNull(slider.getAccessibilityNodeProvider());assertTrue(slider.getAccessibilityNodeProvider().performAction(0,android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_PROGRESS.getId(),arguments));});}
     private void click(int id){instrumentation.runOnMainSync(()->main.findViewById(id).performClick());}
@@ -162,11 +162,11 @@ public final class AvailabilityInstrumentationTest {
     @Test public void realSliderGestureUsesChosenVehicleAndOnlineHidesSwitch() throws Exception {
         Server s=new Server();launch(s);instrumentation.runOnMainSync(()->((Spinner)main.findViewById(R.id.availabilityVehicle)).setSelection(2));
         instrumentation.waitForIdleSync();
-        androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.availabilitySlider)).perform(
+        try{androidx.test.espresso.Espresso.onView(androidx.test.espresso.matcher.ViewMatchers.withId(R.id.availabilitySlider)).perform(
             new androidx.test.espresso.action.GeneralSwipeAction(androidx.test.espresso.action.Swipe.SLOW,
                 view->{int[] p=new int[2];view.getLocationOnScreen(p);return new float[]{p[0]+((Slider)view).getTrackSidePadding(),p[1]+view.getHeight()/2f};},
                 view->{int[] p=new int[2];view.getLocationOnScreen(p);return new float[]{p[0]+view.getWidth()-((Slider)view).getTrackSidePadding(),p[1]+view.getHeight()/2f};},
-                androidx.test.espresso.action.Press.FINGER));
+                androidx.test.espresso.action.Press.FINGER));}catch(RuntimeException failure){windowDiagnostic();throw failure;}
         await(()->main.findViewById(R.id.availabilityOnline).getVisibility()==View.VISIBLE);
         assertEquals(CAR2,s.lastVehicle);assertEquals(1,s.puts.get());instrumentation.runOnMainSync(()->assertEquals(View.GONE,main.findViewById(R.id.availabilityOffline).getVisibility()));
     }
@@ -200,6 +200,13 @@ public final class AvailabilityInstrumentationTest {
             }
             throw new AssertionError("Native framebuffer did not settle");
         }finally{if(previous!=null)previous.recycle();}
+    }
+    private void windowDiagnostic() throws Exception {
+        StringBuilder safe=new StringBuilder("Synthetic availability focus diagnostic\n");
+        instrumentation.runOnMainSync(()->safe.append("hostFocused=").append(host!=null&&host.hasWindowFocus()).append(" lifecycle=").append(host==null?"absent":host.getLifecycle().getCurrentState()).append('\n'));
+        for(String command:new String[]{"dumpsys window windows","dumpsys activity activities","dumpsys power"})try(java.io.BufferedReader reader=new java.io.BufferedReader(new java.io.InputStreamReader(new ParcelFileDescriptor.AutoCloseInputStream(instrumentation.getUiAutomation().executeShellCommand(command)),java.nio.charset.StandardCharsets.UTF_8))){String line;while((line=reader.readLine())!=null)if(line.matches(".*(?:mCurrentFocus=|mFocusedApp=|mTopFocusedDisplayId=|mResumedActivity:|topResumedActivity=|mShowingLockscreen=|mKeyguardShowing=|mAwake=|mWakefulness=|mScreenOn=|mDisplayFrozen=).*"))safe.append(line.trim()).append('\n');}
+        try(java.io.FileOutputStream out=new java.io.FileOutputStream(new File(context.getFilesDir(),"availability-window-focus-diagnostic.txt"))){out.write(safe.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));}
+        System.out.println(safe.toString());
     }
     private void awaitFont(float expected) throws Exception {long until=System.currentTimeMillis()+8000;while(System.currentTimeMillis()<until){instrumentation.waitForIdleSync();if(Math.abs(context.getResources().getConfiguration().fontScale-expected)<0.01f)return;Thread.sleep(40);}fail("Fixture font configuration did not settle");}
     private void shell(String cmd) throws Exception {try(java.io.InputStream in=new ParcelFileDescriptor.AutoCloseInputStream(instrumentation.getUiAutomation().executeShellCommand(cmd))){byte[] b=new byte[512];while(in.read(b)!=-1){ }}}

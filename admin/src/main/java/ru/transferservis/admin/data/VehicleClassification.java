@@ -73,12 +73,13 @@ public final class VehicleClassification {
     }
     public static final class Rule {
         public final String version,make,model,vehicleClass;public final long minYear;
+        public final List<Condition> conditions;
         private Rule(JsonObject response,String expected)throws IOException {
             keys(response,"ok","rule","requestId");ok(response);JsonObject o=object(response,"rule");
             keys(o,"version","make","model","revision","minYear","vehicleClass","allowedBodyTypes","conditions");
             version=version(text(o,"version",128));if(!version.equals(version(expected)))throw invalid();
             make=text(o,"make",80);model=text(o,"model",80);Assignments.revision(o,"revision");minYear=Assignments.revision(o,"minYear");if(minYear>9999)throw invalid();
-            vehicleClass=choice(o,"vehicleClass","comfort","business","minivan");conditions(o);
+            vehicleClass=choice(o,"vehicleClass","comfort","business","minivan");conditions=conditions(o);
             if(!field(o,"allowedBodyTypes").isJsonNull()){
                 Set<String> seen=new HashSet<>();for(JsonElement e:array(o,"allowedBodyTypes",4)){
                     if(!e.isJsonPrimitive()||!e.getAsJsonPrimitive().isString()||!Arrays.asList("sedan","crossover","minivan","other").contains(e.getAsString())||!seen.add(e.getAsString()))throw invalid();
@@ -87,6 +88,7 @@ public final class VehicleClassification {
         }
         public static Rule parse(JsonObject body,String version)throws IOException {try{return new Rule(body,version);}catch(RuntimeException invalid){throw invalid();}}
     }
+    static Decision decision(JsonObject value)throws IOException {return new Decision(value);}
     static String cursor(String value)throws IOException {if(value==null)return "";if(!value.isEmpty()&&!value.matches("[A-Za-z0-9_-]{1,1024}"))throw invalid();return value;}
     static String version(String value)throws IOException {if(value==null||!value.matches("[A-Za-z0-9_.:-]{1,128}")||value.equals(".")||value.equals(".."))throw invalid();return value;}
     private static String nullableVersion(JsonObject o,String key)throws IOException {String v=nullable(o,key,128);return v==null?null:version(v);}

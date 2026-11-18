@@ -79,6 +79,7 @@ jobs:
         run: |
           python3 tools/check_security.py
           python3 tools/check_admin_security.py
+          python3 tools/test_android_native_runner.py
 
       - name: Verify Gradle wrapper
         run: |
@@ -202,21 +203,7 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: |
-            ./gradlew :app:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
-            mkdir -p registration-evidence
-            for image in profile-light profile-dark-large vehicle-light vehicle-dark-large vehicle-class-light vehicle-class-dark-large availability-offline-light availability-online-light availability-offline-dark-large availability-online-dark-large; do adb exec-out run-as ru.transferservis.driver cat files/registration-evidence/$image.png > registration-evidence/$image.png; done
-            python3 tools/check_registration_evidence.py registration-evidence
-            touch registration-evidence/.driver-validated
-            ./gradlew :app:installDebug --no-daemon --stacktrace
-            ./gradlew :admin:connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --no-daemon --stacktrace
-            for image in assignment-orders-light assignment-options-light assignment-form-light assignment-confirm-light assignment-uncertain-light assignment-orders-dark-large assignment-options-dark-large assignment-form-dark-large assignment-confirm-dark-large assignment-uncertain-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/assignment-evidence/$image.png > registration-evidence/$image.png; done
-            python3 tools/check_assignment_evidence.py registration-evidence
-            for image in photo-vehicles-light photo-checks-light photo-form-light photo-confirm-light photo-uncertain-light photo-vehicles-dark-large photo-checks-dark-large photo-form-dark-large photo-confirm-dark-large photo-uncertain-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/photo-evidence/$image.png > registration-evidence/$image.png; done
-            python3 tools/check_photo_control_evidence.py registration-evidence
-            for image in classification-current-light classification-history-light classification-unverified-light classification-current-dark-large classification-history-dark-large classification-unverified-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/classification-evidence/$image.png > registration-evidence/$image.png; done
-            python3 tools/check_classification_evidence.py registration-evidence
-            touch registration-evidence/.validated
+          script: bash tools/run_android_native_tests.sh
 
       - name: Verify executed JVM and Android test reports
         shell: bash
@@ -271,6 +258,22 @@ jobs:
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               if name == 'ADMIN_ANDROID':
                   for required in (
+                      'assessmentUsesPinnedVersionUntilKeysChangeThenCurrentRule',
+                      'assessmentLostAckReadDoesNotRebaseExplicitOriginalRetry',
+                      'assessmentRevokedGrantMfaAndPhoneScopeBlockBeforePost',
+                      'assessment401503MalformedAckNeverRefreshOrReplay',
+                      'assessmentSessionReplacementAndCancelledScopeCannotWrite',
+                      'assessmentStaleEvidenceConflictHasNoAutomaticGetOrPost',
+                      'assessmentDocumentPreviewRequiresIndependentSensitivePermission',
+                      'assessmentLateReadCancellationCannotReturnContext',
+                      'assessmentConfirmationAndLostAckKeepOriginalAcrossExplicitReadRetry',
+                      'assessmentEditedInputRequiresRuleReloadAndDocumentsAreExplicit',
+                      'assessmentOwnerExceptionHasExplicitWaiversAndDispatcherHasNoMode',
+                      'assessmentBackgroundWipesInputsEvidenceDialogAndUnknownAction',
+                      'assessmentUnknownWriteIsDiscardedOnBackgroundWithoutAutomaticReplay',
+                      'assessmentOwnerMfaTimerWipesFormWithoutNetwork',
+                      'nativeAssessmentLight',
+                      'nativeAssessmentDarkLargeFont',
                       'driverAndForeignBackendCiphertextRequireNewLogin',
                       'ownerProfileDoesNotOpenOperationalQueueWithoutMfa',
                       'staleRefreshCannotBecomeAnotherAdminRequest',
@@ -351,7 +354,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: admin-classification-read-debug-apk
+          name: admin-classification-review-debug-apk
           path: admin/build/outputs/apk/debug/admin-debug.apk
           if-no-files-found: error
           retention-days: 7
@@ -365,12 +368,21 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Upload safe native failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-failure-diagnostics
+          path: registration-evidence/native-diagnostics/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Print instrumentation report on failure
         if: failure()
         shell: bash
         run: |
           for report_dir in app/build/outputs/androidTest-results/connected admin/build/outputs/androidTest-results/connected; do
             if [[ -d "$report_dir" ]]; then
-              find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,260p' {} \;
+              find "$report_dir" -type f -name '*.xml' -print -exec sed -n '1,1000p' {} \;
             fi
           done
