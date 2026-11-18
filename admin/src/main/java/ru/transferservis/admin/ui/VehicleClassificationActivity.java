@@ -32,7 +32,9 @@ public final class VehicleClassificationActivity extends AppCompatActivity {
         account=getIntent().getStringExtra("account");vehicle=getIntent().getStringExtra("vehicle");getIntent().removeExtra("account");getIntent().removeExtra("vehicle");
         if(saved!=null||account==null||!account.matches("staff_[A-Za-z0-9_-]{8,94}")||vehicle==null||!vehicle.matches("vehicle_[A-Za-z0-9_-]{8,100}")){finish();return;}
         View root=findViewById(R.id.classificationRoot);root.setSaveFromParentEnabled(false);getWindow().getDecorView().setFilterTouchesWhenObscured(true);
-        if(Build.VERSION.SDK_INT>=29)root.setImportantForContentCapture(View.IMPORTANT_FOR_CONTENT_CAPTURE_NO_EXCLUDE_DESCENDANTS);
+        // FLAG_SECURE protects the entire window, including API29 content capture.
+        // The additional View-level opt-out is available starting at API30.
+        if(Build.VERSION.SDK_INT>=30)root.setImportantForContentCapture(View.IMPORTANT_FOR_CONTENT_CAPTURE_NO_EXCLUDE_DESCENDANTS);
         WindowCompat.setDecorFitsSystemWindows(getWindow(),false);
         boolean light=(getResources().getConfiguration().uiMode&android.content.res.Configuration.UI_MODE_NIGHT_MASK)!=android.content.res.Configuration.UI_MODE_NIGHT_YES;
         WindowInsetsControllerCompat bars=WindowCompat.getInsetsController(getWindow(),getWindow().getDecorView());bars.setAppearanceLightStatusBars(light);bars.setAppearanceLightNavigationBars(light);
