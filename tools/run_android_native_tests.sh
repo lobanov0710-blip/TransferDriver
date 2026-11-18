@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Keep both independent native reports while preserving every failure and gate.
-set -u
+set -eu
 mkdir -p registration-evidence/native-diagnostics
+rm -f registration-evidence/.validated registration-evidence/.driver-validated
 driver_status=0
 admin_status=0
 run_driver() {

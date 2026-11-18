@@ -10,6 +10,8 @@ class NativeRunnerTest(unittest.TestCase):
     def check_run(self, fail):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary);(root/'bin').mkdir();(root/'tools').mkdir()
+            (root/'registration-evidence').mkdir()
+            for name in ('.validated','.driver-validated'):(root/'registration-evidence'/name).touch()
             (root/'tools/run_android_native_tests.sh').write_text(Path('tools/run_android_native_tests.sh').read_text())
             (root/'gradlew').write_text('''#!/bin/bash
 printf '%s\\n' "$*" >> calls
