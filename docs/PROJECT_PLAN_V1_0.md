@@ -603,3 +603,14 @@ Readonly PR17, review/exception PR18 и rule editor PR19 реализуют Andr
 ## G2: подготовка readiness audit — 2026-11-18
 
 После OWNER editor начаты powertrain review и локальная read-only inventory. 121 правило сохранено; 9 семейств имеют частичные первичные свидетельства, 112 pending в новом реестре. Полное покрытие лет/поколений/рынков и реальная legacy inventory остаются открытыми. Подробности: [checkpoint](G2_CLASSIFIER_READINESS_2026-11-18.md). Это не активация/seed/migration и не новая Android-сборка; G1 paused, D4–D7 pending.
+
+
+## G2: первый проход источников по всем 121 семействам — 2026-11-18
+
+Revision 2 реестра:121 строки с частичными первичными сведениями,111 источников;
+исчерпывающее покрытие лет/поколений/рынков и actual legacy inventory открыты.
+Уточнены точные источники Maxus G10/Opel Zafira Life и mixed Lexus ES. CSV и
+runtime не менялись. Вопрос допуска лифтбеков в Комфорт отправлен владельцу;
+ответ ожидается, зависимые изменения запрещены до решения. Действующие pins,
+body guards и dispatcher restrictions сохраняются. Подробности: readiness
+checkpoint и VEHICLE_BODY_POLICY_CLARIFICATION_2026-11-18.md. G1paused,D4–D7pending.
