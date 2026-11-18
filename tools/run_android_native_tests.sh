@@ -25,6 +25,8 @@ run_admin() {
   python3 tools/check_classification_evidence.py registration-evidence
   for image in assessment-form-light assessment-conditions-light assessment-confirm-light assessment-uncertain-light assessment-recorded-light assessment-form-dark-large assessment-conditions-dark-large assessment-confirm-dark-large assessment-uncertain-dark-large assessment-recorded-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/assessment-evidence/$image.png > registration-evidence/$image.png; done
   python3 tools/check_assessment_evidence.py registration-evidence
+  for image in rule-editor-form-light rule-editor-conditions-light rule-editor-confirm-light rule-editor-uncertain-light rule-editor-recorded-light rule-editor-form-dark-large rule-editor-conditions-dark-large rule-editor-confirm-dark-large rule-editor-uncertain-dark-large rule-editor-recorded-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/rule-editor-evidence/$image.png > registration-evidence/$image.png; done
+  python3 tools/check_rule_editor_evidence.py registration-evidence
 }
 # Independent shells retain errexit while the parent records each nonzero status.
 bash -e -c "$(declare -f run_driver); run_driver" || driver_status=$?
@@ -32,6 +34,7 @@ bash -e -c "$(declare -f run_admin); run_admin" || admin_status=$?
 if [[ "$driver_status" -ne 0 || "$admin_status" -ne 0 ]]; then
   adb exec-out run-as ru.transferservis.driver cat files/availability-window-focus-diagnostic.txt > registration-evidence/native-diagnostics/availability-focus.txt 2>/dev/null || true
   adb exec-out run-as ru.transferservis.admin tar -cf - files/assessment-diagnostics > registration-evidence/native-diagnostics/assessment.tar 2>/dev/null || true
+  adb exec-out run-as ru.transferservis.admin tar -cf - files/rule-editor-diagnostics > registration-evidence/native-diagnostics/rule-editor.tar 2>/dev/null || true
   exit 1
 fi
 touch registration-evidence/.validated

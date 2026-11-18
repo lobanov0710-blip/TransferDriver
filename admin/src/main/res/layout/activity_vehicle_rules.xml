@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/rulesRoot" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:saveEnabled="false" android:importantForAutofill="noExcludeDescendants">
+<com.google.android.material.appbar.MaterialToolbar xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/rulesToolbar" android:layout_width="match_parent" android:layout_height="wrap_content" app:navigationIcon="@drawable/ic_assignment_back" app:navigationContentDescription="@string/classification_close" app:title="@string/rules_title" />
+<ProgressBar android:id="@+id/rulesProgress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal" android:visibility="gone" />
+<TextView android:id="@+id/rulesMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" android:saveEnabled="false" />
+<ScrollView android:id="@+id/rulesScroll" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true" android:saveEnabled="false"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:saveEnabled="false">
+<TextView android:id="@+id/rulesSummary" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingVertical="12dp" android:saveEnabled="false" />
+<LinearLayout android:id="@+id/rulesTarget" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:saveEnabled="false">
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_scope" />
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/assessment_make" />
+<EditText android:id="@+id/rulesMake" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:singleLine="true" android:inputType="textNoSuggestions" android:imeOptions="flagNoPersonalizedLearning" android:hint="@string/assessment_make" android:maxLength="80" android:saveEnabled="false" android:importantForAutofill="no" />
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/assessment_model" />
+<EditText android:id="@+id/rulesModel" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:singleLine="true" android:inputType="textNoSuggestions" android:imeOptions="flagNoPersonalizedLearning" android:hint="@string/assessment_model" android:maxLength="80" android:saveEnabled="false" android:importantForAutofill="no" />
+</LinearLayout>
+<LinearLayout android:id="@+id/rulesForm" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:saveEnabled="false">
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_year" />
+<EditText android:id="@+id/rulesYear" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:singleLine="true" android:inputType="number" android:imeOptions="flagNoPersonalizedLearning" android:hint="@string/rules_year" android:maxLength="4" android:saveEnabled="false" android:importantForAutofill="no" />
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_class" />
+<Spinner android:id="@+id/rulesClass" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:contentDescription="@string/rules_class" android:saveEnabled="false" />
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_body_policy" />
+<CheckBox android:id="@+id/rulesSedan" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_sedan" />
+<CheckBox android:id="@+id/rulesCrossover" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_crossover" />
+<CheckBox android:id="@+id/rulesMinivan" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_minivan" />
+<CheckBox android:id="@+id/rulesOther" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_other" />
+<CheckBox android:id="@+id/rulesNullBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/rules_null_body" />
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_conditions" />
+<LinearLayout android:id="@+id/rulesConditions" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:saveEnabled="false" />
+<com.google.android.material.button.MaterialButton android:id="@+id/rulesAddCondition" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/rules_add_condition" />
+<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_reason" />
+<EditText android:id="@+id/rulesReason" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:singleLine="true" android:inputType="textNoSuggestions" android:imeOptions="flagNoPersonalizedLearning" android:hint="@string/rules_reason" android:maxLength="1000" android:saveEnabled="false" android:importantForAutofill="no" />
+</LinearLayout></LinearLayout></ScrollView>
+<com.google.android.material.button.MaterialButton android:id="@+id/rulesConfirm" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/rules_confirm" />
+<com.google.android.material.button.MaterialButton android:id="@+id/rulesRetry" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/assessment_retry" />
+<com.google.android.material.button.MaterialButton android:id="@+id/rulesRead" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/rules_read" />
+</LinearLayout>
