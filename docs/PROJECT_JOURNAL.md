@@ -4959,3 +4959,89 @@ Screenshots используют liftback в тех же synthetic states; ни�
 
 
 Локальный правильный `npm run test:admin-vehicle-rules` завершён:20 tests PASS. Новый liftback workflow повторён после добавления HTTP unknown-body отрицательного случая:2 tests PASS. Перед публикацией diff --check PASS; полные CI и Android JVM/native остаются pending.
+
+
+## Liftback: первый backend CI и ограничение snapshot проекта — 2026-11-18
+
+Первый source20c9f3b45823437ae78b2e04e0d1c70cd4193ef0/tree81f59a7f94407d5ade65337133f4ddcead4ed7f7
+в draft PR45: CI44358568865/job134993291607 FAILURE на новом native upgrade
+шаге. До него80 npm-команд,25 migrations,12 preflight,14 inventory,6 reference,
+audit0 и15 прежних native D1 workflows PASS. Ошибка тестового snapshot: общий
+перечень sqlite_master включал защищённую provider metadata table, которую D1
+запрещает читать. Миграция на native engine ещё не выполнялась в этом тесте;
+успех populated upgrade D1 пока не заявлен.
+
+Исправлен только тестовый snapshot: явный список всех проектных таблиц берётся
+из локальной schema фикстуры24, schema comparison ограничен ими и current view.
+Provider-private таблицы не читаются, разрешения не обходятся. Равенство всех
+проектных строк/rowid, schema rollback, immutable guards, FK/quick_check и новая
+HTTP/SQL матрица сохранены. После исправления2 локальных tests PASS; запускается
+новый полный CI. Runtime/migration/требования проверок не ослаблены.
+
+Публикация Android source56d2cc129b12ca52e4982933f4a37a025e654f2d/tree26e7c3c4217662224425c86a274e149d95c17f18
+в draft PR21 успешна, CI44358868461 выполняется. Сначала большой локальный
+payload и затем целый plan превысили лимит вывода; обе попытки остановились до
+записи Android tree/ref. Повторная публикация читала файлы отдельно, большие
+журнал/план — parent+проверенный append; tree parity подтверждена. Обрезанные
+данные не публиковались. Никаких remote migration/merge/deploy/активации нет.
+
+
+## Liftback: backend CI после исправления snapshot PASS — 2026-11-18
+
+Source `b51176226a6f85eb01abb7dc56abec8450e1f713`, tree `f79751cdc2cd4e5903e20e589dbb28a6860199b5`, local `ea77c9a90ec3ddeef79238698cbb666a94c11d97`:
+CI44359299631/job134995931727 SUCCESS, все32 steps.80 npm,25 migrations,
+12 preflight,14 inventory,6 reference,16 native D1 workflows,6 protected actual
+Wrangler CLI cases,audit0,Worker dry-run PASS. Raw decoded log/head проверены.
+Native engine подтвердил actual OWNER/MFA/Dispatcher boundaries, comfort
+standard/explicit exception, отказ business/minivan-null/direct SQL, старый
+pin/implicit fallback, BEV/year/strict enum, отсутствие automatic approval/hold
+release. Populated24→25 сохраняет все проектные rows/rowid/immutable graph;
+failed upgrade rollback,FK/quick_check PASS,realCloudflareRequests0.
+
+Первый failed CI44358568865 сохранён и разобран; исправление только test snapshot
+scope, runtime/миграция после первого source не менялись. Backend receipt
+COMFORT_LIFTBACK_BACKEND_VERIFICATION_2026-11-18.json привязан к tested source;
+Android CI44358868461 и artifact review ещё pending, их PASS не заявлен.
+В canonical AGENTS добавлено утверждение владельца; canonical backend
+69dff6ed7937c704067b62dae93b08a80425e551, Android
+ df06d6fd35f6e724a84f742a6c0ee71502e7b1a8 (оба2 files/append-only,0 deletions).
+Нет production/remote migration/активации/seed/backfill/real sensitive data.
+
+
+## Liftback: Android attempt1 FAILURE, системный launcher ANR — 2026-11-18
+
+CI44358868461/job134994375409 source56d2cc129b12ca52e4982933f4a37a025e654f2d
+завершился FAILURE. Build/JVM/lint/API endpoint locks/signing isolation прошли;
+48 native UI cases не прошли (3 Driver availability,45 Admin). Safe diagnostic
+artifact14455626085 содержит `hostFocused=false lifecycle=RESUMED`,
+`mCurrentFocus=Application Not Responding: com.google.android.apps.nexuslauncher`,
+keyguard=false, screen awake. Для Driver причина потери focus подтверждена;
+Admin stack traces показывают последующие launch/focus waits. Артефакт
+не содержит APK/успешного набора screenshots; PASS instrumentation не заявлен.
+
+Запущен attempt2 того же source в новом runner/emulator. Runtime/test assertions,
+таймауты, privacy gates и набор обязательных тестов не ослаблены; системное ANR
+окно не обходилось принудительным закрытием. Первый failure сохранён, повторный
+PASS сам по себе не будет означать исправление emulator launcher. Итоговый
+APK/evidence review ожидается только после полностью успешного CI.
+
+
+## Liftback: второй Android FAILURE и readiness gate эмулятора — 2026-11-18
+
+Тот же source56d2cc129b12ca52e4982933f4a37a025e654f2d/CI44358868461 attempt2,
+job135012835848 FAILURE: снова3 Driver/45 Admin native failures. Новый artifact
+14456922082 повторно показывает RESUMED/awake/keyguard=false, но focus у ANR
+`com.google.android.apps.nexuslauncher`. Повтор не устранил внешнюю причину.
+APK/native evidence PASS не заявлены; исходные assertions/timeouts сохранены.
+
+Добавлен отдельный readiness gate перед suites: дождаться boot_completed,
+обычно запустить HOME через am start -W, потребовать3 последовательных focus
+наблюдения штатного launcher. ANR/неизвестный HOME/ошибка adb/таймаут — FAIL;
+нет force-stop/kill/кликов по ANR/изменения image/API/security settings. Это
+проверяемая гипотеза о незавершённом старте launcher и диагностическая защита,
+не доказанное исправление root cause. После native failure записываются только
+focus/process и категория причины ANR, без полного dumpsys/provider/SQL вывода.
+8 unit cases нового gate и6 runner flow checks (5 прежних+новый) PASS, security8/5,
+bash/diff PASS. Неготовая среда останавливает обе suites и удаляет stale markers.
+Запускается новый полный source CI; разрешение liftback/backend runtime не
+менялись. Если gate остановит CI, результат останется BLOCKED, не PASS.

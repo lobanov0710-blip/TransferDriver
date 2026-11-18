@@ -21,15 +21,22 @@ case "$1:$FAIL" in
 esac
 ''')
             (root/'bin/adb').write_text('#!/bin/bash\nif [[ "$FAIL" == adb && "$*" == *files/registration-evidence/* ]]; then exit 7; fi\n')
-            (root/'bin/python3').write_text('#!/bin/bash\nif [[ "$FAIL" == verifier && "$1" == *check_registration_evidence.py ]]; then exit 6; fi\n')
+            (root/'bin/python3').write_text('#!/bin/bash\nif [[ "$FAIL" == readiness && "$1" == tools/check_android_emulator_ready.py ]]; then exit 5; fi\nif [[ "$FAIL" == verifier && "$1" == *check_registration_evidence.py ]]; then exit 6; fi\n')
             for p in (root/'gradlew',root/'bin/adb',root/'bin/python3'):p.chmod(0o700)
             env=dict(os.environ,PATH=str(root/'bin')+os.pathsep+os.environ['PATH'],FAIL=fail)
             result=subprocess.run(['bash','tools/run_android_native_tests.sh'],cwd=root,env=env,capture_output=True,text=True)
+            if fail == 'readiness':
+                self.assertEqual(5,result.returncode)
+                self.assertFalse((root/'calls').exists())
+                for name in ('.validated','.driver-validated'):
+                    self.assertFalse((root/'registration-evidence'/name).exists())
+                return
             self.assertIn(':admin:connectedDebugAndroidTest',(root/'calls').read_text())
             self.assertEqual(0 if not fail else 1,result.returncode,result.stderr)
             self.assertEqual(not fail,(root/'registration-evidence/.validated').exists())
             self.assertEqual(fail not in ('driver','adb','verifier'),(root/'registration-evidence/.driver-validated').exists())
     def test_both_suites_and_evidence_are_required(self):self.check_run('')
+    def test_unready_emulator_prevents_suites_and_stale_validation_markers(self):self.check_run('readiness')
     def test_driver_failure_does_not_mask_status_or_block_admin(self):self.check_run('driver')
     def test_admin_failure_keeps_overall_failure(self):self.check_run('admin')
     def test_adb_failure_cannot_create_validation_marker(self):self.check_run('adb')
