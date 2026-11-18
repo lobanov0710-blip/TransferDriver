@@ -39,6 +39,8 @@ public final class AdminActivity extends AppCompatActivity {
             model.login(login.getText().toString(), secret);
         });
         findViewById(R.id.retry).setOnClickListener(v -> model.restore());
+        findViewById(R.id.vehicleRules).setFilterTouchesWhenObscured(true);
+        findViewById(R.id.vehicleRules).setOnClickListener(v->{AdminViewModel.State s=model.state().getValue();if(s!=null&&!s.loading&&s.access!=null&&s.access.canManageVehicleRules())startActivity(VehicleRuleActivity.intent(this,s.access.accountId));});
         findViewById(R.id.photoControl).setOnClickListener(v -> startActivity(new android.content.Intent(this, PhotoControlActivity.class)));
         findViewById(R.id.assignments).setOnClickListener(v -> startActivity(new android.content.Intent(this, AssignmentActivity.class)));
         findViewById(R.id.queue).setOnClickListener(v -> model.queue(new String[]{"","submitted","under_review","changes_required","approved","rejected"}[filter.getSelectedItemPosition()]));
@@ -76,6 +78,8 @@ public final class AdminActivity extends AppCompatActivity {
         security.setText(!authenticated ? "" : getString(state.access.ownerPhoneTest?R.string.owner_phone_test_notice:state.access.isOwner() ? (state.access.hasVerifiedMfa() ? R.string.owner_mfa_verified : R.string.owner_security_pending) : R.string.server_permissions));
         Button queue = findViewById(R.id.queue);
         queue.setEnabled(authenticated && state.access.canReadRegistrations() && !state.loading);
+        findViewById(R.id.vehicleRules).setVisibility(authenticated&&state.access.canManageVehicleRules()?View.VISIBLE:View.GONE);
+        findViewById(R.id.vehicleRules).setEnabled(authenticated&&state.access.canManageVehicleRules()&&!state.loading);
         findViewById(R.id.photoControl).setVisibility(authenticated && state.access.canReadVehicles() ? View.VISIBLE : View.GONE);
         findViewById(R.id.photoControl).setEnabled(authenticated && state.access.canReadVehicles() && !state.loading);
         findViewById(R.id.assignments).setVisibility(authenticated && state.access.canReadOrders() ? View.VISIBLE : View.GONE);

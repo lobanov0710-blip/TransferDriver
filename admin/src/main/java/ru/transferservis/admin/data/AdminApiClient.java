@@ -41,6 +41,7 @@ public final class AdminApiClient {
         okhttp3.HttpUrl url=okhttp3.HttpUrl.get(AdminEndpointPolicy.BASE_URL+"v1/admin/vehicle-rules").newBuilder().addQueryParameter("make",make).addQueryParameter("model",model).addQueryParameter("limit","1").build();
         return request("GET",url.toString().substring(AdminEndpointPolicy.BASE_URL.length()),null,token,null,scope);
     }
+    JsonObject createVehicleRule(String token,VehicleRuleAction action)throws IOException {return request("POST","v1/admin/vehicle-rules",action.body(),token,action.key,action.scope);}
     JsonObject classificationRegistration(String token,String driver,long scope)throws IOException {return request("GET","v1/admin/registrations/"+RegistrationReview.driverId(driver),null,token,null,scope);}
     JsonObject classificationReview(String token,VehicleAssessmentAction action)throws IOException {return request("POST","v1/admin/vehicles/"+Assignments.vehicleId(action.context.vehicleId)+"/classification/review",action.body(),token,action.key,action.scope);}
     JsonObject photoVehicles(String token,String status,String cursor,long scope)throws IOException {

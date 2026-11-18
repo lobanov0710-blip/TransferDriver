@@ -72,19 +72,21 @@ public final class VehicleClassification {
         public static Page parse(JsonObject body,String vehicle,String cursor,Long revision)throws IOException {try{return new Page(body,vehicle,cursor,revision);}catch(RuntimeException invalid){throw invalid();}}
     }
     public static final class Rule {
-        public final String version,make,model,vehicleClass;public final long minYear;
+        public final String version,make,model,vehicleClass;public final long minYear,revision;
+        public final List<String> allowedBodyTypes;
         public final List<Condition> conditions;
         private Rule(JsonObject response,String expected)throws IOException {
             keys(response,"ok","rule","requestId");ok(response);JsonObject o=object(response,"rule");
             keys(o,"version","make","model","revision","minYear","vehicleClass","allowedBodyTypes","conditions");
             version=version(text(o,"version",128));if(!version.equals(version(expected)))throw invalid();
-            make=text(o,"make",80);model=text(o,"model",80);Assignments.revision(o,"revision");minYear=Assignments.revision(o,"minYear");if(minYear>9999)throw invalid();
+            make=text(o,"make",80);model=text(o,"model",80);revision=Assignments.revision(o,"revision");minYear=Assignments.revision(o,"minYear");if(minYear>9999)throw invalid();
             vehicleClass=choice(o,"vehicleClass","comfort","business","minivan");conditions=conditions(o);
-            if(!field(o,"allowedBodyTypes").isJsonNull()){
+            List<String> bodies=null;if(!field(o,"allowedBodyTypes").isJsonNull()){
+                bodies=new ArrayList<>();
                 Set<String> seen=new HashSet<>();for(JsonElement e:array(o,"allowedBodyTypes",4)){
-                    if(!e.isJsonPrimitive()||!e.getAsJsonPrimitive().isString()||!Arrays.asList("sedan","crossover","minivan","other").contains(e.getAsString())||!seen.add(e.getAsString()))throw invalid();
+                    if(!e.isJsonPrimitive()||!e.getAsJsonPrimitive().isString()||!Arrays.asList("sedan","crossover","minivan","other").contains(e.getAsString())||!seen.add(e.getAsString()))throw invalid();bodies.add(e.getAsString());
                 }if(seen.isEmpty())throw invalid();
-            }
+            }allowedBodyTypes=bodies==null?null:Collections.unmodifiableList(bodies);
         }
         public static Rule parse(JsonObject body,String version)throws IOException {try{return new Rule(body,version);}catch(RuntimeException invalid){throw invalid();}}
     }

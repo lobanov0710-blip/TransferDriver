@@ -258,6 +258,21 @@ jobs:
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               if name == 'ADMIN_ANDROID':
                   for required in (
+                      'ruleUnknownOutcomeReadAndExplicitRetryKeepOriginalVersionBodyAndKey',
+                      'ruleDispatcherErroneousGrantAndPhoneScopeAreDeniedBeforeReadOrPost',
+                      'ruleMfaRevocationSessionReplacementAndCancellationNeverWrite',
+                      'rule401503MalformedAckAnd409NeverRefreshReadOrReplay',
+                      'ruleNewModelPreservesExplicitNoCurrentRuleAndNoDefaultMinimum',
+                      'ruleLookupEscapesQueryWithoutChangingTheExactTarget',
+                      'ruleCancelledDelayedReadCannotExposeSnapshot',
+                      'ruleEditorConfirmsBeforePostAndUnknownReadNeverRebasesOriginalRetry',
+                      'ruleEditorRequiresLookupExplicitNewValuesAndUnchangedTarget',
+                      'ruleEditorPreservesWholeConditionsAndRequiresExplicitRemoval',
+                      'ruleEditorDispatcherPhoneMfaAndConflictFailClosed',
+                      'ruleEditorBackgroundWipesConditionsDialogOriginalActionAndSavedState',
+                      'ruleEditorMfaTimerWipesVisibleDataWithoutNetwork',
+                      'nativeRuleEditorLight',
+                      'nativeRuleEditorDarkLargeFont',
                       'assessmentUsesPinnedVersionUntilKeysChangeThenCurrentRule',
                       'assessmentLostAckReadDoesNotRebaseExplicitOriginalRetry',
                       'assessmentRevokedGrantMfaAndPhoneScopeBlockBeforePost',
@@ -354,7 +369,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: admin-classification-review-debug-apk
+          name: admin-rule-editor-debug-apk
           path: admin/build/outputs/apk/debug/admin-debug.apk
           if-no-files-found: error
           retention-days: 7
