@@ -71,3 +71,6 @@ first-save binding и OWNER-only protected powers. CI44078545851 SUCCESS;
 [provenance и границы](https://github.com/lobanov0710-blip/uber-v3/blob/arch/g2-classifier-binding/docs/VEHICLE_RULE_BINDING_VERIFICATION_2026-11-17.json).
 Trusted assessment/API/admission/Admin UI — следующие части контракта,
 не считаются готовыми по наличию binding. Новых Android binaries здесь нет.
+## Текущий UI prerequisite — 2026-11-18
+
+Backend trusted/public review и история теперь проверены в PR №43 (source `5836e183f86c656c17bf77f77bb94e968f730df5`, CI `44240856017`). Android Draft PR №17 реализует строгие DTO и readonly карточку текущей классификации/истории: CI `44245721289` attempt2 PASS, source `b7eb21f4a824ca3da51e7a0ed05a9158b3721739`. [Scope](ADMIN_CLASSIFICATION_READ_UI_2026-11-18.md), [receipt](ADMIN_CLASSIFICATION_READ_UI_VERIFICATION_2026-11-18.json). Следующий UI срез — форма параметров/условий и OWNER exception, confirmation/explicit retry/privacy; право вручную выбрать class не вводится. Авторство общих правил/UI и полная приёмка ещё впереди. Исторические статусы выше относятся к своим проверенным срезам и не отменяют этот checkpoint.
