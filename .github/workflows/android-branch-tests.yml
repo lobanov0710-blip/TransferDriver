@@ -216,6 +216,8 @@ jobs:
             python3 tools/check_photo_control_evidence.py registration-evidence
             for image in classification-current-light classification-history-light classification-unverified-light classification-current-dark-large classification-history-dark-large classification-unverified-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/classification-evidence/$image.png > registration-evidence/$image.png; done
             python3 tools/check_classification_evidence.py registration-evidence
+            for image in assessment-form-light assessment-conditions-light assessment-confirm-light assessment-uncertain-light assessment-recorded-light assessment-form-dark-large assessment-conditions-dark-large assessment-confirm-dark-large assessment-uncertain-dark-large assessment-recorded-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/assessment-evidence/$image.png > registration-evidence/$image.png; done
+            python3 tools/check_assessment_evidence.py registration-evidence
             touch registration-evidence/.validated
 
       - name: Verify executed JVM and Android test reports
@@ -271,6 +273,22 @@ jobs:
                       assert any(required in case.get('name', '') for case in cases), required + ': not executed'
               if name == 'ADMIN_ANDROID':
                   for required in (
+                      'assessmentUsesPinnedVersionUntilKeysChangeThenCurrentRule',
+                      'assessmentLostAckReadDoesNotRebaseExplicitOriginalRetry',
+                      'assessmentRevokedGrantMfaAndPhoneScopeBlockBeforePost',
+                      'assessment401503MalformedAckNeverRefreshOrReplay',
+                      'assessmentSessionReplacementAndCancelledScopeCannotWrite',
+                      'assessmentStaleEvidenceConflictHasNoAutomaticGetOrPost',
+                      'assessmentDocumentPreviewRequiresIndependentSensitivePermission',
+                      'assessmentLateReadCancellationCannotReturnContext',
+                      'assessmentConfirmationAndLostAckKeepOriginalAcrossExplicitReadRetry',
+                      'assessmentEditedInputRequiresRuleReloadAndDocumentsAreExplicit',
+                      'assessmentOwnerExceptionHasExplicitWaiversAndDispatcherHasNoMode',
+                      'assessmentBackgroundWipesInputsEvidenceDialogAndUnknownAction',
+                      'assessmentUnknownWriteIsDiscardedOnBackgroundWithoutAutomaticReplay',
+                      'assessmentOwnerMfaTimerWipesFormWithoutNetwork',
+                      'nativeAssessmentLight',
+                      'nativeAssessmentDarkLargeFont',
                       'driverAndForeignBackendCiphertextRequireNewLogin',
                       'ownerProfileDoesNotOpenOperationalQueueWithoutMfa',
                       'staleRefreshCannotBecomeAnotherAdminRequest',
@@ -351,7 +369,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: admin-classification-read-debug-apk
+          name: admin-classification-review-debug-apk
           path: admin/build/outputs/apk/debug/admin-debug.apk
           if-no-files-found: error
           retention-days: 7

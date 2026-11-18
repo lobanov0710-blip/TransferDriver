@@ -37,6 +37,12 @@ public final class AdminApiClient {
     JsonObject classificationRule(String token,String version,long scope)throws IOException {
         return request("GET","v1/admin/vehicle-rules/versions/"+VehicleClassification.version(version),null,token,null,scope);
     }
+    JsonObject classificationRules(String token,String make,String model,long scope)throws IOException {
+        okhttp3.HttpUrl url=okhttp3.HttpUrl.get(AdminEndpointPolicy.BASE_URL+"v1/admin/vehicle-rules").newBuilder().addQueryParameter("make",make).addQueryParameter("model",model).addQueryParameter("limit","1").build();
+        return request("GET",url.toString().substring(AdminEndpointPolicy.BASE_URL.length()),null,token,null,scope);
+    }
+    JsonObject classificationRegistration(String token,String driver,long scope)throws IOException {return request("GET","v1/admin/registrations/"+RegistrationReview.driverId(driver),null,token,null,scope);}
+    JsonObject classificationReview(String token,VehicleAssessmentAction action)throws IOException {return request("POST","v1/admin/vehicles/"+Assignments.vehicleId(action.context.vehicleId)+"/classification/review",action.body(),token,action.key,action.scope);}
     JsonObject photoVehicles(String token,String status,String cursor,long scope)throws IOException {
         if(status==null||(!status.isEmpty()&&!PhotoControl.STATUSES.contains(status)))throw new IOException("Invalid filter");
         String next=Assignments.cursor(cursor);return request("GET","v1/admin/vehicles?limit=20"+(status.isEmpty()?"":"&status="+status)+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);
@@ -88,10 +94,14 @@ public final class AdminApiClient {
         if(!OwnerMfa.trueField(response,"ok"))throw new IOException("Invalid mutation response");
     }
     public byte[] resource(String token,String driverId,RegistrationReview.Item item) throws IOException {
+        return resource(token,driverId,item,(Long)null);
+    }
+    byte[] resource(String token,String driverId,RegistrationReview.Item item,long scope)throws IOException {return resource(token,driverId,item,Long.valueOf(scope));}
+    private byte[] resource(String token,String driverId,RegistrationReview.Item item,Long scope)throws IOException {
         if(!"document".equals(item.type)&&!"vehicle_photo".equals(item.type))throw new IOException("Invalid resource");
         Request request=new Request.Builder().url(AdminEndpointPolicy.BASE_URL+"v1/admin/registrations/"
                 +RegistrationReview.driverId(driverId)+"/resources/"+item.type+"/"+RegistrationReview.targetId(item.id))
-                .header("Authorization","Bearer "+token).header("Cache-Control","no-store").header("Accept","image/jpeg, image/png, image/webp").build();
+                .tag(Long.class,scope).header("Authorization","Bearer "+token).header("Cache-Control","no-store").header("Accept","image/jpeg, image/png, image/webp").build();
         try(Response response=client.newCall(request).execute()) {
             if(!response.isSuccessful())throw failure(response);
             ResponseBody body=response.body();
