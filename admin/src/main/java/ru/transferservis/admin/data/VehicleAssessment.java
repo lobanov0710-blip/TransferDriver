@@ -15,7 +15,7 @@ public final class VehicleAssessment {
         public final String make,model,powertrain,bodyType;public final long year;
         public Parameters(String make,String model,String year,String power,String body)throws IOException {
             this.make=text(make,80);this.model=text(model,80);String n=text(year,4);if(!n.matches("[0-9]{1,4}"))throw invalid();this.year=Long.parseLong(n);if(this.year<1)throw invalid();
-            if(!Arrays.asList("combustion","hybrid","battery_electric").contains(power)||!Arrays.asList("sedan","crossover","minivan","other").contains(body))throw invalid();powertrain=power;bodyType=body;
+            if(!Arrays.asList("combustion","hybrid","battery_electric").contains(power)||!Arrays.asList("sedan","crossover","liftback","minivan","other").contains(body))throw invalid();powertrain=power;bodyType=body;
         }
         public boolean keysChanged(Context c){return !make.equals(c.page.declared.make)||!model.equals(c.page.declared.model)||!Long.valueOf(year).equals(c.page.declared.year);}
         public boolean same(Parameters p){return p!=null&&make.equals(p.make)&&model.equals(p.model)&&year==p.year&&powertrain.equals(p.powertrain)&&bodyType.equals(p.bodyType);}

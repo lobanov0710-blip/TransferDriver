@@ -614,3 +614,12 @@ runtime не менялись. Вопрос допуска лифтбеков в
 ответ ожидается, зависимые изменения запрещены до решения. Действующие pins,
 body guards и dispatcher restrictions сохраняются. Подробности: readiness
 checkpoint и VEHICLE_BODY_POLICY_CLARIFICATION_2026-11-18.md. G1paused,D4–D7pending.
+
+
+## G2: утверждён liftback только для comfort — 2026-11-18
+
+OWNER ответил «Только в комфорте»; вопрос кузова закрыт. Реализуются отдельный
+body enum, серверные/SQL ограничения, Admin DTO/формы/отображение и meaningful
+tests. Новых Dispatcher powers, расширения Бизнес/Минивэн или массового изменения
+версий/pins нет. Миграция25 только готовится/проверяется локально и CI, remote
+apply/активация не утверждены. Powertrain ranges/actual inventory остаются открыты.

@@ -28,7 +28,7 @@ public final class VehicleAssessmentActivity extends AppCompatActivity {
     private String account,driver,vehicle;private long scope;private int generation;private boolean started,busy;
     private AdminAccess access;private VehicleAssessment.Context context;private VehicleAssessment.Selection selection;
     private VehicleAssessmentAction uncertain;private AlertDialog confirmation;private Bitmap preview;
-    private static final String[] POWERS={"","combustion","hybrid","battery_electric"},BODIES={"","sedan","crossover","minivan","other"},RESULTS={"","satisfied","unmet"};
+    private static final String[] POWERS={"","combustion","hybrid","battery_electric"},BODIES={"","sedan","crossover","liftback","minivan","other"},RESULTS={"","satisfied","unmet"};
     public static Intent intent(Context c,String account,String driver,String vehicle){return new Intent(c,VehicleAssessmentActivity.class).putExtra("account",account).putExtra("driver",driver).putExtra("vehicle",vehicle);}
     @Override protected void onCreate(Bundle saved){
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);super.onCreate(null);setContentView(R.layout.activity_vehicle_assessment);

@@ -28,7 +28,7 @@
     <string name="assessment_dispatcher">Прежний допуск снят. Водителю нужна безопасная остановка; замену назначает диспетчер вручную. Подтверждение автомобиля не возобновляет старое назначение.</string>
     <string name="assessment_conditions_summary">%1$s: %2$s%3$s\n</string><string name="assessment_waived_suffix"> (явное исключение)</string>
     <string-array name="assessment_powers"><item>Выберите исполнение</item><item>ДВС</item><item>Гибрид</item><item>Электромобиль</item></string-array>
-    <string-array name="assessment_bodies"><item>Выберите кузов</item><item>Седан</item><item>Кроссовер</item><item>Минивэн</item><item>Другой</item></string-array>
+    <string-array name="assessment_bodies"><item>Выберите кузов</item><item>Седан</item><item>Кроссовер</item><item>Лифтбек</item><item>Минивэн</item><item>Другой</item></string-array>
     <string-array name="assessment_decisions"><item>Не проверено</item><item>Выполнено</item><item>Не выполнено</item></string-array>
 <string name="assessment_pinned">Закреплённая версия: %1$s. Класс вычислит сервер после проверки условий.</string>
 <string name="assessment_evidence_summary">Выбранные стороны СТС и ревизии: %1$s</string>

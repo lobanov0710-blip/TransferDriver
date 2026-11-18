@@ -16,7 +16,7 @@ public final class VehicleClassification {
             if(year!=null&&year>9999)throw invalid();
             color=verified?null:nullable(value,"color",80);
             powertrain=verified?choice(value,"powertrain","combustion","hybrid","battery_electric"):null;
-            bodyType=verified?choice(value,"bodyType","sedan","crossover","minivan","other"):null;
+            bodyType=verified?choice(value,"bodyType","sedan","crossover","liftback","minivan","other"):null;
         }
     }
     public static final class Decision {
@@ -84,9 +84,9 @@ public final class VehicleClassification {
             List<String> bodies=null;if(!field(o,"allowedBodyTypes").isJsonNull()){
                 bodies=new ArrayList<>();
                 Set<String> seen=new HashSet<>();for(JsonElement e:array(o,"allowedBodyTypes",4)){
-                    if(!e.isJsonPrimitive()||!e.getAsJsonPrimitive().isString()||!Arrays.asList("sedan","crossover","minivan","other").contains(e.getAsString())||!seen.add(e.getAsString()))throw invalid();bodies.add(e.getAsString());
+                    if(!e.isJsonPrimitive()||!e.getAsJsonPrimitive().isString()||!Arrays.asList("sedan","crossover","liftback","minivan","other").contains(e.getAsString())||!seen.add(e.getAsString()))throw invalid();bodies.add(e.getAsString());
                 }if(seen.isEmpty())throw invalid();
-            }allowedBodyTypes=bodies==null?null:Collections.unmodifiableList(bodies);
+            }if(!"comfort".equals(vehicleClass)&&bodies!=null&&bodies.contains("liftback"))throw invalid();allowedBodyTypes=bodies==null?null:Collections.unmodifiableList(bodies);
         }
         public static Rule parse(JsonObject body,String version)throws IOException {try{return new Rule(body,version);}catch(RuntimeException invalid){throw invalid();}}
     }

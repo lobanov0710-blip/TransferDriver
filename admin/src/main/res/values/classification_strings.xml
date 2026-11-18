@@ -28,6 +28,7 @@
     <string name="classification_bev">Электромобиль</string>
     <string name="classification_sedan">Седан</string>
     <string name="classification_crossover">Кроссовер</string>
+    <string name="classification_liftback">Лифтбек</string>
     <string name="classification_other">Другой</string>
     <string name="classification_rule">Закреплённая версия: %1$s\nВерсия результата: %2$s\n%3$s</string>
     <string name="classification_rule_model">Модель правила: %1$s %2$s\nКласс правила: %3$s · минимальный год: %4$d</string>

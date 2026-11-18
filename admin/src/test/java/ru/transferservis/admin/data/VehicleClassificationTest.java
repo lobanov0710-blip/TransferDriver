@@ -4,6 +4,13 @@ import java.io.IOException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public final class VehicleClassificationTest {
+    @Test public void verifiedLiftbackIsPreservedForCandidateAndExcludedMetadata()throws Exception {
+        JsonObject value=current();value.getAsJsonObject("verifiedParameters").addProperty("bodyType","liftback");
+        VehicleClassification.Page parsed=VehicleClassification.Page.parse(value,CAR,"",4L);
+        assertEquals("liftback",parsed.verified.bodyType);assertEquals("comfort",parsed.decision.vehicleClass);
+        value.add("classification",json("{\"outcome\":\"excluded\",\"vehicleClass\":null,\"ruleVersion\":\"rule_fixture001\",\"reasonCodes\":[\"body_type_not_allowed\"]}"));
+        parsed=VehicleClassification.Page.parse(value,CAR,"",4L);assertEquals("liftback",parsed.verified.bodyType);assertNull(parsed.decision.vehicleClass);
+    }
     static final String CAR="vehicle_fixture001";
     static JsonObject json(String text){return JsonParser.parseString(text).getAsJsonObject();}
     static JsonObject metadata(){return json("{\"ok\":true,\"requestId\":\"req_fixture001\",\"vehicleId\":\""+CAR+"\",\"vehicleRevision\":4,\"inputRevision\":1,\"declaredParameters\":{\"make\":\"Toyota\",\"model\":\"Camry\",\"modelYear\":2023,\"color\":null},\"verifiedParameters\":null,\"pinnedRuleVersion\":\"rule_fixture001\",\"classification\":null,\"evidence\":[],\"conditions\":[],\"history\":[],\"nextHistoryCursor\":null}");}
