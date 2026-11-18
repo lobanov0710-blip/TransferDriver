@@ -1,0 +1,481 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-18",
+  "scope": "Admin parameter/conditions review and OWNER exceptions; server computes class",
+  "status": "ci-native-and-artifact-verified",
+  "repository": "lobanov0710-blip/TransferDriver",
+  "branch": "arch/g2-admin-classification-review-form",
+  "pullRequest": "https://github.com/lobanov0710-blip/TransferDriver/pull/18",
+  "baseBranch": "arch/g2-admin-classification-read",
+  "sourceCommit": "777822f597c8469e0148bb3978479e09ff5d453b",
+  "localSourceCommit": "7eace64fbf2ce33d935c1156bce5de0ad4953036",
+  "sourceTree": "9979e97e0865a56932d75e4a6dc3a06c5bcb84e5",
+  "sha256": {
+    ".github/workflows/android-branch-tests.yml": "62f62b3682af16433c5c447932e44550a59bb303844753915a51ed4496828337",
+    "admin/src/androidTest/java/ru/transferservis/admin/data/AssessmentRepositoryInstrumentationTest.java": "ffebd734a19353a17a92a32d9f091b23da78bd91426c1fe05dee2759696d3f3a",
+    "admin/src/androidTest/java/ru/transferservis/admin/data/AssessmentServer.java": "5551750d9af2b788cc714dbdae9ad09287ed3309d6bd8daacb074431add4f01e",
+    "admin/src/androidTest/java/ru/transferservis/admin/data/AssessmentUiInstrumentationTest.java": "7b3f27a2dfe6f5cf670d8431a213cf28ffe6a5d8e9c7d49ee17a0f25c3b7572b",
+    "admin/src/main/AndroidManifest.xml": "fc5d3434f040c744148da1c2e625b9ef16ff0208101906f29b683f990e479114",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminAccess.java": "5f905504b27ca6fdaa00e42860dbfc859ef4cb708aab78d209cc249d3f122422",
+    "admin/src/main/java/ru/transferservis/admin/data/AdminApiClient.java": "73b2ab25ab6562ffd1cd553673a07b4f717685677d3b2663869b1d9d01fe8fc4",
+    "admin/src/main/java/ru/transferservis/admin/data/VehicleAssessment.java": "94da33278e101a9e0dd93ef0d5a2b154348727d72a0ac1b5490fec4ab531f458",
+    "admin/src/main/java/ru/transferservis/admin/data/VehicleAssessmentAction.java": "83fc7cf95b85b8fa932e5abfad21dde0489fb43ec18c46febbad2375cab0f3cd",
+    "admin/src/main/java/ru/transferservis/admin/data/VehicleAssessmentRepository.java": "da518745421879f2bee80b69ae907365dfae718fc26c068cd0f08a72eb7b6939",
+    "admin/src/main/java/ru/transferservis/admin/data/VehicleClassification.java": "b4d5367592050ccfc62134937b30447743faa62f015f066ae9b0be2b06cee306",
+    "admin/src/main/java/ru/transferservis/admin/ui/ReviewPanel.java": "d0d3ad0912fcf202736b06819506b8112f8854f1eb16c8d7a08b0ee86a180adc",
+    "admin/src/main/java/ru/transferservis/admin/ui/VehicleAssessmentActivity.java": "8c3aa597c2ccd136d4fada9fec8a1759f9f8076ccb01459346f873c22af9c106",
+    "admin/src/main/res/layout/activity_admin.xml": "979f72b4c4c73f4d0c5c954b3afcab412670d021bf7b435bf9dd520aa57533e3",
+    "admin/src/main/res/layout/activity_vehicle_assessment.xml": "f0e91bf235955eac59c779481189fed8be554d8c04b67503a11089625a987f59",
+    "admin/src/main/res/values/assessment_strings.xml": "e7ec6ea2aeb9956e44a23893c1f4c32138394466081fb132ed03e8d0f369d201",
+    "admin/src/test/java/ru/transferservis/admin/data/VehicleAssessmentTest.java": "7730e859f88c3ed44fa17c835324eef803dc4ca0d97698d6015fe4fae902672a",
+    "app/src/androidTest/java/ru/transferservis/driver/data/registration/AvailabilityInstrumentationTest.java": "312311221711bba933dc66ae2bfaa05d8f5840f989d051187a64f35446371748",
+    "docs/ADMIN_CLASSIFICATION_REVIEW_UI_2026-11-18.md": "799a49f83a544c518da6b6fc95710be194bd1a89f8cad7da637690f3093bb9ec",
+    "docs/PROJECT_JOURNAL.md": "aeed6522ebbc632ca97dbd8f2a2d4bf9213e278d7237baa00ca36c36f395f994",
+    "tools/check_assessment_evidence.py": "5051fb7958964d73dd0d1add11494e462f207205181e6251f3f40b75ab8d9481",
+    "tools/run_android_native_tests.sh": "792fd86501402ff00d0a372edf8ccb719cd637ac078a7fa25fda455f50dbe1ea",
+    "tools/test_android_native_runner.py": "247e53aff11680a519422c3dd228974828cd5b984139150ac27d28a8fad8d7d4"
+  },
+  "workflowRun": 44311619540,
+  "workflowAttempt": 1,
+  "workflowJob": 134827092493,
+  "workflowUrl": "https://github.com/lobanov0710-blip/TransferDriver/actions/runs/44311619540",
+  "conclusion": "success",
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Checkout",
+      "conclusion": "success"
+    },
+    {
+      "name": "Set up Java",
+      "conclusion": "success"
+    },
+    {
+      "name": "Create synthetic Firebase config for CI",
+      "conclusion": "success"
+    },
+    {
+      "name": "Create independent Admin debug signing identity",
+      "conclusion": "success"
+    },
+    {
+      "name": "Check Android security configuration",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify Gradle wrapper",
+      "conclusion": "success"
+    },
+    {
+      "name": "Test and build debug, staging and release",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify build-variant API endpoint locks",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify isolated Admin package and signing identity",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify App Check provider policy",
+      "conclusion": "success"
+    },
+    {
+      "name": "Enable KVM",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run Android security instrumentation tests",
+      "conclusion": "success"
+    },
+    {
+      "name": "Verify executed JVM and Android test reports",
+      "conclusion": "success"
+    },
+    {
+      "name": "Upload synthetic native form evidence",
+      "conclusion": "success"
+    },
+    {
+      "name": "Upload tested Admin debug APK",
+      "conclusion": "success"
+    },
+    {
+      "name": "Upload tested Driver required-color debug APK",
+      "conclusion": "success"
+    },
+    {
+      "name": "Upload safe native failure diagnostics",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Print instrumentation report on failure",
+      "conclusion": "skipped"
+    },
+    {
+      "name": "Post Set up Java",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Checkout",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "testExecutions": {
+    "JVM": 51,
+    "STAGING_JVM": 51,
+    "RELEASE_JVM": 51,
+    "ANDROID": 41,
+    "ADMIN_DEBUG_JVM": 79,
+    "ADMIN_STAGING_JVM": 79,
+    "ADMIN_RELEASE_JVM": 79,
+    "ADMIN_ANDROID": 87
+  },
+  "totalJvmExecutions": 390,
+  "totalNativeExecutions": 128,
+  "staticSecurityCases": {
+    "driver": 8,
+    "admin": 5
+  },
+  "nativeRunnerControlFlowCases": 5,
+  "allExecutedTestCasesHaveNoFailureErrorOrSkip": true,
+  "artifacts": [
+    {
+      "id": 14432436516,
+      "name": "admin-classification-review-debug-apk",
+      "digest": "sha256:5096cde413c5fb1f6cafba5c8a6abbf550bda4cee47a386b7f2c6e35623b3fea",
+      "size_in_bytes": 6593835,
+      "sourceCommit": "777822f597c8469e0148bb3978479e09ff5d453b",
+      "downloaded": true,
+      "archiveDigestMatched": true,
+      "workspacePath": "/workspace/verification/assessment-review-44311619540/apk"
+    },
+    {
+      "id": 14432197106,
+      "name": "registration-synthetic-native-evidence",
+      "digest": "sha256:e8f88bf98b2fdd20a27f71a28a8973929b093e6593fd83988bf1e883f3f6530e",
+      "size_in_bytes": 6429723,
+      "sourceCommit": "777822f597c8469e0148bb3978479e09ff5d453b",
+      "downloaded": true,
+      "archiveDigestMatched": true,
+      "workspacePath": "/workspace/verification/assessment-review-44311619540/png"
+    },
+    {
+      "id": 14431843210,
+      "name": "driver-required-color-debug-apk",
+      "digest": "sha256:467c793940a8e02ddd3703f73fe7afbe0da9f4f3fd6b507538ff7e06d073dfc2",
+      "size_in_bytes": 9089982,
+      "sourceCommit": "777822f597c8469e0148bb3978479e09ff5d453b",
+      "downloaded": false
+    }
+  ],
+  "apk": {
+    "package": "ru.transferservis.admin",
+    "debuggable": true,
+    "certificateSha256": "27afc6575d46d36f4308a400273f188496f778d2730119c8aba9f4ec813d7a1c",
+    "sha256": "6958ff168e3cb4e89503e87ce142daf979e34ec8efb3fa9d9ff202899f5de2d8",
+    "workspacePath": "/workspace/verification/assessment-review-44311619540/apk/admin-debug.apk",
+    "signatureVerified": true
+  },
+  "nativePng": {
+    "profile-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "1127837e81f953abe12d8e2339f0882ef54f134a9d6b9e39e3775e750aacfaa7"
+    },
+    "profile-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "b258d5691e61093c838f6407053e5123c1b965472545cf71383de426c95b21ea"
+    },
+    "vehicle-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "f74eb123db18cc849a03f76bbf4d5f1cd5765d4e9154bc553079d308c6453629"
+    },
+    "vehicle-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "22b8508b7ca8c0d81e0f9aceb66256d57fa583af6d9bb1f3b92c807f5db21d73"
+    },
+    "vehicle-class-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "aef3872271644904450fd5d1894b5fa56e98782657928d548db6d904bf7fd510"
+    },
+    "vehicle-class-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "62caeb3d61cae8892cfc999c598a9cfd3650ae78369bf0d31b8dc087bd7f50a0"
+    },
+    "availability-offline-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "560bc1d9b6fc5b5e7871739525efa9e33322b1fe85e1d1b50a5958e4d94e7ff4"
+    },
+    "availability-online-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "30881237e2587180a2f482fc6a8bbd680bbbcf4cc0732d29e2e876bf1f130166"
+    },
+    "availability-offline-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "a7cdc245defc4f1ad3e077d3758bc7bf0cd694557b26e4d7be0ef31d9e5b61eb"
+    },
+    "availability-online-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "ce6f83f4154c074c8093c8cab0c784e2647494107616ff50cde0402289b1bbd2"
+    },
+    "assignment-orders-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "a23364168017dfd4532162d0f7428e90ea9fa1e150507df3a6a73fd3afc0a209"
+    },
+    "assignment-options-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "01d645358a83065819f48b2cce90c92089246ab1e539734ce000dacee274e15d"
+    },
+    "assignment-form-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "38f65b9406d5c6e7abf497a325391bf2b303f869f1c5229018c4bd54ae700fe8"
+    },
+    "assignment-confirm-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "405f50ee0e25618414e965c9a74d7d2a5f02ad563e0b0bf0418f80e9d6fb272a"
+    },
+    "assignment-uncertain-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "1dc133bb90e99f60ff643790febccb717304c3e7318783ff8e71fd640cb0e291"
+    },
+    "assignment-orders-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "0ef879c0741e8e3debb61b2124d3683525fbfd6f4bfeeb8edccac8d6bfab1a0c"
+    },
+    "assignment-options-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "59c1041f85bba1bd368318d21efe00eb220c58ad0ef1d131ce7e2bfa9fe391d2"
+    },
+    "assignment-form-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "7c65fee5374c059c00a6e54ca1e97df51f83f27a42a35d549e768f9738bb6b16"
+    },
+    "assignment-confirm-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "8c57fc1ffbbfe5fe5d56d911ad56ecc5b2fec924b6a32ac72a326d0c6b8d0554"
+    },
+    "assignment-uncertain-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "63d712d5668d93413fc27f30d1c24027ac256523633428e4cb89de8c06740727"
+    },
+    "photo-vehicles-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "d196371d0db692e9db992be0cfa6014dbc364b1e4a3f2af555eb076abf18bbe5"
+    },
+    "photo-checks-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "560b473666780b541e5a7368e8ca5f6d211b424ae82d9f048fdf7848bbc24a5f"
+    },
+    "photo-form-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "0f412e7a9ff125f57ab35b1cd5195975ade1f46b80271bfdc1d8cb59fd9ea9c3"
+    },
+    "photo-confirm-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "2905878569dab4ee193bc3d36bab32d8b7c021808a7795460211db68beafad18"
+    },
+    "photo-uncertain-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "1c053aef43487d0959216b7b412e89a51dd9f6bd5c2d21d5e60cca15094bf6dc"
+    },
+    "photo-vehicles-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "66513cd6776f11e0bffc4b45abb6caeaaac5175a81d1332296c42fcdd113dfe1"
+    },
+    "photo-checks-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "78bb218d50762166f2395105bf7f0c48fdca08bc1021248e24d4ee386b974bc1"
+    },
+    "photo-form-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "3884798e58513e8de29d80eb03f72b156f39d63fb60e92a6becc5e0f381bd2a5"
+    },
+    "photo-confirm-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "180926e9b843162fb18c3d23ae05ca2515e508d4ea21b45a81a2325d6add376f"
+    },
+    "photo-uncertain-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "ca06418ec507cebb57c7ada5d954760da3d929bc281eede83d9ca2b95a382085"
+    },
+    "classification-current-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "d7e664bc9a7685bb7775a6fb0abdf971551cec960cb5bbb2302ba8dff58c3a35"
+    },
+    "classification-history-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "833b3519f587106aaea443b402f52ba71c72aba01d0fd392d4ae2d5fd2739766"
+    },
+    "classification-unverified-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "edd1a219b6c3e2561e69803433a5e5cc7e25d0d6d4c19c4f1ef0112537c97349"
+    },
+    "classification-current-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "30613a3158c09c822193ca4eeb0c15a199a9f251383a34ae05a239c48067decb"
+    },
+    "classification-history-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "9f440d228ed0cb4e6dc116a54ba25c2a60f89294a63964bde5165d9a769fd29d"
+    },
+    "classification-unverified-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "79be366e43f7d9f247bae45d49bb157425adf0236a413e82cbee67fb575e7def"
+    },
+    "assessment-form-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "8d9b996c2da2138f3bbdd983ad171f07854a415c562fdb2202660cf40de40de0"
+    },
+    "assessment-conditions-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "8471f581c364f6808dda893f7102e50a8e25361871af27949cc37a190e5914c3"
+    },
+    "assessment-confirm-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "bf0ee325db193b6850bf01ba6b7812795f970ced4af626c7ee8cea4a338e85f0"
+    },
+    "assessment-uncertain-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "c7e4dae5b2a5db3748d2c708df7449a2a6c3e78162a8c2611fd99c9b753d963b"
+    },
+    "assessment-recorded-light": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "d6ceb09c0beb3d23481444646eb6e09e5d1a66ae60c2f48e621d8fd7f86bb35b"
+    },
+    "assessment-form-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "13b027a835de27c1b62a873691d6b72da8da586cf1ec64fb9c7b3c5aa530f81f"
+    },
+    "assessment-conditions-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "1efe05915cb4fa393315a09d516d2d8191e23fe0c67a120554ec3aeefe891f72"
+    },
+    "assessment-confirm-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "230f3bfa906b2ffd546218a62cf6da2859fa800d8a4533c11e1378c45570b940"
+    },
+    "assessment-uncertain-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "8a8d32e6c6034321b297fe80946fd0e6c6633ee5fc10b6099449b31256807c0b"
+    },
+    "assessment-recorded-dark-large": {
+      "width": 1080,
+      "height": 2400,
+      "sha256": "3b4fec644f49eb024d49eae7572e01f179f0bd79cf7283fa2f8638cdd07929e4"
+    }
+  },
+  "newNativePngVisuallyInspected": [
+    "assessment-form-light",
+    "assessment-conditions-light",
+    "assessment-confirm-light",
+    "assessment-uncertain-light",
+    "assessment-recorded-light",
+    "assessment-form-dark-large",
+    "assessment-conditions-dark-large",
+    "assessment-confirm-dark-large",
+    "assessment-uncertain-dark-large",
+    "assessment-recorded-dark-large"
+  ],
+  "visualReview": "10 actual raw API35 emulator frames: light and dark/font1.3 form, exact rule and explicit evidence/conditions, confirmation, unknown result and explicit retry, recorded result/manual dispatcher warning. Controls/contrast/wrapping readable; scrolling is used for long content. No image editing or synthesis. Remaining36 PNG validated/hash matched, not newly visually reviewed.",
+  "previousRuns": [
+    {
+      "sourceCommit": "4b1591719e204b26b5614011354112fc077c5a66",
+      "run": 44304281095,
+      "conclusion": "cancelled",
+      "reason": "superseded secure dialog capture helper"
+    },
+    {
+      "sourceCommit": "dc2b59907c8108ebc2b5018edf73f8ab5c974039",
+      "run": 44304512138,
+      "job": 134802631038,
+      "conclusion": "failure",
+      "reason": "Driver41 and Admin85/87 native passed; two new raw framebuffer captures did not settle. Ending text entry before capture later produced10 stable frames; exact old animated region was not captured."
+    },
+    {
+      "sourceCommit": "381522e3befda5c37ed900feac3db9ec3d62deb2",
+      "run": 44307399886,
+      "conclusion": "cancelled",
+      "reason": "superseded unknown-model caption correction; build/JVM/lint passed, native not confirmed"
+    },
+    {
+      "sourceCommit": "818bee8158618fe80716b4271e5304972a9f1ef0",
+      "run": 44308654388,
+      "job": 134816762534,
+      "conclusion": "failure",
+      "reason": "Driver38/41 passed; repeated baseline window focus/SystemUI/real gesture failure. Admin did not run. Exact focus owner absent from old logs; diagnostics added, no weakened assertions."
+    },
+    {
+      "sourceCommit": "7fd3db457001c75f75c6a86737ea14e95124f8e0",
+      "run": 44311449734,
+      "conclusion": "cancelled",
+      "reason": "superseded stale generated validation marker fix before final native verification"
+    }
+  ],
+  "backendPrerequisite": {
+    "pullRequest": "https://github.com/lobanov0710-blip/uber-v3/pull/43",
+    "sourceCommit": "5836e183f86c656c17bf77f77bb94e968f730df5",
+    "workflowRun": 44240856017,
+    "newBackendExecution": false
+  },
+  "limitations": [
+    "Independent live/phone acceptance not performed. CI uses synthetic data, Firebase config and ephemeral debug signing; APK is not a production release or phone upgrade signing proof.",
+    "Intermittent baseline Driver window-focus root cause remains unresolved; final fresh run passed and failure-only safe diagnostics are now present. No claim of a repaired production Driver defect.",
+    "OWNER rule authoring UI is the next separate step.",
+    "Full powertrain121/legacy activation inventory remains open.",
+    "G1 paused; D4-D7 pending; no phone allowlist expansion, real sensitive documents, seed/backfill, remote migration, merge or deployment."
+  ]
+}
