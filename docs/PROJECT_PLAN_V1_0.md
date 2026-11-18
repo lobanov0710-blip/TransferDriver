@@ -581,3 +581,8 @@ DTO/форма; новый APK ещё не создавался. Не путат
 requiredColor на native D1 PASS.30 PNG сверены с GitHub archive digest/source,
 2 кадра с новой подписью осмотрены. Факты/границы в REQUIRED_VEHICLE_COLOR_VERIFICATION_2026-11-17.json.
 Следующие Admin classification части не объявляются завершёнными этим fix.
+## Проверенный checkpoint G2 classification — 2026-11-18
+
+Backend PR №43 завершил public review/trusted GET/history поверх immutable storage и SQL admission guards: source `5836e183f86c656c17bf77f77bb94e968f730df5`, CI `44240856017` SUCCESS. Android Draft PR №17 добавляет первый UI prerequisite — readonly карточку введённых/проверенных параметров, системного результата, модели правила и истории. Source `b7eb21f4a824ca3da51e7a0ed05a9158b3721739`, CI `44245721289` attempt2 SUCCESS: 357 JVM/112 native, обе apps build/lint3 variants, security8/5, 36 PNG hashes и 6 новых визуально проверенных кадров. Точные source/artifact/границы — [receipt](ADMIN_CLASSIFICATION_READ_UI_VERIFICATION_2026-11-18.json).
+
+Следующая часть того же утверждённого контракта — parameter/conditions review и OWNER exception form с явным confirmation/same-key retry/foreground privacy, затем OWNER rule authoring UI. Readonly карточка не завершает эти операции, full powertrain121/legacy inventory/live acceptance. Нет активации/merge/deploy/phone allowlist расширения. G1 остаётся на паузе; D4–D7 не утверждены. Этот checkpoint фиксирует реализацию, не вводит новых бизнес-решений.
