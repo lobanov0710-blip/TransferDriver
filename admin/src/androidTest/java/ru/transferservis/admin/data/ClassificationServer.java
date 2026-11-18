@@ -17,7 +17,7 @@ final class ClassificationServer implements Interceptor {
         JsonObject b=json("{\"ok\":true,\"vehicleId\":\""+CAR+"\",\"vehicleRevision\":4,\"inputRevision\":1,\"declaredParameters\":{\"make\":\"Toyota\",\"model\":\"Camry\",\"modelYear\":2023,\"color\":\"Белый\"},\"verifiedParameters\":null,\"pinnedRuleVersion\":\"rule_native001\",\"classification\":null,\"evidence\":[],\"conditions\":[{\"id\":\"rule_native001:1\",\"text\":\"Салон в хорошем состоянии\"}],\"history\":[],\"nextHistoryCursor\":null}");b.addProperty("vehicleRevision",revision);
         if(!unverified){b.add("verifiedParameters",json("{\"make\":\"Toyota\",\"model\":\"Camry\",\"modelYear\":2023,\"powertrain\":\"hybrid\",\"bodyType\":\"sedan\"}"));b.add("classification",json("{\"outcome\":\"candidate\",\"vehicleClass\":\"comfort\",\"ruleVersion\":\"rule_native001\",\"reasonCodes\":[]}"));
             for(String id:new String[]{"document_front001","document_back0001"})b.getAsJsonArray("evidence").add(json("{\"documentId\":\""+id+"\",\"expectedRevision\":1}"));}
-        else{b.getAsJsonObject("declaredParameters").add("modelYear",JsonNull.INSTANCE);b.getAsJsonObject("declaredParameters").add("color",JsonNull.INSTANCE);}
+        else{b.getAsJsonObject("declaredParameters").add("modelYear",JsonNull.INSTANCE);b.getAsJsonObject("declaredParameters").addProperty("color","\u00a0\uFEFF");}
         int size=paginate&&!next?50:1;for(int i=0;i<size;i++)b.getAsJsonArray("history").add(json("{\"assessmentId\":\"assessment_native"+(next?"old":i)+"\",\"vehicleRevision\":2,\"ruleVersion\":\"rule_native001\",\"outcome\":\"candidate\",\"createdAt\":1800000000000}"));
         if(paginate&&!next)b.addProperty("nextHistoryCursor","history_native2");return b;
     }

@@ -76,7 +76,7 @@ public final class VehicleClassificationActivity extends AppCompatActivity {
         findViewById(R.id.classificationRows).setVisibility(data!=null&&!busy?View.VISIBLE:View.GONE);findViewById(R.id.classificationPaging).setVisibility(data!=null&&!busy?View.VISIBLE:View.GONE);
         findViewById(R.id.classificationPrevious).setEnabled(!history.isEmpty());findViewById(R.id.classificationNext).setEnabled(data!=null&&data.page.nextCursor!=null);
         if(data==null||busy)return;VehicleClassification.Page p=data.page;VehicleClassification.Parameters d=p.declared,v=p.verified;
-        text(R.id.classificationDeclared,getString(R.string.classification_declared,d.make,d.model,d.year==null?unknown():d.year.toString(),d.color==null||d.color.trim().isEmpty()?unknown():d.color));
+        text(R.id.classificationDeclared,getString(R.string.classification_declared,d.make,d.model,d.year==null?unknown():d.year.toString(),blank(d.color)?unknown():d.color));
         text(R.id.classificationVerified,v==null?getString(R.string.classification_unverified):getString(R.string.classification_verified,v.make,v.model,v.year.toString(),power(v.powertrain),body(v.bodyType)));
         String result=p.decision==null?getString(R.string.classification_no_class):"candidate".equals(p.decision.outcome)?getString(R.string.classification_candidate,className(p.decision.vehicleClass)):getString("manual_review".equals(p.decision.outcome)?R.string.classification_manual:R.string.classification_excluded);
         if(p.decision!=null)for(String reason:p.decision.reasons)result+="\n"+getString(reason(reason));text(R.id.classificationResult,result);
@@ -89,6 +89,7 @@ public final class VehicleClassificationActivity extends AppCompatActivity {
         text(R.id.classificationHistory,records.toString());
     }
     private String unknown(){return getString(R.string.classification_unknown);}
+    private boolean blank(String value){if(value==null)return true;for(int i=0;i<value.length();i++){char c=value.charAt(i);if(!Character.isWhitespace(c)&&!Character.isSpaceChar(c)&&c!='\uFEFF')return false;}return true;}
     private String className(String c){return getString("comfort".equals(c)?R.string.classification_comfort:"business".equals(c)?R.string.classification_business:R.string.classification_minivan);}
     private String power(String c){return getString("combustion".equals(c)?R.string.classification_combustion:"hybrid".equals(c)?R.string.classification_hybrid:R.string.classification_bev);}
     private String body(String c){return getString("sedan".equals(c)?R.string.classification_sedan:"crossover".equals(c)?R.string.classification_crossover:"minivan".equals(c)?R.string.classification_minivan:R.string.classification_other);}

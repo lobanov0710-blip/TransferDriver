@@ -43,7 +43,7 @@ public final class ClassificationUiInstrumentationTest {
         click(R.id.classificationNext);await(()->screen.findViewById(R.id.classificationPrevious).isEnabled()&&screen.findViewById(R.id.classificationProgress).getVisibility()==View.GONE);
         assertFalse(screen.findViewById(R.id.classificationNext).isEnabled());click(R.id.classificationPrevious);await(()->screen.findViewById(R.id.classificationNext).isEnabled()&&screen.findViewById(R.id.classificationProgress).getVisibility()==View.GONE);
         server.unverified=true;click(R.id.classificationReload);await(()->text(R.id.classificationVerified).contains("Актуального подтверждения нет"));assertEquals(context.getString(R.string.classification_no_class),text(R.id.classificationResult));
-        assertTrue(text(R.id.classificationHistory).contains("Кандидат"));assertTrue(text(R.id.classificationDeclared).contains("Не указано"));
+        assertTrue(text(R.id.classificationHistory).contains("Кандидат"));assertTrue(text(R.id.classificationDeclared).contains("Год выпуска: Не указано"));assertTrue(text(R.id.classificationDeclared).contains("Цвет кузова: Не указано"));
         assertEquals(0,countInputs(screen.findViewById(R.id.classificationRoot)));
     }
     private int countInputs(View view){if(view instanceof EditText)return 1;int n=0;if(view instanceof ViewGroup)for(int i=0;i<((ViewGroup)view).getChildCount();i++)n+=countInputs(((ViewGroup)view).getChildAt(i));return n;}
