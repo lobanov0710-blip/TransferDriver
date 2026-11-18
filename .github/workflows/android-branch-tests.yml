@@ -214,6 +214,8 @@ jobs:
             python3 tools/check_assignment_evidence.py registration-evidence
             for image in photo-vehicles-light photo-checks-light photo-form-light photo-confirm-light photo-uncertain-light photo-vehicles-dark-large photo-checks-dark-large photo-form-dark-large photo-confirm-dark-large photo-uncertain-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/photo-evidence/$image.png > registration-evidence/$image.png; done
             python3 tools/check_photo_control_evidence.py registration-evidence
+            for image in classification-current-light classification-history-light classification-unverified-light classification-current-dark-large classification-history-dark-large classification-unverified-dark-large; do adb exec-out run-as ru.transferservis.admin cat files/classification-evidence/$image.png > registration-evidence/$image.png; done
+            python3 tools/check_classification_evidence.py registration-evidence
             touch registration-evidence/.validated
 
       - name: Verify executed JVM and Android test reports
@@ -317,6 +319,16 @@ jobs:
                       'photoExpiredMfaClosesFormWithoutInvalidReasonMessage',
                       'nativePhotoControlLight',
                       'nativePhotoControlDarkLargeFont',
+                      'classificationReadsFreshAccessAndNeverRequiresOrGrantsRuleManagement',
+                      'classificationOwnerMfaAndPhoneScopeDenyBeforeDataTransport',
+                      'classificationDelayedResponseCannotExposePriorSessionOrEraseNextLogin',
+                      'classificationCancelAndStaleRevisionCloseReadWithoutRefreshOrMutation',
+                      'classificationUiSeparatesCurrentProofFromHistoryAndPagesWithoutMutation',
+                      'classificationBackgroundClearsMetadataAndSavedHierarchy',
+                      'classificationStaleReadAndPhoneScopeClearCardWithoutAutomaticReload',
+                      'classificationMfaExpiryClearsVisibleCardWithoutNetwork',
+                      'nativeClassificationReadLight',
+                      'nativeClassificationReadDarkLargeFont',
                       'nativeAssignmentLight',
                       'nativeAssignmentDarkLargeFont',
                       'moderationUiExplicitlyRetriesUncertainStartAndReturnsOneElementWithReason',
@@ -339,7 +351,7 @@ jobs:
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: admin-photo-control-debug-apk
+          name: admin-classification-read-debug-apk
           path: admin/build/outputs/apk/debug/admin-debug.apk
           if-no-files-found: error
           retention-days: 7

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/classificationRoot" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:saveEnabled="false" android:importantForAutofill="noExcludeDescendants">
+    <com.google.android.material.appbar.MaterialToolbar android:id="@+id/classificationToolbar"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="56dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto" app:navigationIcon="@drawable/ic_assignment_back"
+        app:navigationContentDescription="@string/classification_close" app:title="@string/classification_title" />
+    <ProgressBar android:id="@+id/classificationProgress" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" android:visibility="gone" />
+    <TextView android:id="@+id/classificationMessage" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:saveEnabled="false" android:accessibilityLiveRegion="polite" android:textAppearance="?attr/textAppearanceBodyLarge" />
+    <ScrollView android:id="@+id/classificationScroll" android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:fillViewport="true" android:saveEnabled="false">
+        <LinearLayout android:id="@+id/classificationRows" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:saveEnabled="false" android:paddingBottom="16dp">
+            <TextView android:id="@+id/classificationDeclared" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" android:paddingVertical="12dp" android:saveEnabled="false" />
+            <TextView android:id="@+id/classificationVerified" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" android:paddingVertical="12dp" android:saveEnabled="false" />
+            <TextView android:id="@+id/classificationResult" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleLarge" android:paddingVertical="12dp" android:saveEnabled="false" />
+            <TextView android:id="@+id/classificationRule" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" android:paddingVertical="12dp" android:saveEnabled="false" />
+            <TextView android:id="@+id/classificationEvidence" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyMedium" android:paddingVertical="12dp" android:saveEnabled="false" />
+            <TextView android:id="@+id/classificationConditions" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" android:paddingVertical="12dp" android:saveEnabled="false" />
+            <TextView android:id="@+id/classificationHistory" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodyLarge" android:paddingVertical="12dp" android:saveEnabled="false" />
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout android:id="@+id/classificationPaging" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+        <com.google.android.material.button.MaterialButton android:id="@+id/classificationPrevious" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/classification_previous" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/classificationNext" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/classification_next" />
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@+id/classificationReload" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/classification_reload" />
+</LinearLayout>

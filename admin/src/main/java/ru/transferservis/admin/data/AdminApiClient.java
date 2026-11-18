@@ -30,6 +30,13 @@ public final class AdminApiClient {
         OkHttpClient.Builder builder=AdminEndpointPolicy.clientBuilder();if(guard!=null)builder.addInterceptor(guard);if(transport!=null)builder.addInterceptor(transport);client=builder.build();
     }
     JsonObject assignmentMe(String token,long scope)throws IOException {return request("GET","v1/admin/me",null,token,null,scope);}
+    JsonObject classification(String token,String vehicle,String cursor,long scope)throws IOException {
+        String next=VehicleClassification.cursor(cursor);
+        return request("GET","v1/admin/vehicles/"+Assignments.vehicleId(vehicle)+"/classification"+(next.isEmpty()?"":"?historyCursor="+next),null,token,null,scope);
+    }
+    JsonObject classificationRule(String token,String version,long scope)throws IOException {
+        return request("GET","v1/admin/vehicle-rules/versions/"+VehicleClassification.version(version),null,token,null,scope);
+    }
     JsonObject photoVehicles(String token,String status,String cursor,long scope)throws IOException {
         if(status==null||(!status.isEmpty()&&!PhotoControl.STATUSES.contains(status)))throw new IOException("Invalid filter");
         String next=Assignments.cursor(cursor);return request("GET","v1/admin/vehicles?limit=20"+(status.isEmpty()?"":"&status="+status)+(next.isEmpty()?"":"&cursor="+next),null,token,null,scope);

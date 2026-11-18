@@ -57,6 +57,18 @@ class AdminSecurityConfigurationTests(unittest.TestCase):
             view = next(e for e in photo.iter() if e.get(A+'id') == '@+id/'+name)
             self.assertEqual('false', view.get(A+'saveEnabled'))
         self.assertIn('FLAG_SECURE', (JAVA / 'ui/PhotoControlActivity.java').read_text())
+        classification = ET.parse(MAIN / 'res/layout/activity_vehicle_classification.xml').getroot()
+        self.assertEqual('noExcludeDescendants', classification.get(A + 'importantForAutofill'))
+        self.assertEqual('false', classification.get(A + 'saveEnabled'))
+        self.assertFalse(any(e.tag.endswith('EditText') for e in classification.iter()))
+        for name in ('classificationDeclared','classificationVerified','classificationResult','classificationRule',
+                     'classificationEvidence','classificationConditions','classificationHistory','classificationRows','classificationMessage'):
+            view = next(e for e in classification.iter() if e.get(A + 'id') == '@+id/' + name)
+            self.assertEqual('false', view.get(A + 'saveEnabled'))
+        self.assertIn('FLAG_SECURE', (JAVA / 'ui/VehicleClassificationActivity.java').read_text())
+        client = (JAVA / 'data/VehicleClassificationRepository.java').read_text()
+        for forbidden in ('api.refresh(', 'SharedPreferences', 'FileOutputStream'):
+            self.assertNotIn(forbidden, client)
         net = ET.parse(MAIN / 'res/xml/network_security_config.xml').getroot()
         self.assertEqual('false', net.find('base-config').get('cleartextTrafficPermitted'))
         self.assertEqual(['system'], [e.get('src') for e in net.iter('certificates')])
