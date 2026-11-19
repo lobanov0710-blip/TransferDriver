@@ -56,6 +56,20 @@ class EmulatorReadyTest(unittest.TestCase):
     def test_failed_home_start_is_rejected(self):
         self.assertFalse(ready(**self.fixture(status='Error: launch failed')))
 
+    def test_report_records_expected_package_and_stability(self):
+        report = {}
+        self.assertTrue(ready(**self.fixture(), report=report))
+        self.assertEqual('synthetic.launcher', report['resolvedHomePackage'])
+        self.assertEqual('ready', report['stage'])
+        self.assertEqual(3, report['stableSamples'])
+
+    def test_report_distinguishes_unmatched_focus_from_boot_failure(self):
+        report = {}
+        self.assertFalse(ready(**self.fixture(windows=['mCurrentFocus=Window{0 other.app/.Home}']), report=report))
+        self.assertTrue(report['bootCompleted'])
+        self.assertEqual('focus', report['stage'])
+        self.assertEqual(0, report['matchedSamples'])
+
     def test_diagnostic_uses_display_focus_and_redacts_anr_reason(self):
         commands = []
         def run(*command):

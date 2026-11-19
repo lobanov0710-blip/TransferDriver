@@ -1,0 +1,51 @@
+name: Android emulator readiness probe
+
+on:
+  push:
+    branches:
+      - 'arch/**'
+      - 'fix/**'
+    paths:
+      - 'tools/check_android_emulator_ready.py'
+      - 'tools/test_android_emulator_ready.py'
+      - '.github/workflows/android-emulator-readiness.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-emulator-readiness-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - name: Test readiness gate
+        run: python3 tools/test_android_emulator_ready.py
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Probe normal HOME without application or test changes
+        uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: python3 tools/check_android_emulator_ready.py
+      - name: Upload safe emulator readiness diagnostic
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: emulator-readiness-probe-diagnostics
+          path: registration-evidence/native-diagnostics/emulator-readiness.txt
+          if-no-files-found: ignore
+          retention-days: 7

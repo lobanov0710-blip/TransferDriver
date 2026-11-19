@@ -5119,3 +5119,22 @@ fixture3549d8fe457ab5211b7735a6c3361ef27d2257ce. Исправлен разбор
 branch ref; созданные объекты проверены до продолжения. Рабочий runtime приложений
 и бизнес-правила не менялись. Готовится атомарный commit с tree parity/branch lease,
 затем полный Android CI; native/APK PASS до его окончания не заявляется.
+
+
+## Liftback: CI44473172878 gate FAIL и короткий emulator probe — 2026-11-19
+
+Source81fab1ffd22aa02e621aca60ed713173d7d2b4af/job135387301056 FAILURE до native
+suites:build/JVM/lint3 variants/security8/5/runner6/readiness10 PASS. Новый
+artifact14504843534 содержит фокус штатного NexusLauncher; ANR не зафиксирован.
+Точной причины несовпадения readiness пока нет: ожидаемый HOME и sample counters
+не записывались. Этот отказ не объявляется ошибкой runtime приложений/новым ANR.
+
+Добавлены безопасные stage/boot flag/expected system HOME package/focus counters
+в failure diagnostic и2 unit cases (итого12) для этих состояний. Секретные поля,
+raw command/provider/SQL output не выводятся. Добавлен отдельный короткий probe
+workflow на изменения gate:тот же API35/Google APIs/x86_64/Pixel6/animations off,
+без application builds. Это диагностика инфраструктуры, не замена обязательного
+полного Android CI/native/PNG/APK. Main workflow/gates/assertions/timeouts прежние.
+12 readiness/6 runner tests,YAML parse/diff PASS. В среде локально нет KVM/emulator;
+установка альтернативной платформы/обход focus/ANR не выполнялись. Полный результат
+остается BLOCKED до исправления причины и проверки артефактов нового source.

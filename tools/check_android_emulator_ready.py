@@ -11,9 +11,13 @@ def adb(*args):
                           text=True, timeout=15).stdout
 
 
-def diagnostic(run=adb):
+def diagnostic(run=adb, report=None):
     # Only fixed system-state fields, never raw app/provider/SQL output.
     lines = ['Synthetic emulator readiness diagnostic']
+    if report:
+        for key in ['stage', 'bootCompleted', 'resolvedHomePackage', 'homeStartOk', 'samples', 'matchedSamples', 'stableSamples']:
+            if key in report:
+                lines.append(key + '=' + str(report[key]))
     for command in [('dumpsys', 'window', 'displays'), ('dumpsys', 'activity', 'lastanr')]:
         try:
             output = run(*command)
@@ -33,43 +37,56 @@ def diagnostic(run=adb):
     path.write_text('\n'.join(lines) + '\n')
 
 
-def ready(run=adb, clock=time.monotonic, pause=time.sleep):
+def ready(run=adb, clock=time.monotonic, pause=time.sleep, report=None):
+    report = {} if report is None else report
+    report.update(stage='boot', bootCompleted=False)
     deadline = clock() + 60
     while run('getprop', 'sys.boot_completed').strip() != '1':
         if clock() >= deadline:
             return False
         pause(1)
+    report.update(stage='resolve_home', bootCompleted=True)
     component = run('cmd', 'package', 'resolve-activity', '--brief', '-a',
                     'android.intent.action.MAIN', '-c', 'android.intent.category.HOME').strip().splitlines()[-1]
     if not re.fullmatch(r'[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+', component):
         return False
     package = component.split('/')[0]
+    report.update(stage='start_home', resolvedHomePackage=package)
     # A normal launch warms the system launcher before app/configuration switches.
     # It neither kills processes nor accepts/closes an ANR or security dialog.
     result = run('am', 'start', '-W', '-a', 'android.intent.action.MAIN', '-c',
                  'android.intent.category.HOME')
-    if not re.search(r'^Status: ok\s*$', result, re.M):
+    report['homeStartOk'] = bool(re.search(r'^Status: ok\s*$', result, re.M))
+    if not report['homeStartOk']:
         return False
     stable = 0
+    report.update(stage='focus', samples=0, matchedSamples=0, stableSamples=0)
     while clock() < deadline:
         windows = run('dumpsys', 'window', 'displays')
         focus = next((line for line in windows.splitlines() if 'mCurrentFocus=' in line), '')
         if 'Application Not Responding:' in windows:
+            report['stage'] = 'anr'
             return False
-        stable = stable + 1 if re.search(r'\b' + re.escape(package) + r'/', focus) else 0
+        matched = bool(re.search(r'\b' + re.escape(package) + r'/', focus))
+        stable = stable + 1 if matched else 0
+        report['samples'] += 1
+        report['matchedSamples'] += int(matched)
+        report['stableSamples'] = stable
         if stable >= 3:
+            report['stage'] = 'ready'
             return True
         pause(1)
     return False
 
 
 if __name__ == '__main__':
+    report = {}
     try:
-        success = ready()
+        success = ready(report=report)
     except (OSError, subprocess.SubprocessError, IndexError):
         success = False
     if not success:
-        diagnostic()
+        diagnostic(report=report)
         print('ANDROID_EMULATOR_READY=FAIL; safe system diagnostic recorded')
         sys.exit(1)
     print('ANDROID_EMULATOR_READY=PASS')
