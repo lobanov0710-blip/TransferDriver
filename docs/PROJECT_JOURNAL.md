@@ -4135,3 +4135,29 @@ Full powertrain ranges121/actual legacy inventory/live acceptance открыты
 Нет seed/backfill/remote migration/activation/merge/deploy. G1paused,D4–D7pending.
 
 Подробный receipt feature branch: https://github.com/lobanov0710-blip/TransferDriver/blob/arch/g2-comfort-liftback/docs/COMFORT_LIFTBACK_VERIFICATION_2026-11-19.json
+
+
+## Установка тестового Admin на телефон: incident и pending signing decision — 2026-11-19
+
+Владелец:«Приложение не установлено»;существующий Admin уже установлен,пытался
+обновить. Точный INSTALL_FAILED код/сертификат телефона пока не получены.
+Выданный d09d5f1e/CI44488353051 APK проверен повторно:SHA256/size совпали с
+receipt,apksigner V2 PASS,package ru.transferservis.admin,minSdk26,target37,
+versionCode1,testOnly отсутствует,native ABI restrictions нет. Старый APK
+CI44321910346 имеет тот же package,но другой сертификат. Workflow создаёт новый
+Admin debug key на каждом runner:обновление старой CI-установки другим ключом
+невозможно. Это подтверждённый недостаток схемы телефонной доставки и вероятный
+блокер данного обновления,не доказательство повреждения APK/единственной причины
+общего сообщения Android. Эмуляторная приёмка не являлась live upgrade acceptance.
+
+Подготовлен ADMIN_PHONE_INSTALL_SIGNING_PROPOSAL_2026-11-19.md:предложение A —
+ru.transferservis.admin.qa/Transfer Admin QA,STAGING,постоянный приватный QA key
+на Windows владельца,установка рядом. B — исходный package с отдельным согласием
+на разовую переустановку/потерю локальных сессий при отсутствии старого ключа.
+Package/signing/runtime не изменены,ключи не создавались/не запрашивались в чат,
+установленный Admin/данные/OWNER/TOTP не удалялись и не сбрасывались. Следующий
+зависимый шаг требует выбора владельца по AGENTS3;G1paused,phone allowlist прежняя.
+
+Предложение и полная диагностика опубликованы в рабочей ветке,commit7042d164:
+https://github.com/lobanov0710-blip/TransferDriver/blob/7042d164ab5e259cc16db3198126fef48fb35215/docs/ADMIN_PHONE_INSTALL_SIGNING_PROPOSAL_2026-11-19.md
+Ожидается явный выбор владельца;нового утверждения/phone install acceptance нет.
