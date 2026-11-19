@@ -6,8 +6,9 @@
 
 ## Что приготовлено
 
-- APK Admin с STAGING endpoint, отдельным package/signing от Driver. Передаваемый
-  debug APK предназначен только для этой проверки; release/upload key ещё не создан.
+- Отдельный Admin с STAGING endpoint и изоляцией от Driver. После решения владельца
+  2026-11-19 телефонный артефакт — unsigned Transfer Admin QA для постоянной
+  локальной подписи; прежние CI debug APK не подходят для обычных обновлений.
 - Защищённый локальный CLI, закреплённый за Worker `uber-v3-staging`,
   `uber-v3-staging.lobanov0710.workers.dev`, D1 `transfer-servis52-staging`
   (`66474481-a123-47f9-81b4-12af7565ec8d`) и утверждённым staging KV.
@@ -103,6 +104,11 @@ Bootstrap TTL 15 минут, считается по часам БД, макси
 После timeout/сбоя не повторяйте запись вслепую: сначала новый read-only `plan`.
 
 ## На телефоне
+
+Если OWNER уже подключил TOTP и выполнил успешный вход, используйте тот же
+login/password и текущий шестизначный TOTP, в том числе в новом QA-приложении.
+Шаги bootstrap/enrollment ниже относятся только к первичной настройке OWNER.
+Повторно выполнять `owner`, пересоздавать аккаунт или сбрасывать MFA не требуется.
 
 1. Для новой установки используйте отдельно утверждённый Transfer Admin QA
    (Android 8+): [постоянная приватная подпись на Windows](ADMIN_QA_SIGNING_WINDOWS.md).

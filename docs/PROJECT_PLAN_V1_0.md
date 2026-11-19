@@ -649,3 +649,17 @@ STAGING, debuggable=false,постоянный приватный QA key на с
 с одноразовой CI-подписью больше не выдаётся как обновление. Старый Admin/данные
 сохраняются. Физическая приёмка и приватная подпись требуют участия владельца;
 они не считаются выполненными synthetic CI. G1paused,phone scope без расширения.
+
+
+## Admin phone QA: CI/upgrade checkpoint — 2026-11-19
+
+Утверждённый A реализован в Draft PR22,source088c8053/CI44508544855 SUCCESS.
+525 JVM/145 native,7variants build/lint и real emulator QA installation checks:
+coexistence/distinct UID+dataDir/nondebug/same-key2→3/foreign-key rejection/
+original Admin marker preserved PASS. Unsigned QA archive проверен offline;
+[receipt](ADMIN_PHONE_QA_VERIFICATION_2026-11-19.json),
+[инструкция Windows](ADMIN_QA_SIGNING_WINDOWS.md). Следующий зависимый шаг —
+приватное создание/сохранение QA key у владельца,локальная подпись и физическая
+установка/вход. Существующий OWNER подходит;нового аккаунта не создано,его
+роль/схема доступа требуют уточнения владельца. G1paused,phone scope прежний,
+нет classifier activation/merge/deploy/remote writes.
