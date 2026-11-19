@@ -25,3 +25,9 @@ business/minivan/OWNER exception bypass. Проверки новых runtime и�
 Seed, remote migration, merge, deployment и активация требуют отдельных решений.
 G1 на паузе; D4–D7 ожидают утверждения. Этот checkpoint не является новым APK
 или повторной Android-приёмкой. Результаты backend CI фиксируются отдельно в журнале.
+
+
+Поправка liftback проверена отдельным checkpoint 2026-11-19:
+[receipt](COMFORT_LIFTBACK_VERIFICATION_2026-11-19.json).432 JVM/145 native,56 PNG hashes/8 raw changed frames
+и debug APK проверены. Это не full powertrain ranges/actual inventory/live
+acceptance или активация; исторические docs-only checkpoints выше сохранены.
