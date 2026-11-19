@@ -1,6 +1,8 @@
 """Boot/focus/ANR gates use a synthetic adb fixture and virtual time."""
 import subprocess
 import unittest
+from unittest.mock import patch
+import check_android_emulator_ready as gate
 from check_android_emulator_ready import ready
 
 
@@ -17,7 +19,9 @@ class EmulatorReadyTest(unittest.TestCase):
                 return component
             if command[0] == 'am':
                 return status
-            return next(frames, 'mCurrentFocus=null')
+            if command == ('dumpsys', 'window', 'displays'):
+                return next(frames, 'mCurrentFocus=null')
+            raise AssertionError('Unsupported synthetic adb command')
         def pause(seconds):
             self.now += seconds
         return dict(run=run, clock=lambda: self.now, pause=pause)
@@ -51,6 +55,25 @@ class EmulatorReadyTest(unittest.TestCase):
 
     def test_failed_home_start_is_rejected(self):
         self.assertFalse(ready(**self.fixture(status='Error: launch failed')))
+
+    def test_diagnostic_uses_display_focus_and_redacts_anr_reason(self):
+        commands = []
+        def run(*command):
+            commands.append(command)
+            if command == ('dumpsys', 'window', 'displays'):
+                return '  mCurrentFocus=Window{0 synthetic.launcher/.Home}'
+            return 'Reason: Input dispatching timed out (sensitive synthetic detail)'
+        with patch.object(gate, 'Path') as path:
+            gate.diagnostic(run)
+        output = path.return_value.write_text.call_args.args[0]
+        self.assertIn('mCurrentFocus=', output)
+        self.assertIn('ANR_REASON=input_dispatch_timeout', output)
+        self.assertNotIn('sensitive synthetic detail', output)
+
+    def test_missing_diagnostic_fields_are_explicit(self):
+        with patch.object(gate, 'Path') as path:
+            gate.diagnostic(lambda *command: '')
+        self.assertIn('NO_SUPPORTED_SYSTEM_FIELDS', path.return_value.write_text.call_args.args[0])
 
 
 if __name__ == '__main__':

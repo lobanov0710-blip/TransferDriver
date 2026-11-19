@@ -5045,3 +5045,77 @@ focus/process и категория причины ANR, без полного du
 bash/diff PASS. Неготовая среда останавливает обе suites и удаляет stale markers.
 Запускается новый полный source CI; разрешение liftback/backend runtime не
 менялись. Если gate остановит CI, результат останется BLOCKED, не PASS.
+
+
+## Liftback: новый source CI с emulator readiness gate — 2026-11-18
+
+Android source5eb857497d84ff17d1a1034ed48f69ca6d349564/local
+b372aa3e654fa98504b5701c5fd1bf25af23032b/tree6df234f6232f99b3716d2ce329667304819cd94a,
+CI44368213906 выполняется. Draft PR21 обновлён с tree parity/branch lease;
+проверенная backend реализация b51176226a6f85eb01abb7dc56abec8450e1f713 неизменна.
+
+Docs-only publication helper сначала штатно отказал публиковать tools/workflow
+изменения; ref/tree тогда не записывались. Для нового source использован явный
+список7 изменённых файлов с теми же tree parity/lease и append-only journal.
+Краткий exec-server transport disconnected устранён повторным подключением;
+Cloud Environment status подтвердил ту же running/connected машину, local
+commit/чистое рабочее дерево проверены до публикации. Секреты не запрашивались.
+
+Сравнение с двумя прежними успешными OWNER-editor CI: emulator37.2.13.0,
+Google APIs35 x86_64/Pixel6 и2560MB совпадают. Доказательств смены image/emulator
+или исправления launcher пока нет; готовность HOME проверяется отдельно,
+платформа и обязательные native cases сохранены.
+
+
+## Liftback: CI44368213906 остановлен ошибкой нового gate — 2026-11-18
+
+Source5eb857497d84ff17d1a1034ed48f69ca6d349564/job135027592164 FAILURE:
+build/JVM/lint3 variants,security8/5,runner6/readiness8 PASS, но новый HOME
+readiness gate выдал FAIL через60 секунд до запуска обеих native suites.
+Artifact14457882609 содержал только пустую строку. Этот прогон НЕ подтверждает
+новое ANR/неисправность среды: найдена ошибка самой добавленной проверки.
+
+В Android15 WMS команда `dumpsys window windows` вызывает dumpWindowsLocked,
+тогда как mCurrentFocus/mFocusedApp печатает DisplayContent; нужная команда —
+`dumpsys window displays`. Проверено по AOSP android15-release:
+https://github.com/aosp-mirror/platform_frameworks_base/blob/android15-release/services/core/java/com/android/server/wm/WindowManagerService.java
+https://github.com/aosp-mirror/platform_frameworks_base/blob/android15-release/services/core/java/com/android/server/wm/DisplayContent.java
+Исправлена команда gate/diagnostic; фикстура теперь принимает только точную
+команду displays, а не любой dumpsys. Добавлены2 meaningful cases на diagnostic
+focus/редактирование ANR reason и явное отсутствие полей:10 tests PASS; runner6
+PASS. Ранее2 запуска44358868461 с реальными launcher ANR/48 native failures
+сохраняются. Не объявляется успешный APK/native evidence или исправленный ANR.
+Бизнес-правила/runtime apps не менялись, assertions/timeouts сохранены.
+
+
+## Liftback: публикация исправления gate прервана — 2026-11-19
+
+Исправленный local source0b5cd04279b386c54094627f6c945152b7593649 готов:
+Android15 display dump вместо windows,10 readiness tests/6 runner tests PASS.
+Публикация через GitHub create_tree была прервана, runtime заменён; последующая
+проверка ожидаемого tree4375da69b4c5f4d7dc313a2a9760731013f453ae дала404.
+Попытка загрузить отдельный code blob тоже прервана. Branch update/новый CI
+исправленного source не подтверждены. Последний подтверждённый remote head:
+5eb857497d84ff17d1a1034ed48f69ca6d349564.
+
+Текущий итог: backend b51176226a6f85eb01abb7dc56abec8450e1f713/CI44359299631
+SUCCESS. Android44358868461 attempt1/2 FAILURE с подтверждённым launcher ANR;
+44368213906 FAILURE до suites из-за ошибки нового gate, исправленной локально.
+Native145/PNG56/APK для новой версии НЕ объявлены PASS. Для завершения нужны
+успешная публикация подготовленного исправления, полный CI и проверка artifacts.
+Прерванные GitHub write операции не повторялись после последней отмены; состояние
+ветки повторно прочитано. Нет merge/deploy/remote migration/активации. G1paused.
+
+
+## Liftback: возобновление публикации исправления — 2026-11-19
+
+По указанию владельца «Продолжаем» среда восстановлена. Remote head повторно
+проверен:5eb857497d84ff17d1a1034ed48f69ca6d349564; прежние ожидаемые tree/code blob
+отсутствовали. Повторены10 readiness/6 runner tests:PASS; diff whitespace PASS.
+Повторная загрузка code blobs теперь отвечает: gate1b56e966438a19635065602619bc7f1bbffa1b80,
+fixture3549d8fe457ab5211b7735a6c3361ef27d2257ce. Исправлен разбор ответа
+вспомогательной публикации: create_blob возвращает structuredContent.sha напрямую,
+а fetch blob — декодированный текст, не JSON. Ошибки разбора ответа не меняли
+branch ref; созданные объекты проверены до продолжения. Рабочий runtime приложений
+и бизнес-правила не менялись. Готовится атомарный commit с tree parity/branch lease,
+затем полный Android CI; native/APK PASS до его окончания не заявляется.

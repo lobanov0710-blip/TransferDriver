@@ -13,8 +13,8 @@ def adb(*args):
 
 def diagnostic(run=adb):
     # Only fixed system-state fields, never raw app/provider/SQL output.
-    lines = []
-    for command in [('dumpsys', 'window', 'windows'), ('dumpsys', 'activity', 'lastanr')]:
+    lines = ['Synthetic emulator readiness diagnostic']
+    for command in [('dumpsys', 'window', 'displays'), ('dumpsys', 'activity', 'lastanr')]:
         try:
             output = run(*command)
             for line in output.splitlines():
@@ -26,6 +26,8 @@ def diagnostic(run=adb):
                                  else 'broadcast_timeout' if 'broadcast' in cause else 'other'))
         except (OSError, subprocess.SubprocessError):
             lines.append('SYSTEM_DIAGNOSTIC_UNAVAILABLE')
+    if len(lines) == 1:
+        lines.append('NO_SUPPORTED_SYSTEM_FIELDS')
     path = Path('registration-evidence/native-diagnostics/emulator-readiness.txt')
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text('\n'.join(lines) + '\n')
@@ -50,7 +52,7 @@ def ready(run=adb, clock=time.monotonic, pause=time.sleep):
         return False
     stable = 0
     while clock() < deadline:
-        windows = run('dumpsys', 'window', 'windows')
+        windows = run('dumpsys', 'window', 'displays')
         focus = next((line for line in windows.splitlines() if 'mCurrentFocus=' in line), '')
         if 'Application Not Responding:' in windows:
             return False
