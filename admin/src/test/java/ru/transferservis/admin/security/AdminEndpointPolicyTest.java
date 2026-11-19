@@ -6,10 +6,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 public final class AdminEndpointPolicyTest {
     @Test public void allVariantsUseLockedEndpointAndDebugFlag() {
-        boolean staging="debug".equals(BuildConfig.BUILD_TYPE)||"staging".equals(BuildConfig.BUILD_TYPE);
+        boolean qa="qa".equals(BuildConfig.BUILD_TYPE);
+        boolean staging="debug".equals(BuildConfig.BUILD_TYPE)||"staging".equals(BuildConfig.BUILD_TYPE)||qa;
         assertTrue(staging||"release".equals(BuildConfig.BUILD_TYPE));
         assertEquals(staging?AdminEndpointPolicy.STAGING:AdminEndpointPolicy.PRODUCTION,AdminEndpointPolicy.BASE_URL);
         assertEquals("debug".equals(BuildConfig.BUILD_TYPE),BuildConfig.DEBUG);
+        assertEquals(qa?"ru.transferservis.admin.qa":"ru.transferservis.admin",BuildConfig.APPLICATION_ID);
+        assertTrue(!qa || BuildConfig.VERSION_CODE >= 2);
         assertTrue(AdminEndpointPolicy.allows(URI.create(AdminEndpointPolicy.BASE_URL+"v1/admin/me")));
         assertFalse(AdminEndpointPolicy.allows(URI.create(staging?AdminEndpointPolicy.PRODUCTION:AdminEndpointPolicy.STAGING)));
     }

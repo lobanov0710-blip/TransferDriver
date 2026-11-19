@@ -33,6 +33,14 @@ android {
             versionNameSuffix = "-staging"
             buildConfigField("String", "ADMIN_API_BASE_URL", "\"https://uber-v3-staging.lobanov0710.workers.dev/\"")
         }
+        create("qa") {
+            initWith(getByName("staging"))
+            applicationIdSuffix = ".qa"
+            versionNameSuffix = "-qa"
+            isDebuggable = false
+            signingConfig = null // Owner signs this artifact locally with the persistent QA key.
+            matchingFallbacks += listOf("staging", "release")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -42,6 +50,13 @@ android {
 androidComponents {
     beforeVariants(selector().all()) {
         it.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
+    }
+    onVariants(selector().withBuildType("qa")) { variant ->
+        val code = providers.gradleProperty("adminQaVersionCode").map(String::toInt).orElse(2).map {
+            require(it >= 2) { "Admin QA versionCode must be at least 2" }
+            it
+        }
+        variant.outputs.forEach { it.versionCode.set(code) }
     }
 }
 dependencies {

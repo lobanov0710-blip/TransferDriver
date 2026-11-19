@@ -32,3 +32,8 @@ firebase-debug*.log
 
 # Independent local debug identity for Transfer Admin.
 .local-signing/
+
+# Local QA verification artifacts; private CI test keys only live in temporary directories.
+.qa-verification/
+/admin-phone-qa/
+__pycache__/

@@ -5349,3 +5349,50 @@ ru.transferservis.admin.qa/Transfer Admin QA,STAGING,постоянный при
 Package/signing/runtime не изменены,ключи не создавались/не запрашивались в чат,
 установленный Admin/данные/OWNER/TOTP не удалялись и не сбрасывались. Следующий
 зависимый шаг требует выбора владельца по AGENTS3;G1paused,phone allowlist прежняя.
+
+
+## OWNER утвердил Admin phone QA, вариант A — 2026-11-19
+
+На конкретное предложение ADMIN_PHONE_INSTALL_SIGNING_PROPOSAL_2026-11-19.md
+владелец ответил «Утверждаю». Разрешены отдельный ru.transferservis.admin.qa,
+Transfer Admin QA, STAGING, debuggable=false, unsigned artifact с локальной
+подписью постоянным приватным QA-ключом на Windows владельца и проверками
+coexistence/update/isolation. Старый Admin/данные/OWNER/TOTP сохраняются.
+Новый ключ не публикуется/не передаётся в чат; Driver-подпись не используется.
+Рабочая ветка fix/admin-phone-qa от проверенного liftback checkpoint.
+
+Вопрос владельца: можно ли обновить прежним ключом? Да, только при наличии
+исходного приватного ключа и совпадении публичного сертификата. Проверены пути
+сохранения workflow: CI key генерируется заново,не включён в artifact/cache.
+Локально сохранившийся Admin debug cert ea4f14836b45719946857ce90a3fd8399a088b6ecca76f0a82db26cfa9c71a8b
+не совпадает с двумя сравнивавшимися CI APK. Точный сертификат телефона не
+получен; нельзя объявлять невозможным обновление любой прежней версии.
+Владелец подтвердил источник установленного APK — выдавался в переписке,
+но точный файл/дата не указаны. Ключи/пароли не выводились. Утверждение A
+не отменено этим уточняющим вопросом. G1paused;нет deploy/merge/backend изменений.
+
+
+### QA initial local verification — 2026-11-19
+
+Первый offline Gradle запуск остановлен до сборки: sandbox запрещал sockets,
+которые Gradle использует для file locks. Повтор с явным sandbox network
+разрешением дошёл до реальной QA сборки/93 JVM: 92pass,endpoint policy test
+отклонил новый buildType qa,поскольку allowlist знала лишь debug/staging/release.
+Политику дополнено явным qa→STAGING/DEBUG=false/package.qa/versionCode>=2,
+не ослабляя прежние variant assertions. Это первоначальный failure,не PASS.
+Static Admin guards5/diffcheck/QA guard rejection исходного Admin PASS.
+Эмулятор/Windows private signing ещё не выполнялись.
+
+
+### Account request and interrupted verification — 2026-11-19
+
+Повторный локальный Gradle после исправления endpoint assertion не получил
+результат: tool call прерван владельцем; старый failure log не принят за новый
+PASS. Реальная QA сборка/обновление будут проверены отдельным GitHub CI.
+Владелец попросил создать login/password для тестирования и выдать в чат.
+Проверены backend scope и owner provisioning: singleton OWNER уже с TOTP;
+существующий пароль не извлекается и factor/reset не предусмотрен. Remote
+Cloudflare connector/авторизованной БД в этой среде нет,приватный control plane
+остаётся на Windows владельца. Нового аккаунта не создано/пароль не менялся.
+Запрошено уточнение: существующий OWNER/восстановление/отдельный сотрудник.
+Изолированная QA сборка не создаёт серверный доступ и не расширяет phone allowlist.

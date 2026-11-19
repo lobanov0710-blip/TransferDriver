@@ -638,3 +638,14 @@ Full classifier readiness/activation не завершены. Следующий
 покрытие121 семейства по годам/поколениям/рынкам и защищённая actual legacy
 inventory, затем конкретный план обработки пробелов для рассмотрения.
 G1paused,D4–D7pending. Merge/deploy/remote migration/seed/activation отдельно.
+
+
+## Admin phone QA: вариант A утверждён — 2026-11-19
+
+Владелец утвердил отдельный ru.transferservis.admin.qa / Transfer Admin QA,
+STAGING, debuggable=false,постоянный приватный QA key на своём Windows.
+Подготовить unsigned artifact/инструкцию и проверить coexistence,разные UID/dataDir,
+обычное обновление QA тем же ключом и отказ чужой подписи. Телефонный debug APK
+с одноразовой CI-подписью больше не выдаётся как обновление. Старый Admin/данные
+сохраняются. Физическая приёмка и приватная подпись требуют участия владельца;
+они не считаются выполненными synthetic CI. G1paused,phone scope без расширения.
