@@ -4,24 +4,26 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import ru.transferservis.driver.data.model.StaffDto;
 import ru.transferservis.driver.data.model.StaffLoginResponse;
-import ru.transferservis.driver.data.repository.StaffRepository;
+import ru.transferservis.driver.data.repository.DriverFirebaseSessionRepository;
 
-public class LoginViewModel extends ViewModel {
+public final class LoginViewModel
+        extends ViewModel {
 
-    private final StaffRepository repository;
+    private final DriverFirebaseSessionRepository repository;
 
     private final MutableLiveData<LoginResult> loginResult =
             new MutableLiveData<>();
 
     private final MutableLiveData<Boolean> loading =
-            new MutableLiveData<>(false);
+            new MutableLiveData<>(
+                    false
+            );
 
     public LoginViewModel() {
 
         repository =
-                new StaffRepository();
+                new DriverFirebaseSessionRepository();
     }
 
     public LiveData<LoginResult> getLoginResult() {
@@ -34,45 +36,17 @@ public class LoginViewModel extends ViewModel {
         return loading;
     }
 
-    public void login(
-            String login,
-            String password
+    public void exchangeFirebaseSession(
+            String firebaseIdToken,
+            String appCheckToken,
+            String installationId
     ) {
 
-        if (Boolean.TRUE.equals(
-                loading.getValue()
-        )) {
-
-            return;
-        }
-
         if (
-                login == null
-                        ||
-                        login.trim().isEmpty()
+                Boolean.TRUE.equals(
+                        loading.getValue()
+                )
         ) {
-
-            loginResult.setValue(
-                    LoginResult.error(
-                            "Введите логин"
-                    )
-            );
-
-            return;
-        }
-
-        if (
-                password == null
-                        ||
-                        password.isEmpty()
-        ) {
-
-            loginResult.setValue(
-                    LoginResult.error(
-                            "Введите пароль"
-                    )
-            );
-
             return;
         }
 
@@ -80,11 +54,11 @@ public class LoginViewModel extends ViewModel {
                 true
         );
 
-        repository.login(
-                login,
-                password,
-
-                new StaffRepository.LoginCallback() {
+        repository.exchange(
+                firebaseIdToken,
+                appCheckToken,
+                installationId,
+                new DriverFirebaseSessionRepository.SessionCallback() {
 
                     @Override
                     public void onSuccess(
@@ -95,19 +69,6 @@ public class LoginViewModel extends ViewModel {
                                 false
                         );
 
-                        if (!isValidDriverResponse(
-                                response
-                        )) {
-
-                            loginResult.postValue(
-                                    LoginResult.error(
-                                            "Доступ разрешён только водителям"
-                                    )
-                            );
-
-                            return;
-                        }
-
                         loginResult.postValue(
                                 LoginResult.success(
                                         response
@@ -116,8 +77,35 @@ public class LoginViewModel extends ViewModel {
                     }
 
                     @Override
-                    public void onError(
-                            int httpStatus,
+                    public void onIdentityVerificationRequired() {
+
+                        loading.postValue(
+                                false
+                        );
+
+                        loginResult.postValue(
+                                LoginResult.error(
+                                        "Не удалось подтвердить номер. Запросите новый код"
+                                )
+                        );
+                    }
+
+                    @Override
+                    public void onRateLimited() {
+
+                        loading.postValue(
+                                false
+                        );
+
+                        loginResult.postValue(
+                                LoginResult.error(
+                                        "Слишком много попыток. Повторите позже"
+                                )
+                        );
+                    }
+
+                    @Override
+                    public void onTemporaryError(
                             String message
                     ) {
 
@@ -127,7 +115,9 @@ public class LoginViewModel extends ViewModel {
 
                         loginResult.postValue(
                                 LoginResult.error(
-                                        message
+                                        safeMessage(
+                                                message
+                                        )
                                 )
                         );
                     }
@@ -135,79 +125,19 @@ public class LoginViewModel extends ViewModel {
         );
     }
 
-    private boolean isValidDriverResponse(
-            StaffLoginResponse response
+    private String safeMessage(
+            String value
     ) {
 
         if (
-                response == null
+                value == null
                         ||
-                        !response.isOk()
+                        value.trim().isEmpty()
         ) {
 
-            return false;
+            return "Не удалось подтвердить вход";
         }
 
-        StaffDto staff =
-                response.getStaff();
-
-        if (
-                staff == null
-                        ||
-                        staff.getId() == null
-                        ||
-                        staff.getId().trim().isEmpty()
-        ) {
-
-            return false;
-        }
-
-        if (
-                staff.getRole() == null
-                        ||
-                        !"driver".equalsIgnoreCase(
-                                staff.getRole().trim()
-                        )
-        ) {
-
-            return false;
-        }
-
-        if (
-                response.getAccessToken() == null
-                        ||
-                        response
-                                .getAccessToken()
-                                .trim()
-                                .isEmpty()
-        ) {
-
-            return false;
-        }
-
-        if (
-                response.getRefreshToken() == null
-                        ||
-                        response
-                                .getRefreshToken()
-                                .trim()
-                                .isEmpty()
-        ) {
-
-            return false;
-        }
-
-        if (
-                response.getAccessExpiresAt()
-                        <= 0
-                        ||
-                        response.getRefreshExpiresAt()
-                                <= 0
-        ) {
-
-            return false;
-        }
-
-        return true;
+        return value.trim();
     }
 }

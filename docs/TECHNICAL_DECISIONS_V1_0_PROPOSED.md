@@ -1,0 +1,173 @@
+# Технические решения к ТЗ v1.0 — предложение для утверждения
+
+Дата: 2026-11-06. Статус: **ЧАСТИЧНО УТВЕРЖДЕНО**.
+Основание: владелец подтвердил отсутствие решений раздела 39 и поручил их подготовить.
+Продуктовые правила утверждённого ТЗ не изменяются.
+
+## D1. Приложения и Firebase — УТВЕРЖДЕНО 2026-11-07
+
+Driver сохраняет package `ru.transferservis.driver`. Admin предлагается отдельным
+Android-модулем `admin`, Java + XML, package `ru.transferservis.admin`, с отдельными
+app data, Keystore, сессиями и ключом подписи. Общий Java-код допускается,
+совместное хранилище сессий между приложениями запрещается.
+
+Использовать Firebase-проект владельца с приложением Driver. В Firebase Console:
+
+1. Создать проект либо выбрать существующий production-проект Transfer Servis.
+2. Зарегистрировать Android package `ru.transferservis.driver`.
+3. Добавить SHA-256/SHA-1 сертификатов debug и production из фактических keystore.
+   Ключ подписи не передавать в чат и не хранить в Git.
+4. Включить Authentication → Phone; ограничить SMS-регионы фактическим рынком.
+   Настроить бюджет/квоты SMS и тестовые номера без отправки реальных SMS.
+5. Скачать конфигурацию в локальный игнорируемый `app/google-services.json`
+   либо передавать её в CI через secret; backend получает только project ID
+   и необходимые серверные credentials через штатное хранилище секретов.
+6. Проверить Play Integrity/reCAPTCHA и доставку SMS на реальном устройстве.
+
+Создание проекта требует действия владельца Google-аккаунта: подключённого
+доступа в текущей среде нет. Поддельный Firebase config для APK не используется.
+Admin не получает Phone Auth автоматически: его существующая staff-auth схема
+сохраняется, усиление MFA для OWNER выносится в первый этап Admin.
+
+## D2. Firebase identity → staff session — УТВЕРЖДЕНО 2026-11-07
+
+Предлагаемый контракт: `POST /v1/driver/session/exchange`.
+Тело: `firebaseIdToken`, `installationId`; App Check передаётся отдельным заголовком.
+Ответ: существующая серверная access JWT + rotating refresh session и безопасная
+проекция собственного аккаунта. Firebase ID token не используется как staff JWT.
+
+Backend проверяет подпись по официальным обновляемым ключам, `iss`, `aud`,
+`exp`, `iat`, актуальность `auth_time`, `sub`, phone provider и подтверждённый
+`phone_number`; клиентский номер/роль/driverId не принимаются как источник истины.
+Подтверждённый номер нормализуется в E.164. Блокированный аккаунт не получает сессию.
+Новый аккаунт получает registration `draft`, без допуска к линии/заказам.
+Один активный driver на номер обеспечивается уникальным индексом и транзакцией.
+
+Обмен одноразовый: сохраняется digest предъявленного ID token до его истечения,
+повтор без подтверждённой идемпотентности отвергается. Никаких raw token в D1/logs.
+Смена телефона — отдельный серверный процесс с повторной проверкой и audit.
+Предлагается начальный лимит 5 обменов/минуту на installation и phone digest,
+дополнительный IP-limit и прогрессивная задержка; SMS защищаются отдельно в Firebase.
+Существующие TTL staff session сохраняются до отдельного решения о смене.
+
+## D3. D1 и API — УТВЕРЖДЕНО 2026-11-07
+
+Миграции только добавочные, сначала на локальной/изолированной D1.
+Предлагаемые сущности:
+
+| Сущность | Ключевые поля/ограничения |
+|---|---|
+| driver_profiles | staff_account_id, normalized_phone UNIQUE для active, registration_status, region, identity_status |
+| vehicles | id, driver_id, VIN, plate, status, class, capacity, revision |
+| document_resources | owner_id, vehicle_id?, kind, private_object_key, status, retention_until; без публичного URL |
+| driver_availability | driver_id UNIQUE, active_vehicle_id, on_line/off_line, revision |
+| order_assignments | id, order_id, driver_id, vehicle_id, revision, assigned_by, reason, revoked_at |
+| identity_verifications | id, assignment_id/revision, driver_id, order_id, vehicle_id, challenge_digest, expires_at, state, verified_at |
+| vehicle_photo_checks | vehicle_id, kind, due_at, grace_until, result, reviewed_by |
+| staff_permissions | account_id, permission; OWNER фиксируется отдельно, не назначается обычным admin |
+| support_cases, chat_messages, calls | участники, order_id?, case_id?, server timestamps, сроки удаления |
+| audit_events | actor, action, target, outcome, timestamp, request_id; без токенов/PII/file contents |
+
+Утвердить следующие группы `/v1`-контрактов как основу детализации:
+
+| Контракт | Авторизация и результат |
+|---|---|
+| GET /driver/me | Только собственный профиль, допуск, активное авто и причины отказа |
+| PUT /driver/registration | Собственные разрешённые draft-поля; не статус approved |
+| POST /driver/registration/submit | Сервер проверяет полноту материалов |
+| POST/PATCH /driver/vehicles | Собственное авто; критические изменения сбрасывают соответствующее одобрение |
+| POST /driver/uploads | Одноразовая ограниченная загрузка private resource с назначением/лимитом; без постоянного download URL |
+| PUT /driver/availability | activeVehicleId, requestedState, expectedRevision; все проверки допуска серверные |
+| GET /driver/assignments | Только собственные разрешённые назначения, без свободных заявок |
+| POST /driver/assignments/{id}/verification-challenges | Одноразовая сессия съёмки с коротким сроком и привязкой ко всей assignment-связке |
+| POST /driver/assignments/{id}/phase | phase, verificationSessionId, expectedRevision; серверная проверка binding |
+| GET /admin/me | Авторитетные role и permissions; deny-by-default при отсутствии |
+| POST /admin/orders/{id}/assign или reassign | orders.assign/reassign, driverId, vehicleId, reason, expectedRevision |
+| POST /admin/registrations/{id}/review | Отдельные identity/documents permissions, решение по конкретным элементам |
+| POST /admin/vehicles/{id}/photo-checks | vehicles.verify, причина и режим ограничения |
+| POST /driver/support-cases | Собственный кейс; отмена заказа не разрешается этим API |
+
+Все mutation: Idempotency-Key, revision/optimistic locking, атомарные проверки и audit.
+Ошибки: 401 сессия, 403 права, 404 недоступный чужой ресурс, 409 конфликт/revision,
+422 неполные/неверные данные, 429 лимит. Стабильный code и requestId без PII.
+Admin UI не является защитой: проверки выполняются на каждом backend endpoint.
+PII отдаётся только назначенному участнику; при reassign старые права отзываются
+в той же транзакции. Push содержит только тип/opaque ID, без документов и текста чата.
+
+## D4. Face/liveness SDK и пороги — НЕ УТВЕРЖДЕНО
+
+Предлагается оценить лицензируемый FaceTec как первого кандидата для Android Java.
+Это кандидат для технического испытания, не утверждение текущих возможностей,
+стоимости, юрисдикции хранения или пригодности поставщика.
+Условия выбора: серверная проверка liveness/challenge, защита replay/injection,
+отсутствие gallery для trip selfie, проверяемый результат и допустимые условия
+обработки биометрии. Локальный ML Kit face detection не заменяет liveness/identity.
+
+Цель проверки качества для сравнения: FAR ≤ 10^-5 на согласованном наборе,
+с измерением FRR и ручным рассмотрением спорных случаев. Численный SDK threshold
+утверждается только после калибровки; произвольный процент совпадения не использовать.
+Challenge предлагается 120 секунд, одноразовый. `verified` записывает только backend
+после проверки подписанного результата/серверного ответа провайдера.
+Mismatch создаёт security event/manual review, без автоматического пожизненного бана.
+
+## D5. Хранение и правовые условия — НЕ УТВЕРЖДЕНО
+
+Предложения сроков, требующие отдельного подтверждения владельцем и юристом:
+
+- trip selfie: удаление через 24 часа после успешного завершения поездки;
+  спорный случай — изолированное хранение до решения, максимум 30 дней до пересмотра;
+- reference selfie/документы: пока аккаунт активен и 30 дней после закрытия,
+  кроме отдельно обоснованного обязательного хранения;
+- VoIP: 30 дней; записи private/encrypted, отдельный ключевой доступ и audit;
+- chat: строго 30 календарных дней по уже утверждённому ТЗ, включая жизненный цикл
+  вложений, индексов и резервных копий; job удаления с проверкой результата;
+- аудит: предварительно 1 год, без чувствительного содержимого.
+
+До реализации сбора документов/биометрии и записи звонков необходимо подтвердить
+юрисдикцию, законное основание, текст согласия/уведомления, местонахождение
+хранилища/провайдера, удаление и backup-retention. Общая фраза «утверждаю архитектуру»
+не является юридическим согласованием обработки данных или выбором поставщика.
+
+## D6. Ранжирование, документы и операционные таймауты — НЕ УТВЕРЖДЕНО
+
+Первый вариант: жёсткие фильтры ТЗ, затем лексикографически ETA,
+соответствие предпочтениям, нагрузка, подтверждённая надёжность, дополнительные
+проверенные документы; стабильное разрешение равенства. OWNER видит входные
+факторы и причины исключения. Автоназначения нет. Весовой рейтинг — отдельная версия.
+Дополнительные документы до юридического решения не становятся основанием допуска;
+каждый хранит вид, срок, review status и проверившего сотрудника.
+Service buffer предлагается 30 минут с настройкой OWNER и audit изменения.
+Таймаут реакции на назначение — 5 минут с уведомлением диспетчеру, без автоматической
+передачи заказа другому водителю. Эти значения требуют подтверждения.
+
+## D7. GPS и навигация — НЕ УТВЕРЖДЕНО
+
+Внешние Yandex Navigator/Maps через явный Intent. Pickup/destination выбирается
+по авторитетной фазе. Предлагаемый GPS: только назначенный заказ в разрешённых
+фазах, foreground service, 15 секунд в движении / 60 секунд без движения,
+stale > 60 секунд, accuracy > 100 м помечается непригодной. Сервер проверяет
+assignment/revision и возраст каждой точки. После done/canceled/reassign/logout
+передача прекращается; сервер отвергает поздние точки. Offline-очередь координат
+в первой версии отключена. Точные параметры проверяются на устройстве и батарее.
+
+## Статус решений владельца
+
+**D1–D3 утверждены владельцем проекта 2026-11-07** как техническая основа следующего этапа:
+
+- D1 — структура приложений и Firebase;
+- D2 — Firebase identity → staff session;
+- D3 — серверные сущности D1 и группы API-контрактов `/v1`.
+
+D4, D5, D6 и D7 остаются **НЕ УТВЕРЖДЕНЫ** и требуют отдельных решений владельца.
+
+Утверждение D1–D3 разрешает переход к технической детализации и реализации соответствующего backend Phase 1 в отдельной ветке, но не является разрешением на merge или production deploy.
+
+Для D1–D3 обязательны:
+- additive migrations;
+- deny-by-default authorization;
+- server-authoritative roles/status/assignment;
+- idempotency/revision для mutation;
+- audit критических операций;
+- негативные contract tests на подмену role/phone/driverId/vehicleId, replay и доступ к чужим ресурсам.
+
+Merge/deploy требуют отдельного решения владельца по готовому PR.

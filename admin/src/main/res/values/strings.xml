@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Transfer Admin</string>
+    <string name="heading">Transfer Admin</string>
+    <string name="sign_in_title">Вход сотрудника</string>
+    <string name="login_hint">Логин</string>
+    <string name="password_hint">Пароль</string>
+    <string name="sign_in">Войти</string>
+    <string name="retry">Повторить проверку доступа</string>
+    <string name="logout">Выйти</string>
+    <string name="registrations">Регистрации</string>
+    <string name="owner">Владелец</string>
+    <string name="dispatcher">Диспетчер</string>
+    <string name="owner_security_pending">Рабочие разделы владельца закрыты до завершения настройки дополнительной защиты.</string>
+    <string name="server_permissions">Доступ предоставляется в пределах разрешений, выданных владельцем.</string>
+    <string name="login_required">Введите логин и пароль.</string>
+    <string name="request_failed">Не удалось подтвердить доступ. Проверьте соединение и данные входа, затем повторите попытку.</string>
+    <string name="queue_empty">Нет регистраций в очереди.</string>
+    <string name="submitted">Новая заявка</string>
+    <string name="under_review">На проверке</string>
+    <string name="changes_required">Требует исправления</string>
+    <string name="registration_row">%1$s\n%2$s · %3$s\n\n</string>
+</resources>

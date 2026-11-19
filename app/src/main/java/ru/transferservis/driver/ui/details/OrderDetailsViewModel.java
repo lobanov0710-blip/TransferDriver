@@ -36,6 +36,8 @@ public final class OrderDetailsViewModel
 
     private String currentOrderId;
 
+    private Long currentOrderRevision;
+
     public OrderDetailsViewModel() {
 
         repository =
@@ -126,6 +128,9 @@ public final class OrderDetailsViewModel
                             return;
                         }
 
+                        currentOrderRevision =
+                                order.getRevision();
+
                         state.setValue(
                                 OrderDetailsState.success(
                                         order
@@ -194,17 +199,9 @@ public final class OrderDetailsViewModel
         }
 
         if (
-                !"taken".equals(
+                !"done".equals(
                         safeTargetStatus
                 )
-                        &&
-                        !"in_progress".equals(
-                                safeTargetStatus
-                        )
-                        &&
-                        !"done".equals(
-                                safeTargetStatus
-                        )
         ) {
 
             actionResult.setValue(
@@ -212,6 +209,23 @@ public final class OrderDetailsViewModel
                             safeOrderId,
                             safeTargetStatus,
                             "Недопустимый переход статуса"
+                    )
+            );
+
+            return;
+        }
+
+        if (
+                currentOrderRevision == null
+                        ||
+                        currentOrderRevision < 1
+        ) {
+
+            actionResult.setValue(
+                    OrderActionResult.error(
+                            safeOrderId,
+                            safeTargetStatus,
+                            "Некорректная версия заявки"
                     )
             );
 
@@ -237,6 +251,7 @@ public final class OrderDetailsViewModel
         repository.changeOrderStatus(
                 safeOrderId,
                 safeTargetStatus,
+                currentOrderRevision,
 
                 new OrderRepository.TransitionCallback() {
 

@@ -1,0 +1,4 @@
+<resources>
+    <!-- Reuse the current Driver Material 3 base; no new brand theme is approved here. -->
+    <style name="Theme.TransferAdmin" parent="Theme.Material3.DayNight.NoActionBar" />
+</resources>
