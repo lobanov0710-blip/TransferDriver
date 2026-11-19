@@ -169,3 +169,12 @@ Backend Draft PR46 source1882d622 / CI44518440499 SUCCESS:orphan/NULL ссылк
 [Checkpoint](G2_CLASSIFIER_RANGE_INVENTORY_2026-11-19.md). Далее — решение по
 закрытому чтению,оставшиеся range proofs,затем план устранения пробелов;
 activation/seed/migrations/merge/deploy отдельно. G1paused,D4–D7pending.
+
+
+## G2: вариант A закрытой STAGING инвентаризации утверждён — 2026-11-19
+
+OWNER: «Утверждают вариант А». Разрешён private Windows CLI: точные STAGING
+метаданные и один SELECT с18агрегатами; закрытый JSON, public receipt без чисел.
+Full SQLite export не включён. Реальное чтение ещё не выполнено. Реализация
+проверяется в отдельном Draft backend PR47; пакет не выдаётся до результатов CI.
+G1paused,D4–D7pending; нет remote writes/activation/migrations/merge/deploy.
