@@ -5191,3 +5191,71 @@ https://github.com/actions/runner-images/blob/main/README.md
 Android35/Google APIs/x86_64/Pixel6/renderer/RAM и app code/таймауты/assertions
 сохранены; ANR всё ещё блокирует тесты. YAML parse/diff PASS; новый source должен
 пройти отдельный probe и полный main CI. Backend/runtime source не менялись.
+
+
+## Liftback: host24 probe PASS и сохранение технической истории — 2026-11-19
+
+Source1ad5e6f5cceaedae55ca019b85e112f9b99d3d79:probe44477348025/job135400991290
+SUCCESS наubuntu-24.04,15 readiness cases,actual HOME ready,transitions0/bootstrap
+observedFalse. Main44477347924/job135400991011 выполняется; probe не заменяет
+native/PNG/APK acceptance. Backend10 non-doc source hashes сверены без изменений.
+
+Для точности истории публикации:временный bundle helper ранее отказал на duplicate
+previousSha keyword после расширения state; объект результата заменён на update
+с явным overwrite. После замены exec runtime пропадал сохранённый V8 publisher
+helper; публикация остановилась до ref write, helper восстановлен из файлов.
+Отдельные ошибки JSON parsing ответа GitHub create_blob/fetch исправлены с
+проверкой созданных объектов. Это сбои tooling публикации,не скрытые тестовые
+PASS/production mutations. GitHub blobs/tree сверялись с локальными Git hashes;
+canonical/ref записи применяются только с ожидаемым parent SHA/force=false.
+
+
+## Liftback: состояние после прерванного ожидания CI — 2026-11-19 07:21 UTC
+
+Инструмент ожидания прерван; сам GitHub main CI44477347924/job135400991011
+(source1ad5e6f5cceaedae55ca019b85e112f9b99d3d79) не отменён. Повторное чтение:
+status=in_progress,Run Android security instrumentation tests; artifacts ещё нет.
+Build/JVM/lint3 variants выполнены,probe44477348025 SUCCESS наUbuntu24.04.
+Полный native145/PNG56/APK acceptance пока НЕ подтверждены; итоговый verified
+receipt не создавался и canonical checkpoint не закрывался. Далее получить
+завершённый CI,при PASS проверить bytes/source/digests/signature и raw frames,
+затем опубликовать итоговые docs/журналы с сохранением всей failed/cancelled истории.
+Нет merge/deploy/remote migration/activation; G1paused,D4–D7pending.
+
+
+## Liftback: main CI PASS и offline artifact validation — 2026-11-19
+
+Main44477347924/job135400991011 source1ad5e6f5cceaedae55ca019b85e112f9b99d3d79
+SUCCESS:432 JVM/145 native,оба приложения build/lint3 variants,security8/5,
+runner6/readiness15/actual HOME ready,variant endpoint/signing isolation/AppCheck
+PASS. Прежние failures/cancellation сохранены. Artifact14508325451 (56 PNG) и
+14507872500 (Admin APK) скачаны,archive digests/size/source и все56 PNG CRC/
+dimensions/hash совпали с actual CI log. Driver APK artifact14508525046 только
+metadata,не скачивался и не объявляется offline проверенным.
+
+Первый offline verifier остановился на `aapt dump badging`:не разрешён внешний
+системный android:icon reference0x01080042. Сам APK не изменён; чтение binary
+AndroidManifest через штатный `aapt dump xmltree` успешно. Проверены package
+ru.transferservis.admin,debuggable=true,allowBackup=false,usesCleartextTraffic=false.
+`apksigner verify --print-certs` PASS,один certificate SHA256. Manifest/icon/подпись
+не обходились изменением сборки. История метода сохранена в artifact receipt.
+Визуальный осмотр восьми changed raw frames ещё предстоит; полный checkpoint
+не закрывается до него. Нет release/phone acceptance/merge/deploy/activation.
+
+
+## Liftback: visual finding после green CI — 2026-11-19
+
+Непосредственно осмотрены8 raw frames source1ad5e6f5. Assessment form/confirmation
+и rule confirmation показывают реальный Лифтбек,класс серверный; layout/action
+кнопки читаемы вlight/dark-large. Найдено устаревшее пояснение rules_body_policy:
+перечисляло только sedan/crossover дляcomfort при корректном новом checkbox.
+Это visual finding,поэтому green CI/56 hashes не объявляются итоговой приёмкой.
+
+Исправлена одна строка Android XML:«Комфорт:седан,кроссовер или лифтбек».
+Бизнес/L7/L9/BEV и runtime restrictions не менялись. XML parse/diff PASS;
+новый APK должен быть собран и проверен своим полным CI/артефактами. Новые тесты,
+дублирующие текст строки,не добавлялись. Предыдущие successful CI44477347924,
+validated archives/manifest/signature и8 inspected frames сохранены как
+intermediate source с finding,не как итоговый APK. Probe44477348025 относится
+к неизменным gate/workflows;их4 source hashes зафиксированы для проверки reuse,
+а app acceptance нового source будет только из его полного main CI.
