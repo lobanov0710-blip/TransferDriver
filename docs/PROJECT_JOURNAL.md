@@ -5138,3 +5138,25 @@ workflow на изменения gate:тот же API35/Google APIs/x86_64/Pixel
 12 readiness/6 runner tests,YAML parse/diff PASS. В среде локально нет KVM/emulator;
 установка альтернативной платформы/обход focus/ANR не выполнялись. Полный результат
 остается BLOCKED до исправления причины и проверки артефактов нового source.
+
+
+## Liftback: причина readiness FAIL подтверждена probe — 2026-11-19
+
+Source98305cc7b02bdf9c5aaf9ed942af46952749ed8d, probe CI44475128578/job135393701100
+FAILURE,artifact14506386048:bootCompleted=True,homeStartOk=True,expected HOME
+com.android.settings,56 samples/1 matched/stable0; фактический focus NexusLauncher.
+Подтверждено зависание логики проверки на первом временном HOME, а не ошибка
+приложений. AOSP Android15 Settings FallbackHome регистрирует HOME с priority-1000
+и завершает себя после появления реального HOME:
+https://github.com/aosp-mirror/platform_packages_apps_settings/blob/android15-release/src/com/android/settings/FallbackHome.java
+https://github.com/aosp-mirror/platform_packages_apps_settings/blob/android15-release/AndroidManifest.xml
+
+Исправлено:обычный HOME start сохраняется; цель HOME разрешается заново при каждом
+наблюдении, смена package сбрасывает стабильность. Focused Settings.FallbackHome
+не принимается за готовую среду. Нужны3 последовательных совпадения реального HOME;
+ANR всё ещё немедленный FAIL, deadline60/adb15/native assertions не изменены.
+Добавлены3 regression cases:bootstrap→real HOME,persistent focused fallback,
+сброс трёх наблюдений при смене HOME.15 readiness/6 runner tests PASS,diff PASS.
+Main CI44475128391 того же диагностического source не является готовой сборкой;
+его итог/cancellation будет сохранён отдельно. Новый source должен пройти короткий
+probe и весь main CI; первоначальные2 реальных ANR root cause пока не закрыты.

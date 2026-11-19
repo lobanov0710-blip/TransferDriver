@@ -7,16 +7,18 @@ from check_android_emulator_ready import ready
 
 
 class EmulatorReadyTest(unittest.TestCase):
-    def fixture(self, *, boot='1', component='synthetic.launcher/.Home', status='Status: ok', windows=None):
+    def fixture(self, *, boot='1', component='synthetic.launcher/.Home', components=None, status='Status: ok', windows=None):
         self.now = 0
         self.calls = []
         frames = iter(windows or ['mCurrentFocus=Window{0 synthetic.launcher/.Home}'] * 3)
+        homes = components or [component]
+        targets = iter(homes)
         def run(*command):
             self.calls.append(command)
             if command[0] == 'getprop':
                 return boot
             if command[0] == 'cmd':
-                return component
+                return next(targets, homes[-1])
             if command[0] == 'am':
                 return status
             if command == ('dumpsys', 'window', 'displays'):
@@ -69,6 +71,30 @@ class EmulatorReadyTest(unittest.TestCase):
         self.assertTrue(report['bootCompleted'])
         self.assertEqual('focus', report['stage'])
         self.assertEqual(0, report['matchedSamples'])
+
+    def test_bootstrap_home_may_yield_to_real_home_without_pinning_settings(self):
+        report = {}
+        homes = ['com.android.settings/.FallbackHome'] + ['synthetic.launcher/.Home'] * 3
+        frames = ['mCurrentFocus=Window{0 com.android.settings/.FallbackHome}'] + ['mCurrentFocus=Window{0 synthetic.launcher/.Home}'] * 3
+        self.assertTrue(ready(**self.fixture(components=homes, windows=frames), report=report))
+        self.assertTrue(report['bootstrapHomeObserved'])
+        self.assertEqual(1, report['homeTargetChanges'])
+        self.assertEqual(3, report['stableSamples'])
+
+    def test_focused_bootstrap_home_alone_never_passes(self):
+        report = {}
+        frames = ['mCurrentFocus=Window{0 com.android.settings/.FallbackHome}'] * 70
+        self.assertFalse(ready(**self.fixture(component='com.android.settings/.FallbackHome', windows=frames), report=report))
+        self.assertTrue(report['bootstrapHomeObserved'])
+        self.assertEqual(0, report['matchedSamples'])
+
+    def test_home_package_change_restarts_three_sample_stability(self):
+        homes = ['other.launcher/.Home'] * 2 + ['synthetic.launcher/.Home'] * 3
+        frames = ['mCurrentFocus=Window{0 '+home+'}' for home in homes]
+        report = {}
+        self.assertTrue(ready(**self.fixture(components=homes, windows=frames), report=report))
+        self.assertEqual(5, report['samples'])
+        self.assertEqual(3, report['stableSamples'])
 
     def test_diagnostic_uses_display_focus_and_redacts_anr_reason(self):
         commands = []
