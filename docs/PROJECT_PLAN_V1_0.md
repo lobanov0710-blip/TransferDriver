@@ -679,3 +679,28 @@ Backend Draft PR46 source1882d622 / CI44518440499 SUCCESS:orphan/NULL ссылк
 [Checkpoint](G2_CLASSIFIER_RANGE_INVENTORY_2026-11-19.md). Далее — решение по
 закрытому чтению,оставшиеся range proofs,затем план устранения пробелов;
 activation/seed/migrations/merge/deploy отдельно. G1paused,D4–D7pending.
+
+
+## G2: вариант A закрытой STAGING инвентаризации утверждён — 2026-11-19
+
+OWNER: «Утверждают вариант А». Разрешён private Windows CLI: точные STAGING
+метаданные и один SELECT с18агрегатами; закрытый JSON, public receipt без чисел.
+Full SQLite export не включён. Реальное чтение ещё не выполнено. Реализация
+проверяется в отдельном Draft backend PR47; пакет не выдаётся до результатов CI.
+G1paused,D4–D7pending; нет remote writes/activation/migrations/merge/deploy.
+
+
+## G2: private inventory вариант A — проверен и готов владельцу — 2026-11-19
+
+Backend Draft PR47, source6df1c9f / CI44607369124 Linux+Windows SUCCESS.
+21 actual-Wrangler CLI / 9 Windows policy+NTFS ACL cases,81npm scripts и
+остальные обязательные backend gates PASS. ZIP 16files/15hashes сверён с
+CI digest и независимыми Windows/local builds. Ошибки SDK JSON/PSModulePath/
+PTY harness исправлены и отражены в журнале и квитанции.
+[Пакет и порядок запуска](G2_PRIVATE_INVENTORY_HANDOFF_2026-11-19.md),
+[проверки](PRIVATE_VEHICLE_INVENTORY_VERIFICATION_2026-11-19.json).
+Следующий зависимый шаг — приватный запуск владельцем на Windows с
+существующей авторизацией Cloudflare; передать только receipt.public.json.
+Actual data ещё не читались. Full classifier readiness и111range followups
+остаются открытыми. G1paused,D4–D7pending; без remote writes/migrations/
+activation/merge/deploy и изменения APK/аккаунтов/ключей/прав.
