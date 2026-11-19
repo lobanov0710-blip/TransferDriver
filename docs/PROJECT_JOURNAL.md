@@ -5160,3 +5160,34 @@ ANR всё ещё немедленный FAIL, deadline60/adb15/native assertion
 Main CI44475128391 того же диагностического source не является готовой сборкой;
 его итог/cancellation будет сохранён отдельно. Новый source должен пройти короткий
 probe и весь main CI; первоначальные2 реальных ANR root cause пока не закрыты.
+
+
+## Liftback: bootstrap fix source и superseded CI — 2026-11-19
+
+Опубликован source110b864897e69d31dfed07eeaa63cd08f7e15d71/local
+6582d574e110127ce0e99b4cc54dd62cb5d33f4f/tree245b80bb6d841423341bedacedfb34b89f6970aa
+(точный local SHA сверяется state file). Новый main CI44475834159 и probe44475834201
+выполняются. Main CI44475128391 диагностического source98305cc7 завершён cancelled
+автоматической concurrency после публикации исправления; complete native/APK
+PASS по нему не заявлен. Все неуспешные/отменённые попытки сохраняются в receipt.
+
+
+## Liftback: настоящий pre-suite launcher ANR и pin host Ubuntu24 — 2026-11-19
+
+Main CI44475834159/job135396046450 source110b8648 FAILURE до native suites;
+artifact14505419809:stage=anr,bootCompleted/homeStartOk=True,expected NexusLauncher,
+1 matched/stable sample; focus у Application Not Responding:NexusLauncher,
+ANR_REASON=input_dispatch_timeout. Bootstrap race уже исправлен; это реальный
+системный ANR,а не прежняя ошибка displays/FallbackHome. Probe44475834201 того же
+source SUCCESS (15 unit cases,HOME ready) не заменяет провал полного CI.
+
+Сопоставлены raw runner headers:latest main Ubuntu26 image20261116.202.1,
+probe/прежний green Ubuntu26 image20261111.196.1. Первый liftback ANR также был
+на196.1,поэтому смена image НЕ объявляется доказанной единственной причиной.
+Для воспроизводимой базовой среды оба Android workflows закреплены на
+поддерживаемом GitHub host ubuntu-24.04:
+https://github.com/actions/runner-images/blob/main/README.md
+Это контролируемая стабилизация CI,не доказанное устранение launcher root cause.
+Android35/Google APIs/x86_64/Pixel6/renderer/RAM и app code/таймауты/assertions
+сохранены; ANR всё ещё блокирует тесты. YAML parse/diff PASS; новый source должен
+пройти отдельный probe и полный main CI. Backend/runtime source не менялись.
