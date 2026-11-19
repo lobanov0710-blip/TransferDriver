@@ -5327,3 +5327,25 @@ backend отдельный короткий PROJECT_PLAN_V1_0.md. До commit ф
 с только что созданным checkpoint и удалён. Единый утверждённый план остаётся
 в TransferDriver;backend обновляет свой журнал/ссылки,не создаёт параллельный план.
 Runtime/CSV/история не менялись; дальнейшая публикация docs-only [skip ci].
+
+
+## Установка тестового Admin на телефон: incident и pending signing decision — 2026-11-19
+
+Владелец:«Приложение не установлено»;существующий Admin уже установлен,пытался
+обновить. Точный INSTALL_FAILED код/сертификат телефона пока не получены.
+Выданный d09d5f1e/CI44488353051 APK проверен повторно:SHA256/size совпали с
+receipt,apksigner V2 PASS,package ru.transferservis.admin,minSdk26,target37,
+versionCode1,testOnly отсутствует,native ABI restrictions нет. Старый APK
+CI44321910346 имеет тот же package,но другой сертификат. Workflow создаёт новый
+Admin debug key на каждом runner:обновление старой CI-установки другим ключом
+невозможно. Это подтверждённый недостаток схемы телефонной доставки и вероятный
+блокер данного обновления,не доказательство повреждения APK/единственной причины
+общего сообщения Android. Эмуляторная приёмка не являлась live upgrade acceptance.
+
+Подготовлен ADMIN_PHONE_INSTALL_SIGNING_PROPOSAL_2026-11-19.md:предложение A —
+ru.transferservis.admin.qa/Transfer Admin QA,STAGING,постоянный приватный QA key
+на Windows владельца,установка рядом. B — исходный package с отдельным согласием
+на разовую переустановку/потерю локальных сессий при отсутствии старого ключа.
+Package/signing/runtime не изменены,ключи не создавались/не запрашивались в чат,
+установленный Admin/данные/OWNER/TOTP не удалялись и не сбрасывались. Следующий
+зависимый шаг требует выбора владельца по AGENTS3;G1paused,phone allowlist прежняя.
