@@ -4182,3 +4182,50 @@ coexistence/update/isolation. Старый Admin/данные/OWNER/TOTP сох�
 Владелец подтвердил источник установленного APK — выдавался в переписке,
 но точный файл/дата не указаны. Ключи/пароли не выводились. Утверждение A
 не отменено этим уточняющим вопросом. G1paused;нет deploy/merge/backend изменений.
+
+
+## Admin phone QA — проверенный вариант A, 2026-11-19
+
+Draft PR22,source088c8053f79b8e6c038557585e2ca318911252e7,local9c4975b86408862cbc593f41df3e31e7138817aa,
+общий tree22a11a4ea6aa6f59b913c5a69c44df8f1100d954. CI44508544855/job135506418754
+SUCCESS:525 JVM (Driver51x3,Admin93x4),145 API35 native (41+104),обе apps
+build/lint прежних3variants+AdminQA,security8/5,runner6,readiness15,endpoint/
+signing isolation/AppCheck и PowerShell parser PASS. Начальные local failure/
+interrupted call сохранены выше; это не перенос PASS с прежнего source.
+
+Реальный оптимизированный unsigned QA:ru.transferservis.admin.qa,versionCode2,
+STAGING,debuggable=false. Disposable CI keys подтвердили установку рядом с
+Admin/Driver,разные UID/dataDir,запрет run-as,запуск,обновление2→3 тем же ключом,
+INSTALL_FAILED_UPDATE_INCOMPATIBLE при чужой подписи,сохранение UID/dataDir/
+firstInstall и контрольного файла прежнего Admin. CI ключи удалены,не выдаются
+как постоянные. Приватный ключ создаёт владелец на Windows;физическая приёмка
+и настоящая приватная подпись ещё pending. Существующий Admin/OWNER/TOTP
+не сбрасывались и не переустанавливались.
+
+QA archive14522253186 скачан:987722 bytes,SHA256
+e83191645bce0d3c54544eb01ef9e11061564a2412450e71aafb548feb5c5a0d. Digest/source/
+CRC/paths и source bytes guide/script совпали;реальный unsigned APK1767324 bytes,
+SHA256 2eed6f90beb2a325d8e514fbfa3ded977c7200393ee690b3c4abec7b6c6c9ed1.
+Binary manifest/unsigned/16K alignment/QA label проверены offline повторно.
+Прежние native PNG валидированы CI;заново не скачивались/визуально не принимались.
+Точные факты/границы:ADMIN_PHONE_QA_VERIFICATION_2026-11-19.json. Диагностический
+debug APK больше не выдаётся как совместимое телефонное обновление.
+
+OWNER просил новый login/password в чат. Аккаунт не создан:нет авторизованного
+Cloudflare control plane в этой среде,а текущий phone scope допускает лишь
+существующего singleton OWNER с MFA. Ожидается выбор существующего доступа/
+восстановления/отдельного сотрудника;пароль не придуман как якобы действующий,
+старый не изменён. QA принимает существующий OWNER login/password/TOTP,без
+повторного bootstrap. Инструкция Windows/phone уточнена. Необязательный lookup
+таймингов через неподдержанный GitHub job URL был отклонён;использован доступный
+workflow/jobs list,никаких gates/тестов это не меняло. Первый orchestration syntax
+вызов был исправлен до действий. G1paused,D4–D7pending;backend/phone scope
+не расширены,merge/deploy/remote writes не выполнялись.
+
+Проверенные docs commit ef273c90 и Draft PR22:
+https://github.com/lobanov0710-blip/TransferDriver/pull/22
+
+При sync канонического плана обнаружено,что его прежние главы короче feature-плана;
+строгая проверка equality остановила первую подготовку до каких-либо записей.
+После сверки сохранён весь канонический prefix и присоединены только новые
+утверждение A/checkpoint,без замены/удаления прежних глав и изменения приоритетов.
