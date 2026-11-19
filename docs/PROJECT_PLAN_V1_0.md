@@ -663,3 +663,19 @@ original Admin marker preserved PASS. Unsigned QA archive проверен offli
 установка/вход. Существующий OWNER подходит;нового аккаунта не создано,его
 роль/схема доступа требуют уточнения владельца. G1paused,phone scope прежний,
 нет classifier activation/merge/deploy/remote writes.
+
+
+## G2: dated ranges / orphan-safe inventory — 2026-11-19
+
+Backend Draft PR46 source1882d622 / CI44518440499 SUCCESS:orphan/NULL ссылки
+теперь входят в проблемные счётчики закрытого inventory.16inventory/6reference/
+25migrations/80npm/16native D1/6protected CLI/audit0/dry-run PASS.
+Уточнены10семейств по18первичным источникам/20bounded observations;каталог121/
+архив116/годы сохранены,remaining111 ranges и exhaustive0 остаются открытыми.
+Владелец подтвердил отсутствие snapshot и поручил подготовить порядок для
+утверждения. Подготовлено предложение A:18aggregate counts внутри STAGING D1,
+закрытый JSON на Windows/public receipt без чисел;5фиксированных SQL проверены
+на synthetic schemas. Remote CLI/чтение/экспорт ещё не выполняются до решения.
+[Checkpoint](G2_CLASSIFIER_RANGE_INVENTORY_2026-11-19.md). Далее — решение по
+закрытому чтению,оставшиеся range proofs,затем план устранения пробелов;
+activation/seed/migrations/merge/deploy отдельно. G1paused,D4–D7pending.
