@@ -82,6 +82,15 @@ jobs:
           python3 tools/test_android_native_runner.py
           python3 tools/test_android_emulator_ready.py
 
+      - name: Check Windows signing script syntax
+        shell: pwsh
+        run: |
+          $parseTokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'tools/sign_admin_qa.ps1'), [ref]$parseTokens, [ref]$parseErrors) | Out-Null
+          if ($parseErrors.Count -ne 0) { throw 'Windows signing script syntax failed.' }
+          Write-Output 'WINDOWS_SIGNING_SCRIPT_SYNTAX=PASS'
+
       - name: Verify Gradle wrapper
         run: |
           chmod +x ./gradlew
@@ -112,8 +121,26 @@ jobs:
             :admin:lintDebug \
             :admin:lintStaging \
             :admin:lintRelease \
+            :admin:testQaUnitTest \
+            :admin:assembleQa \
+            :admin:lintQa \
             --no-daemon \
             --stacktrace
+
+      - name: Prepare unsigned Admin phone QA and synthetic upgrade
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p admin-phone-qa .qa-verification
+          cp admin/build/outputs/apk/qa/admin-qa-unsigned.apk admin-phone-qa/admin-qa-unsigned.apk
+          python3 tools/check_admin_qa_delivery.py --base admin-phone-qa/admin-qa-unsigned.apk --receipt admin-phone-qa/build-receipt.json
+          QA_CONFIG="$(find admin/build/generated -type f -path '*/qa/*' -name BuildConfig.java -print -quit)"
+          test -n "$QA_CONFIG"
+          grep -F 'https://uber-v3-staging.lobanov0710.workers.dev/' "$QA_CONFIG"
+          grep -F 'public static final boolean DEBUG = false;' "$QA_CONFIG"
+          if grep -Fq 'https://uber-v3.lobanov0710.workers.dev/' "$QA_CONFIG"; then exit 20; fi
+          ./gradlew :admin:assembleQa -PadminQaVersionCode=3 --no-daemon --stacktrace
+          cp admin/build/outputs/apk/qa/admin-qa-unsigned.apk .qa-verification/admin-qa-upgrade-unsigned.apk
 
       - name: Verify build-variant API endpoint locks
         shell: bash
@@ -204,7 +231,9 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: bash tools/run_android_native_tests.sh
+          script: |
+            bash tools/run_android_native_tests.sh
+            python3 tools/check_admin_qa_delivery.py --base admin-phone-qa/admin-qa-unsigned.apk --upgrade .qa-verification/admin-qa-upgrade-unsigned.apk --receipt admin-phone-qa/build-receipt.json
 
       - name: Verify executed JVM and Android test reports
         shell: bash
@@ -220,6 +249,7 @@ jobs:
               ('ADMIN_DEBUG_JVM', 'admin/build/test-results/testDebugUnitTest'),
               ('ADMIN_STAGING_JVM', 'admin/build/test-results/testStagingUnitTest'),
               ('ADMIN_RELEASE_JVM', 'admin/build/test-results/testReleaseUnitTest'),
+              ('ADMIN_QA_JVM', 'admin/build/test-results/testQaUnitTest'),
               ('ADMIN_ANDROID', 'admin/build/outputs/androidTest-results/connected'),
           ]:
               files = list(Path(directory).rglob('TEST-*.xml'))
@@ -368,7 +398,19 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Upload tested Admin debug APK
+      - name: Upload unsigned Admin phone QA and signing instructions
+        if: ${{ success() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: admin-phone-qa-unsigned
+          path: |
+            admin-phone-qa/
+            tools/sign_admin_qa.ps1
+            docs/ADMIN_QA_SIGNING_WINDOWS.md
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload diagnostic Admin debug APK (not for phone updates)
         if: ${{ success() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
