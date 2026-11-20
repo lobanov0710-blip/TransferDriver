@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     steps:
@@ -80,6 +80,7 @@ jobs:
           python3 tools/check_security.py
           python3 tools/check_admin_security.py
           python3 tools/test_android_native_runner.py
+          python3 tools/test_android_emulator_ready.py
 
       - name: Verify Gradle wrapper
         run: |
@@ -267,6 +268,7 @@ jobs:
                       'ruleCancelledDelayedReadCannotExposeSnapshot',
                       'ruleEditorConfirmsBeforePostAndUnknownReadNeverRebasesOriginalRetry',
                       'ruleEditorRequiresLookupExplicitNewValuesAndUnchangedTarget',
+                      'liftbackIsOnlySelectableForComfortAndIsConfirmedVerbatim',
                       'ruleEditorPreservesWholeConditionsAndRequiresExplicitRemoval',
                       'ruleEditorDispatcherPhoneMfaAndConflictFailClosed',
                       'ruleEditorBackgroundWipesConditionsDialogOriginalActionAndSavedState',
@@ -282,6 +284,7 @@ jobs:
                       'assessmentDocumentPreviewRequiresIndependentSensitivePermission',
                       'assessmentLateReadCancellationCannotReturnContext',
                       'assessmentConfirmationAndLostAckKeepOriginalAcrossExplicitReadRetry',
+                      'verifiedLiftbackIsShownAndConfirmedWithoutClientClassSelection',
                       'assessmentEditedInputRequiresRuleReloadAndDocumentsAreExplicit',
                       'assessmentOwnerExceptionHasExplicitWaiversAndDispatcherHasNoMode',
                       'assessmentBackgroundWipesInputsEvidenceDialogAndUnknownAction',

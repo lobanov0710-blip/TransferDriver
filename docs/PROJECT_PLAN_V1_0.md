@@ -614,3 +614,27 @@ runtime не менялись. Вопрос допуска лифтбеков в
 ответ ожидается, зависимые изменения запрещены до решения. Действующие pins,
 body guards и dispatcher restrictions сохраняются. Подробности: readiness
 checkpoint и VEHICLE_BODY_POLICY_CLARIFICATION_2026-11-18.md. G1paused,D4–D7pending.
+
+
+## G2: утверждён liftback только для comfort — 2026-11-18
+
+OWNER ответил «Только в комфорте»; вопрос кузова закрыт. Реализуются отдельный
+body enum, серверные/SQL ограничения, Admin DTO/формы/отображение и meaningful
+tests. Новых Dispatcher powers, расширения Бизнес/Минивэн или массового изменения
+версий/pins нет. Миграция25 только готовится/проверяется локально и CI, remote
+apply/активация не утверждены. Powertrain ranges/actual inventory остаются открыты.
+
+
+## G2: liftback только Комфорт — проверенный checkpoint 2026-11-19
+
+Утверждённое правило реализовано в backend/SQL и Android Admin, без массового
+изменения versions/pins. Draft PR45/21: backend CI44359299631 и Android
+CI44488353051 SUCCESS.432 JVM/145 native,обе apps3 variants build/lint,
+security8/5,runner6/readiness15,56 PNG hashes/8 raw changed frames/debug APK
+проверены. Прежние failures и точные источники сохранены в журнале и
+[receipt](COMFORT_LIFTBACK_VERIFICATION_2026-11-19.json). Это завершает проверку реализации поправки кузова.
+
+Full classifier readiness/activation не завершены. Следующий прежний объём:
+покрытие121 семейства по годам/поколениям/рынкам и защищённая actual legacy
+inventory, затем конкретный план обработки пробелов для рассмотрения.
+G1paused,D4–D7pending. Merge/deploy/remote migration/seed/activation отдельно.

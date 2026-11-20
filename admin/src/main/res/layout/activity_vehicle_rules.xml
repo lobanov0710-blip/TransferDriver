@@ -20,6 +20,7 @@
 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/rules_body_policy" />
 <CheckBox android:id="@+id/rulesSedan" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_sedan" />
 <CheckBox android:id="@+id/rulesCrossover" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_crossover" />
+<CheckBox android:id="@+id/rulesLiftback" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/rules_liftback" />
 <CheckBox android:id="@+id/rulesMinivan" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_minivan" />
 <CheckBox android:id="@+id/rulesOther" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/classification_other" />
 <CheckBox android:id="@+id/rulesNullBody" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:saveEnabled="false" android:text="@string/rules_null_body" />

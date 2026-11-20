@@ -23,9 +23,10 @@ public final class VehicleRuleAction {
         if(a==null||!a.canManageVehicleRules()||s==null||s.scope<1||s.rule!=null&&s.rule.revision>=Assignments.MAX_REVISION||!a.accountId.equals(s.accountId)||!s.make.equals(VehicleAssessment.text(make,80))||!s.model.equals(VehicleAssessment.text(model,80)))throw invalid();
         String y=VehicleAssessment.text(year,4);if(!y.matches("[0-9]{1,4}")||Long.parseLong(y)<1||!Arrays.asList("comfort","business","minivan").contains(vehicleClass))throw invalid();long minimum=Long.parseLong(y);
         if(bodies!=null&&(bodies.isEmpty()||bodies.size()>4||new HashSet<>(bodies).size()!=bodies.size()))throw invalid();
-        if(bodies!=null)for(String type:bodies)if(!Arrays.asList("sedan","crossover","minivan","other").contains(type))throw invalid();
+        if(bodies!=null)for(String type:bodies)if(!Arrays.asList("sedan","crossover","liftback","minivan","other").contains(type))throw invalid();
         if(!"minivan".equals(vehicleClass)&&bodies==null)throw invalid();
-        if("comfort".equals(vehicleClass)&&!Arrays.asList("sedan","crossover").containsAll(bodies))throw invalid();
+        if("comfort".equals(vehicleClass)&&!Arrays.asList("sedan","crossover","liftback").containsAll(bodies))throw invalid();
+        if(!"comfort".equals(vehicleClass)&&bodies!=null&&bodies.contains("liftback"))throw invalid();
         if("business".equals(vehicleClass)){String required="Li Auto".equals(s.make)&&Arrays.asList("L7","L9").contains(s.model)?"crossover":"sedan";if(bodies.size()!=1||!required.equals(bodies.get(0)))throw invalid();}
         if(conditions==null||conditions.size()>32||new HashSet<>(conditions).size()!=conditions.size())throw invalid();for(String c:conditions)if(!VehicleAssessment.text(c,1000).equals(c))throw invalid();
         String note=VehicleAssessment.text(reason,1000);JsonObject b=new JsonObject();b.addProperty("make",s.make);b.addProperty("model",s.model);b.addProperty("minYear",minimum);b.addProperty("vehicleClass",vehicleClass);

@@ -4,7 +4,7 @@
 <string name="rules_scope">Редактор OWNER. Укажите марку из утверждённого справочника и точную модель, затем найдите текущее правило. Новые марки здесь не добавляются. Это правило классификации, а не допуск конкретного автомобиля.</string>
 <string name="rules_read">Найти текущее правило</string>
 <string name="rules_year">Минимальный год выпуска</string><string name="rules_class">Класс правила</string>
-<string name="rules_body_policy">Допустимые кузова выбираются явно. Комфорт: седан и/или кроссовер. Бизнес: седан; для Li Auto L7/L9 — кроссовер. Запрет полностью электрических автомобилей сохраняется.</string>
+<string name="rules_body_policy">Допустимые кузова выбираются явно. Комфорт: седан, кроссовер или лифтбек. Бизнес: седан; для Li Auto L7/L9 — кроссовер. Запрет полностью электрических автомобилей сохраняется.</string>
 <string name="rules_null_body">Для минивэна оставить определение кузова по условиям строки, без нового ограничения</string>
 <string name="rules_conditions">Условия точной версии. Каждое условие — отдельная строка, текст не разбирается автоматически. Отсутствие условий будет явно показано при подтверждении.</string>
 <string name="rules_add_condition">Добавить условие</string><string name="rules_remove_condition">Удалить условие</string><string name="rules_condition">Условие %1$d</string>
@@ -21,4 +21,5 @@
 <string name="rules_changed">Правило изменилось. Повторите поиск и подготовьте новую версию заново.</string>
 <string-array name="rules_classes"><item>Выберите класс правила</item><item>Комфорт</item><item>Бизнес</item><item>Минивэн</item></string-array>
 <string name="rules_rejected">Сервер не принял новую версию. Проверьте утверждённую марку, параметры и условия, затем выполните поиск заново.</string>
+<string name="rules_liftback">Лифтбек — только Комфорт</string>
 </resources>

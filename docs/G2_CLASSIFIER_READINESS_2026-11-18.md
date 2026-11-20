@@ -13,14 +13,21 @@ Android runtime, APK, allowlist OWNER-phone и права диспетчера �
 доступа указаны в revision 2 реестра. Каталог/годы/правила не менялись.
 Реальная legacy inventory и активация не выполнены.
 
-Производители называют отдельные одобренные модели лифтбеками. Владелец получил
-[вопрос о кузове](VEHICLE_BODY_POLICY_CLARIFICATION_2026-11-18.md); решения пока
-нет, enum/кузовные ограничения/допуски не менялись. Новый проход меняет только
-документы. Runtime verification JSON предыдущего этапа привязан к своему
-проверенному source и не является CI-проверкой новых текстов/ссылок.
+Вопрос лифтбеков закрыт: владелец ответил «Только в комфорте». В отдельных
+ветках arch/g2-comfort-liftback реализован тип liftback для comfort с запретом
+business/minivan/OWNER exception bypass. Проверки новых runtime изменений
+ведутся отдельно; массовой смены pins/правил, seed и активации нет.
+Подробности: [утверждённое решение](VEHICLE_BODY_POLICY_CLARIFICATION_2026-11-18.md)
+и [реализация](COMFORT_LIFTBACK_IMPLEMENTATION_2026-11-18.md).
 
 Далее: завершить доказательства по оставшимся исполнениям; подготовить защищённое
 чтение реальных legacy и конкретный план устранения пробелов для рассмотрения.
 Seed, remote migration, merge, deployment и активация требуют отдельных решений.
 G1 на паузе; D4–D7 ожидают утверждения. Этот checkpoint не является новым APK
 или повторной Android-приёмкой. Результаты backend CI фиксируются отдельно в журнале.
+
+
+Поправка liftback проверена отдельным checkpoint 2026-11-19:
+[receipt](COMFORT_LIFTBACK_VERIFICATION_2026-11-19.json).432 JVM/145 native,56 PNG hashes/8 raw changed frames
+и debug APK проверены. Это не full powertrain ranges/actual inventory/live
+acceptance или активация; исторические docs-only checkpoints выше сохранены.

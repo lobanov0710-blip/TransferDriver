@@ -3,6 +3,7 @@
 set -eu
 mkdir -p registration-evidence/native-diagnostics
 rm -f registration-evidence/.validated registration-evidence/.driver-validated
+python3 tools/check_android_emulator_ready.py
 driver_status=0
 admin_status=0
 run_driver() {
@@ -32,6 +33,7 @@ run_admin() {
 bash -e -c "$(declare -f run_driver); run_driver" || driver_status=$?
 bash -e -c "$(declare -f run_admin); run_admin" || admin_status=$?
 if [[ "$driver_status" -ne 0 || "$admin_status" -ne 0 ]]; then
+  python3 -c 'from tools.check_android_emulator_ready import diagnostic; diagnostic()' || true
   adb exec-out run-as ru.transferservis.driver cat files/availability-window-focus-diagnostic.txt > registration-evidence/native-diagnostics/availability-focus.txt 2>/dev/null || true
   adb exec-out run-as ru.transferservis.admin tar -cf - files/assessment-diagnostics > registration-evidence/native-diagnostics/assessment.tar 2>/dev/null || true
   adb exec-out run-as ru.transferservis.admin tar -cf - files/rule-editor-diagnostics > registration-evidence/native-diagnostics/rule-editor.tar 2>/dev/null || true

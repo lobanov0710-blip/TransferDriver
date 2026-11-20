@@ -5,6 +5,11 @@ import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public final class VehicleAssessmentTest {
+    @Test public void liftbackRemainsAnActualBodyParameterWithoutClientSelectedClass()throws Exception {
+        VehicleAssessment.Parameters value=new VehicleAssessment.Parameters("Toyota","Camry","2023","hybrid","liftback");
+        assertEquals("liftback",value.json().get("bodyType").getAsString());assertFalse(value.json().has("vehicleClass"));
+        assertFalse(value.same(new VehicleAssessment.Parameters("Toyota","Camry","2023","hybrid","sedan")));
+    }
     static JsonObject json(String s){return JsonParser.parseString(s).getAsJsonObject();}
     static AdminAccess owner(){return AdminAccess.fromResponse(json("{\"ok\":true,\"admin\":{\"accountId\":\"staff_operator001\",\"role\":\"owner\",\"permissions\":[\"*\"],\"mfa\":{\"required\":true,\"verified\":true,\"method\":\"totp\",\"expiresAt\":9007199254740991}}}"),"staff_operator001");}
     static VehicleAssessment.Parameters params(String model,String year)throws IOException{return new VehicleAssessment.Parameters("Toyota",model,year,"hybrid","sedan");}

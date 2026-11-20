@@ -5,6 +5,15 @@ import java.util.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public final class VehicleRuleActionTest {
+    @Test public void liftbackRuleIsExplicitComfortOnlyAndAcknowledgedWithoutAliasing()throws Exception {
+        VehicleRuleAction action=create(snapshot(false),"comfort",List.of("sedan","crossover","liftback"),List.of());
+        assertEquals("liftback",action.body().getAsJsonArray("allowedBodyTypes").get(2).getAsString());
+        assertEquals(action.bodies,action.acknowledge(ack(action)).allowedBodyTypes);
+        for(String type:List.of("business","minivan"))rejects(()->create(snapshot(false),type,List.of("liftback"),List.of()));
+        JsonObject forged=ack(action);forged.getAsJsonObject("rule").addProperty("vehicleClass","minivan");
+        rejects(()->VehicleClassification.Rule.parse(forged,"rule_created001"));
+        assertEquals(List.of("sedan"),VehicleAssessmentTest.rule().allowedBodyTypes);
+    }
     static AdminAccess owner(){return VehicleAssessmentTest.owner();}
     static VehicleRuleAction.Snapshot snapshot(boolean exists)throws Exception{return new VehicleRuleAction.Snapshot(owner(),1,"Toyota","Camry",exists?VehicleAssessmentTest.rule():null);}
     static VehicleRuleAction create(VehicleRuleAction.Snapshot s,String type,List<String> bodies,List<String> conditions)throws Exception{return VehicleRuleAction.create(owner(),s,s.make,s.model,"2023",type,bodies,conditions,"Synthetic reason");}
