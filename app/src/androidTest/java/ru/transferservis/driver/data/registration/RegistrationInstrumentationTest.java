@@ -167,15 +167,20 @@ public final class RegistrationInstrumentationTest {
         AtomicInteger writes=new AtomicInteger();JsonObject data=JsonParser.parseString(DRAFT).getAsJsonObject();
         launch(chain->{String method=chain.request().method();if(!method.equals("GET")){
             writes.incrementAndGet();okio.Buffer buffer=new okio.Buffer();chain.request().body().writeTo(buffer);JsonObject body=JsonParser.parseString(buffer.readUtf8()).getAsJsonObject();
-            assertFalse(body.has("driverId"));assertFalse(body.has("status"));assertFalse(body.has("vehicleClass"));assertEquals(2020,body.get("modelYear").getAsInt());assertEquals("XW8ZZZ61ZFG000001",body.get("vin").getAsString());
+            assertFalse(body.has("driverId"));assertFalse(body.has("status"));assertFalse(body.has("vehicleClass"));assertEquals(2020,body.get("modelYear").getAsInt());assertEquals("XW8ZZZ61ZFG000001",body.get("vin").getAsString());assertEquals("Белый",body.get("color").getAsString());
             if(method.equals("POST")){assertEquals(9,body.size());body.add("vehicleClass",com.google.gson.JsonNull.INSTANCE);body.addProperty("id",VEHICLE);body.addProperty("driverId","synthetic-driver");body.addProperty("status","draft");body.addProperty("revision",1);data.getAsJsonArray("vehicles").add(body);}
             else {assertEquals("PATCH",method);assertEquals(10,body.size());assertEquals(1,body.get("expectedRevision").getAsInt());data.getAsJsonArray("vehicles").get(0).getAsJsonObject().addProperty("revision",2);}
             return response(chain,200,"{\"ok\":true}");}return response(chain,200,data.toString());});
         click(R.id.registrationAddVehicle);click(R.id.registrationSaveVehicle);awaitText("Проверьте поля");assertEquals(0,writes.get());
         enter(R.id.vinInput,"xw8zzz61zfg000001");enter(R.id.plateInput,"TEST-001");enter(R.id.makeInput,"Synthetic");enter(R.id.modelInput,"Vehicle");enter(R.id.modelYearInput,"2020");enter(R.id.capacityInput,"4");
         instrumentation.runOnMainSync(()->{for(int id:new int[]{R.id.baggageInput,R.id.usageInput})((android.widget.Spinner)activity.findViewById(id)).setSelection(1);});
+        click(R.id.registrationSaveVehicle);awaitText("Проверьте поля");assertEquals(0,writes.get());
+        enter(R.id.colorInput,"   ");click(R.id.registrationSaveVehicle);awaitText("Проверьте поля");assertEquals(0,writes.get());
+        enter(R.id.colorInput,"Белый");
         click(R.id.registrationSaveVehicle);awaitText("Сохранено");assertEquals(1,writes.get());
         instrumentation.runOnMainSync(()->((android.widget.LinearLayout)activity.findViewById(R.id.registrationVehicles)).getChildAt(0).performClick());
+        enter(R.id.colorInput,"");click(R.id.registrationSaveVehicle);awaitText("Проверьте поля");assertEquals(1,writes.get());
+        enter(R.id.colorInput,"Белый");
         click(R.id.registrationSaveVehicle);awaitText("Сохранено");assertEquals(2,writes.get());
     }
     @Test public void backgroundClearsUnsavedInputAndSecureCaptureFlagRemains() throws Exception {
@@ -189,7 +194,7 @@ public final class RegistrationInstrumentationTest {
     }
     private JsonObject approvedVehicleData() {
         JsonObject data=JsonParser.parseString(DRAFT).getAsJsonObject();
-        JsonObject row=JsonParser.parseString("{\"vin\":\"XW8ZZZ61ZFG000001\",\"plate\":\"TEST-001\",\"make\":\"Synthetic\",\"model\":\"Vehicle\",\"modelYear\":2020,\"color\":null,\"vehicleClass\":\"comfort\",\"capacity\":4,\"baggageCapacity\":\"standard\",\"usageBasis\":\"owner\",\"status\":\"approved\",\"revision\":1}").getAsJsonObject();
+        JsonObject row=JsonParser.parseString("{\"vin\":\"XW8ZZZ61ZFG000001\",\"plate\":\"TEST-001\",\"make\":\"Synthetic\",\"model\":\"Vehicle\",\"modelYear\":2020,\"color\":\"Белый\",\"vehicleClass\":\"comfort\",\"capacity\":4,\"baggageCapacity\":\"standard\",\"usageBasis\":\"owner\",\"status\":\"approved\",\"revision\":1}").getAsJsonObject();
         row.addProperty("id",VEHICLE);row.addProperty("driverId","synthetic-driver");data.getAsJsonArray("vehicles").add(row);return data;
     }
     private void openFirstVehicle(){instrumentation.runOnMainSync(()->((android.widget.LinearLayout)activity.findViewById(R.id.registrationVehicles)).getChildAt(0).performClick());}

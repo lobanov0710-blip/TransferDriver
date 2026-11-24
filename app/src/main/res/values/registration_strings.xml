@@ -27,7 +27,7 @@
     <string name="registration_plate_label">Госномер</string>
     <string name="registration_make_label">Марка</string>
     <string name="registration_model_label">Модель</string>
-    <string name="registration_color_label">Цвет (необязательно)</string>
+    <string name="registration_color_label">Цвет кузова</string>
     <string name="registration_capacity_label">Пассажирских мест</string>
     <string name="registration_capacity_help">От 1 до 20</string>
     <string name="registration_model_year_label">Год выпуска</string>
