@@ -226,7 +226,8 @@ public final class StaffAuthInterceptor
                 refreshResult =
                 sessionRefresher
                         .refreshAfterUnauthorizedBlocking(
-                                accessTokenUsed
+                                accessTokenUsed,
+                                session.getStaffId()
                         );
 
         switch (

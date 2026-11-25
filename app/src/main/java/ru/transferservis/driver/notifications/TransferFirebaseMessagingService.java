@@ -5,9 +5,6 @@ import androidx.annotation.NonNull;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Map;
-import java.util.UUID;
-
 import ru.transferservis.driver.data.session.SecureSessionStore;
 
 public final class TransferFirebaseMessagingService
@@ -59,52 +56,11 @@ public final class TransferFirebaseMessagingService
                 message
         );
 
-        /*
-         * ARCH-11.15B3 uses data-only FCM
-         * messages so delivery is handled
-         * here consistently in foreground
-         * and background.
-         *
-         * Never log payloads or FCM tokens.
-         */
-
-        Map<String, String> data =
-                message.getData();
-
-        if (
-                data == null
-                        ||
-                        data.isEmpty()
-        ) {
-
-            return;
-        }
-
-        String type =
-                clean(
-                        data.get(
-                                "type"
-                        )
-                );
-
-        if (!"new_order".equals(
-                type
-        )) {
-
-            return;
-        }
-
-        String orderId =
-                clean(
-                        data.get(
-                                "orderId"
-                        )
-                );
-
-        if (!isUuid(
-                orderId
-        )) {
-
+        AssignmentPushEvent event = AssignmentPushEvent.parse(message.getData());
+        if (event == null) return;
+        DriverNotificationManager notifications = new DriverNotificationManager(this);
+        if (event.revoked) {
+            notifications.cancelOrder(event.orderId);
             return;
         }
 
@@ -127,50 +83,6 @@ public final class TransferFirebaseMessagingService
             return;
         }
 
-        new DriverNotificationManager(
-                this
-        )
-                .notifyNewOrder(
-                        orderId
-                );
-    }
-
-    private boolean isUuid(
-            String value
-    ) {
-
-        if (
-                value == null
-                        ||
-                        value.length()
-                                != 36
-        ) {
-
-            return false;
-        }
-
-        try {
-
-            UUID.fromString(
-                    value
-            );
-
-            return true;
-
-        } catch (
-                IllegalArgumentException error
-        ) {
-
-            return false;
-        }
-    }
-
-    private String clean(
-            String value
-    ) {
-
-        return value == null
-                ? ""
-                : value.trim();
+        notifications.notifyAssignment(event.orderId);
     }
 }

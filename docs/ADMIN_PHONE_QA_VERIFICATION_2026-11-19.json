@@ -1,0 +1,111 @@
+{
+  "status": "passed_ci_and_offline",
+  "sourceCommit": "088c8053f79b8e6c038557585e2ca318911252e7",
+  "sourceTree": "22a11a4ea6aa6f59b913c5a69c44df8f1100d954",
+  "localCommit": "9c4975b86408862cbc593f41df3e31e7138817aa",
+  "ciRun": 44508544855,
+  "ciJob": 135506418754,
+  "draftPr": 22,
+  "physicalPhoneAcceptance": false,
+  "ownerPrivateSigning": false,
+  "accountCreated": false,
+  "date": "2026-11-19",
+  "branch": "fix/admin-phone-qa",
+  "ciConclusion": "success",
+  "androidApi": 35,
+  "testCounts": [
+    {
+      "name": "JVM",
+      "count": 51
+    },
+    {
+      "name": "STAGING_JVM",
+      "count": 51
+    },
+    {
+      "name": "RELEASE_JVM",
+      "count": 51
+    },
+    {
+      "name": "ANDROID",
+      "count": 41
+    },
+    {
+      "name": "ADMIN_DEBUG_JVM",
+      "count": 93
+    },
+    {
+      "name": "ADMIN_STAGING_JVM",
+      "count": 93
+    },
+    {
+      "name": "ADMIN_RELEASE_JVM",
+      "count": 93
+    },
+    {
+      "name": "ADMIN_QA_JVM",
+      "count": 93
+    },
+    {
+      "name": "ADMIN_ANDROID",
+      "count": 104
+    }
+  ],
+  "jvmExecutions": 525,
+  "nativeExecutions": 145,
+  "staticGuards": {
+    "Driver": 8,
+    "Admin": 5,
+    "nativeRunner": 6,
+    "emulatorReady": 15
+  },
+  "buildsAndLint": [
+    "Driver debug/staging/release",
+    "Admin debug/staging/release/qa"
+  ],
+  "windowsSigningScript": "syntax_passed_in_CI; private execution on owner Windows pending",
+  "qaArtifact": {
+    "id": 14522253186,
+    "name": "admin-phone-qa-unsigned",
+    "zipBytes": 987722,
+    "zipSha256": "e83191645bce0d3c54544eb01ef9e11061564a2412450e71aafb548feb5c5a0d",
+    "expiresAt": "2026-11-26T11:05:52Z",
+    "package": "ru.transferservis.admin.qa",
+    "versionCode": 2,
+    "unsignedSha256": "2eed6f90beb2a325d8e514fbfa3ded977c7200393ee690b3c4abec7b6c6c9ed1",
+    "unsignedBytes": 1767324,
+    "debuggable": false,
+    "endpoint": "STAGING",
+    "sourceCommit": "088c8053f79b8e6c038557585e2ca318911252e7",
+    "checks": [
+      "binary_manifest",
+      "unsigned",
+      "side_by_side",
+      "distinct_uid_dataDir",
+      "not_debuggable",
+      "launch",
+      "same_key_upgrade",
+      "foreign_key_rejected",
+      "original_admin_preserved"
+    ]
+  },
+  "offlineChecks": {
+    "archiveDigestSizeCrcPaths": true,
+    "sourceScriptAndGuideBytes": true,
+    "binaryManifestUnsignedAlignment": true,
+    "qaLabelPresent": true
+  },
+  "limitations": [
+    "Owner private QA key not created here; no signed phone APK issued.",
+    "Physical phone install/update/login pending owner.",
+    "Existing phone certificate and exact INSTALL_FAILED code not obtained.",
+    "Existing OWNER/password/TOTP preserved; account request awaits role clarification/private control plane.",
+    "Existing native screenshots validated by CI; not downloaded or visually re-reviewed for this packaging change.",
+    "No backend scope expansion, migration, seed, activation, merge or deploy; G1 paused."
+  ],
+  "priorFailures": [
+    "Local sandbox socket restriction before Gradle tasks.",
+    "Initial local QA test run: 92/93 passed; endpoint build-type allowlist extended explicitly for QA.",
+    "Follow-up local build tool call aborted; not reported as pass."
+  ]
+}

@@ -18,6 +18,15 @@ public final class StaffOrderDto {
     private String status;
     private String driverId;
 
+    private Long revision;
+
+    private String assignmentId;
+    private Long assignmentRevision;
+    private String assignmentPhase;
+    private Long phaseUpdatedAt;
+    private Long assignedAt;
+    private String vehicleId;
+
     private Long createdAt;
     private Long updatedAt;
 
@@ -67,6 +76,62 @@ public final class StaffOrderDto {
 
     public String getDriverId() {
         return driverId;
+    }
+
+    public Long getRevision() {
+        return revision;
+    }
+
+    public String getAssignmentId() {
+        return assignmentId;
+    }
+
+    public Long getAssignmentRevision() {
+        return assignmentRevision;
+    }
+
+    public String getAssignmentPhase() {
+        return assignmentPhase;
+    }
+
+    public Long getPhaseUpdatedAt() {
+        return phaseUpdatedAt;
+    }
+
+    public Long getAssignedAt() {
+        return assignedAt;
+    }
+
+    public String getVehicleId() {
+        return vehicleId;
+    }
+
+    public void bindAssignmentContext(
+            String assignmentId,
+            Long assignmentRevision,
+            String assignmentPhase,
+            Long phaseUpdatedAt,
+            Long assignedAt,
+            String vehicleId
+    ) {
+
+        this.assignmentId =
+                assignmentId;
+
+        this.assignmentRevision =
+                assignmentRevision;
+
+        this.assignmentPhase =
+                assignmentPhase;
+
+        this.phaseUpdatedAt =
+                phaseUpdatedAt;
+
+        this.assignedAt =
+                assignedAt;
+
+        this.vehicleId =
+                vehicleId;
     }
 
     public Long getCreatedAt() {

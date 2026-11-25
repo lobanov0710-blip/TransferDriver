@@ -8,10 +8,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import ru.transferservis.driver.security.SecureActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,11 +26,12 @@ import ru.transferservis.driver.R;
 import ru.transferservis.driver.data.model.StaffOrderDto;
 import ru.transferservis.driver.data.session.DriverSession;
 import ru.transferservis.driver.data.session.DriverSessionManager;
-import ru.transferservis.driver.data.session.SecureSessionStore;
 import ru.transferservis.driver.ui.login.LoginActivity;
+import ru.transferservis.driver.ui.photo.PhotoChecksActivity;
+import ru.transferservis.driver.ui.support.SupportCasesActivity;
 
 public class DriverMainActivity
-        extends AppCompatActivity {
+        extends SecureActivity {
 
     private static final int REQUEST_POST_NOTIFICATIONS =
             11015;
@@ -48,6 +50,10 @@ public class DriverMainActivity
 
     private Button buttonRetrySession;
     private Button buttonLogout;
+    private Button buttonPhotoControl;
+    private Button buttonSupport;
+
+    private LinearLayout layoutDriverTools;
 
     private RecyclerView recyclerOrders;
 
@@ -110,6 +116,26 @@ public class DriverMainActivity
         buttonLogout.setOnClickListener(
                 view ->
                         logout()
+        );
+
+        buttonPhotoControl.setOnClickListener(
+                view ->
+                        startActivity(
+                                new Intent(
+                                        this,
+                                        PhotoChecksActivity.class
+                                )
+                        )
+        );
+
+        buttonSupport.setOnClickListener(
+                view ->
+                        startActivity(
+                                new Intent(
+                                        this,
+                                        SupportCasesActivity.class
+                                )
+                        )
         );
 
         ensureSessionAndLoadOrders(
@@ -181,6 +207,21 @@ public class DriverMainActivity
         buttonLogout =
                 findViewById(
                         R.id.buttonLogout
+                );
+
+        layoutDriverTools =
+                findViewById(
+                        R.id.layoutDriverTools
+                );
+
+        buttonPhotoControl =
+                findViewById(
+                        R.id.buttonPhotoControl
+                );
+
+        buttonSupport =
+                findViewById(
+                        R.id.buttonSupport
                 );
 
         recyclerOrders =
@@ -410,7 +451,6 @@ public class DriverMainActivity
 
                                 case AUTHENTICATION_REQUIRED:
 
-                                    clearLocalSession();
 
                                     openLogin();
 
@@ -672,7 +712,6 @@ public class DriverMainActivity
                                                     false
                                             );
 
-                                    clearLocalSession();
 
                                     openLogin();
                                 }
@@ -794,6 +833,10 @@ public class DriverMainActivity
                 View.GONE
         );
 
+        layoutDriverTools.setVisibility(
+                View.GONE
+        );
+
         tabOrders.setVisibility(
                 View.GONE
         );
@@ -814,6 +857,10 @@ public class DriverMainActivity
         ensureNotificationPermission();
 
         buttonLogout.setVisibility(
+                View.VISIBLE
+        );
+
+        layoutDriverTools.setVisibility(
                 View.VISIBLE
         );
 
@@ -1087,13 +1134,6 @@ public class DriverMainActivity
         );
     }
 
-    private void clearLocalSession() {
-
-        new SecureSessionStore(
-                this
-        )
-                .clear();
-    }
 
     private void ensureNotificationPermission() {
 

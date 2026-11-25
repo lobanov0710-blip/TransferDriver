@@ -87,7 +87,7 @@ public final class DriverSessionManager {
             pushRegistrar
                     .markNeedsRegistration();
 
-            sessionStore.clear();
+            sessionStore.clearIfCurrent(current);
 
             callback
                     .onAuthenticationRequired();
@@ -167,7 +167,7 @@ public final class DriverSessionManager {
             pushRegistrar
                     .markNeedsRegistration();
 
-            sessionStore.clear();
+            sessionStore.clearIfCurrent(current);
 
             callback.onLoggedOut();
 
@@ -214,7 +214,7 @@ public final class DriverSessionManager {
             pushRegistrar
                     .markNeedsRegistration();
 
-            sessionStore.clear();
+            sessionStore.clearIfCurrent(current);
 
             callback.onLoggedOut();
 
@@ -229,7 +229,7 @@ public final class DriverSessionManager {
                     @Override
                     public void onSuccess() {
 
-                        sessionStore.clear();
+                        sessionStore.clearIfCurrent(current);
 
                         /*
                          * A later login on this
