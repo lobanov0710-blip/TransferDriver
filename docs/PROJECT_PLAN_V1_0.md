@@ -194,3 +194,15 @@ PTY harness исправлены и отражены в журнале и кви
 Actual data ещё не читались. Full classifier readiness и111range followups
 остаются открытыми. G1paused,D4–D7pending; без remote writes/migrations/
 activation/merge/deploy и изменения APK/аккаунтов/ключей/прав.
+
+
+## G2: квитанция private inventory получена — 2026-11-25
+
+Запуск владельцем на Windows больше не ожидается: receipt.public.json сообщает
+об успешном чтении 24 ноября 20:03 (Москва), профиль legacy. Source/tree/target/
+query hash, 19 публичных полей, флаги и время проверены. [Квитанция](evidence/vehicle-inventory/2026-11-24/receipt.public.json),
+[результат проверки](evidence/vehicle-inventory/2026-11-24/review.json).
+Числа остаются у владельца; рассмотрение private report разработчиком не выполнено.
+Далее — рассмотрение закрытого результата владельцем и план обработки пробелов.
+Readiness/111 range followups остаются открытыми. Разрешения на миграции,
+изменение данных или активацию из квитанции не следуют. G1 paused, D4–D7 pending.
