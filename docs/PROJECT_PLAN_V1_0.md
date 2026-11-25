@@ -218,3 +218,16 @@ Readiness/111 range followups остаются открытыми. Разреш�
 закрытого рассмотрения и не готовность автомобилей. Нули отсутствующих legacy
 слоёв не считать исправностью. Параллельно остаётся независимый обзор111 ranges.
 G1 paused,D4–D7 pending; без активации, миграций, backfill, merge/deploy.
+
+
+## G2: schema prerequisite proposal и запрос нового metadata scope — 2026-11-25
+
+[Конкретное предложение](VEHICLE_SCHEMA_STAGE_PROPOSAL_2026-11-25.md) и
+[manifest](VEHICLE_SCHEMA_STAGE_PROPOSAL_2026-11-25.json): source6df1c9f,
+7закреплённых SQL, варианты18→25/19→25 проверены локально на synthetic SQLite.
+Это не разрешение remote apply. Приватные сведения владельца не опубликованы;
+состояние всего STAGING не выводится из автомобильных агрегатов.
+Следующий gate — отдельное утверждение ограниченной проверки D1 schema и
+Worker deployments/version metadata, без частных показателей и без writes.
+Новый Worker metadata scope требует явного решения по AGENTS п3; миграции,
+восстановление и deploy остаются отдельно. G1paused,D4–D7pending,111ranges open.
